@@ -1,6 +1,6 @@
-import LD48 from './ld48'
+import AvO from './avo'
 
-var ld48
+var avo
 window.onload = function() {
-  window.ld48 = new LD48()
+  window.avo = new AvO()
 }

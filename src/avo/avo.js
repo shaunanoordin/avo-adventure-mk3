@@ -16,7 +16,7 @@ const STARTING_LEVEL = (Number.isInteger(parseInt(searchParams.get('level'))))
   ? parseInt(searchParams.get('level')) - 1
   : 0
 
-class LD48 {
+class AvO {
   constructor () {
     this.html = {
       main: document.getElementById('main'),
@@ -510,4 +510,4 @@ function stopEvent (e) {
   return false
 }
 
-export default LD48
+export default AvO
