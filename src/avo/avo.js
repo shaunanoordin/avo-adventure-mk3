@@ -148,6 +148,45 @@ class AvO {
           
     this.processPlayerInput()
   }
+
+  paintRays () {
+    if (!this.hero) return
+    const hero = this.hero
+    const c2d = this.canvas2d
+    const camera = this.camera
+    
+    const DEFAULT_RAY_LENGTH = 1000
+    const ray = {
+      start: {
+        x: hero.x,
+        y: hero.y,
+      },
+      end: {
+        x: hero.x + DEFAULT_RAY_LENGTH* Math.cos(hero.rotation),
+        y: hero.y + DEFAULT_RAY_LENGTH * Math.sin(hero.rotation),
+      }
+    }
+
+    const lineOfSight = {
+      start: {
+        x: hero.x,
+        y: hero.y,
+      },
+      end: {
+        x: hero.x + DEFAULT_RAY_LENGTH* Math.cos(hero.rotation),
+        y: hero.y + DEFAULT_RAY_LENGTH * Math.sin(hero.rotation),
+      }
+    }
+    
+    c2d.beginPath()
+    c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
+    c2d.lineTo(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y)
+    c2d.closePath()
+    c2d.strokeStyle = '#4cc'
+    c2d.lineWidth = 3
+    c2d.stroke()
+    
+  }
   
   paint () {
     const c2d = this.canvas2d
@@ -270,6 +309,8 @@ class AvO {
       */
     }
     // ----------------
+    
+    this.paintRays()
   }
   
   processPlayerInput (timeStep) {
