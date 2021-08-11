@@ -170,6 +170,8 @@ class AvO {
     
     let endPoint = undefined
     
+    this.debugRays && console.log('-'.repeat(80))
+    
     this.entities.forEach(entity => {
       if (entity === hero) return
       
@@ -195,6 +197,8 @@ class AvO {
         }
       }
     })
+    
+    this.debugRays && console.log('ENDPOINT: ', endPoint)
                     
     if (!endPoint) {
       endPoint = {
@@ -203,7 +207,7 @@ class AvO {
       }
     }
     
-    this.debug = true
+    this.debugRays = false
     
     // Line of sight
     c2d.beginPath()
@@ -259,7 +263,7 @@ class AvO {
     if(t2 < 0 || t2 > 1) return null
 
     // Return the POINT OF INTERSECTION
-    console.log(t1, t2)
+    this.debugRays && console.log(t1, t2)
     return {
       x: r_px + r_dx * t1,
       y: r_py + r_dy * t1,
@@ -404,6 +408,12 @@ class AvO {
       if (keysPressed['ArrowDown']) directionY++
       if (keysPressed['ArrowLeft']) directionX--
       if (keysPressed['ArrowUp']) directionY--
+      
+      // TEMP
+      if (keysPressed['r'] && !keysPressed['r'].acknowledged) {
+        this.debugRays = true
+        keysPressed['r'].acknowledged = true
+      }
       
       if (
         (keysPressed['x'] && !keysPressed['x'].acknowledged)
