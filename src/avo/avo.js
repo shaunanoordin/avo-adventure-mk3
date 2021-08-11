@@ -155,7 +155,7 @@ class AvO {
     const c2d = this.canvas2d
     const camera = this.camera
     
-    const DEFAULT_RAY_LENGTH = 1000
+    const DEFAULT_RAY_LENGTH = 320
     
     const lineOfSight = {
       start: {
@@ -168,6 +168,7 @@ class AvO {
       }
     }
     
+    let endPoint = undefined
     
     this.entities.forEach(entity => {
       if (entity === hero) return
@@ -187,35 +188,75 @@ class AvO {
           },
         }
         
-        if (!this.debug) console.log(this.calculateIntersection(lineOfSight, segment))
+        const intersection = this.calculateIntersection(lineOfSight, segment)
+        // console.log(intersection?.param, endPoint.param)
+        if (!endPoint || (intersection && intersection.param < endPoint.param)) {
+          endPoint = intersection
+        }
       }
     })
+                    
+    if (!endPoint) {
+      endPoint = {
+        x: hero.x + DEFAULT_RAY_LENGTH* Math.cos(hero.rotation),
+        y: hero.y + DEFAULT_RAY_LENGTH * Math.sin(hero.rotation),
+      }
+    }
     
     this.debug = true
     
     c2d.beginPath()
     c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
-    c2d.lineTo(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y)
+    c2d.lineTo(endPoint.x + camera.x, endPoint.y + camera.y)
     c2d.closePath()
     c2d.strokeStyle = '#4cc'
     c2d.lineWidth = 3
     c2d.stroke()
   }
 
+  /*
+  Calculate intersection between two lines (a ray and a segment of a polygon)
+  Original code from https://ncase.me/sight-and-light/
+   */
   calculateIntersection (ray, segment) {
     // RAY in parametric: Point + Direction*T1
-    var r_px = ray.start.x
-    var r_py = ray.start.y
-    var r_dx = ray.end.x-ray.start.x
-    var r_dy = ray.end.y-ray.start.y
+    let r_px = ray.start.x
+    let r_py = ray.start.y
+    let r_dx = ray.end.x - ray.start.x
+    let r_dy = ray.end.y - ray.start.y
 
     // SEGMENT in parametric: Point + Direction*T2
-    var s_px = segment.start.x
-    var s_py = segment.start.y
-    var s_dx = segment.end.x-segment.start.x
-    var s_dy = segment.end.y-segment.start.y
+    let s_px = segment.start.x
+    let s_py = segment.start.y
+    let s_dx = segment.end.x - segment.start.x
+    let s_dy = segment.end.y - segment.start.y
+    
+    // Are they parallel? If so, no intersect
+    let r_mag = Math.sqrt(r_dx * r_dx + r_dy * r_dy)
+    let s_mag = Math.sqrt(s_dx * s_dx + s_dy * s_dy)
+    if (r_mag === 0 || s_mag === 0) return null
+    if (r_dx / r_mag === s_dx / s_mag && r_dy / r_mag === s_dy / s_mag) return null
 
-    return null
+    // SOLVE FOR T1 & T2
+    // r_px+r_dx*T1 = s_px+s_dx*T2 && r_py+r_dy*T1 = s_py+s_dy*T2
+    // ==> T1 = (s_px+s_dx*T2-r_px)/r_dx = (s_py+s_dy*T2-r_py)/r_dy
+    // ==> s_px*r_dy + s_dx*T2*r_dy - r_px*r_dy = s_py*r_dx + s_dy*T2*r_dx - r_py*r_dx
+    // ==> T2 = (r_dx*(s_py-r_py) + r_dy*(r_px-s_px))/(s_dx*r_dy - s_dy*r_dx)
+    if ((s_dx * r_dy - s_dy * r_dx) === 0 || r_dx === 0) return null
+    var t2 = (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx)
+    var t1 = (s_px + s_dx * t2 - r_px) / r_dx
+
+    // Must be within parametic whatevers for RAY/SEGMENT
+    if(t1 < 0) return null
+    if(t2 < 0 || t2 > 1) return null
+
+    // Return the POINT OF INTERSECTION
+    return {
+      x: r_px + r_dx * t1,
+      y: r_py + r_dy * t1,
+      param: t1
+    }
+
   }
   
   paint () {
