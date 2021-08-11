@@ -149,13 +149,13 @@ class AvO {
     this.processPlayerInput()
   }
 
-  paintRays () {
+  paintLineOfSight () {
     if (!this.hero) return
     const hero = this.hero
     const c2d = this.canvas2d
     const camera = this.camera
     
-    const DEFAULT_RAY_LENGTH = 480
+    const DEFAULT_RAY_LENGTH = 320
     
     const lineOfSight = {
       start: {
@@ -191,8 +191,7 @@ class AvO {
         }
         
         const intersection = this.calculateIntersection(lineOfSight, segment)
-        // console.log(intersection?.param, endPoint.param)
-        if (!endPoint || (intersection && intersection.param < endPoint.param)) {
+        if (!endPoint || (intersection && intersection.distanceFactor < endPoint.distanceFactor)) {
           endPoint = intersection
         }
       }
@@ -209,25 +208,47 @@ class AvO {
     
     this.debugRays = false
     
+    // Expected line of sight
+    c2d.beginPath()
+    c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
+    c2d.lineTo(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y)
+    c2d.closePath()
+    c2d.strokeStyle = '#c88'
+    c2d.lineWidth = 3
+    c2d.setLineDash([5, 5])
+    c2d.stroke()
+    c2d.setLineDash([])
+    
     // Line of sight
     c2d.beginPath()
     c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
     c2d.lineTo(endPoint.x + camera.x, endPoint.y + camera.y)
     c2d.closePath()
-    c2d.strokeStyle = '#4cc'
+    c2d.strokeStyle = '#39f'
     c2d.lineWidth = 3
     c2d.stroke()
-    
+
     // Expected maximum line of sight
     c2d.beginPath()
-    c2d.arc(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y, 8, 0, 2 * Math.PI)
+    c2d.arc(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y, 4, 0, 2 * Math.PI)
     c2d.closePath()
-    c2d.fillStyle = '#4cc'
+    c2d.fillStyle = '#c88'
+    c2d.fill()
+    
+    // Maximum line of sight
+    c2d.beginPath()
+    c2d.arc(endPoint.x + camera.x, endPoint.y + camera.y, 8, 0, 2 * Math.PI)
+    c2d.closePath()
+    c2d.fillStyle = '#39f'
     c2d.fill()
   }
 
   /*
   Calculate intersection between two lines (a ray and a segment of a polygon)
+  - Each line is in the format { start: { x, y }, end: { x, y } }
+  - Returns null if there's no intersection.
+  - Returns { x, y, distanceFactor } if there's an intersection
+    distanceFactor is portion of 
   Original code from https://ncase.me/sight-and-light/
    */
   calculateIntersection (ray, segment) {
@@ -245,18 +266,8 @@ class AvO {
     let s_dx = segment.end.x - segment.start.x
     let s_dy = segment.end.y - segment.start.y
     
-    // Are they parallel? If so, no intersect
-    let r_mag = Math.sqrt(r_dx * r_dx + r_dy * r_dy)
-    let s_mag = Math.sqrt(s_dx * s_dx + s_dy * s_dy)
-    if (r_mag === 0 || s_mag === 0) {
-      this.debugRays && console.log('   EXIT B: ', r_mag, s_mag)
-      return null
-    }
-    if (r_dx / r_mag === s_dx / s_mag && r_dy / r_mag === s_dy / s_mag) {
-      this.debugRays && console.log('   EXIT B: ', r_dx / r_mag, s_dx / s_mag, r_dy / r_mag, s_dy / s_mag)
-      return null
-    }
-
+    // Optional: check if the lines are parallel by calculating their angles.
+    
     // SOLVE FOR T1 & T2
     // r_px+r_dx*T1 = s_px+s_dx*T2 && r_py+r_dy*T1 = s_py+s_dy*T2
     // ==> T1 = (s_px+s_dx*T2-r_px)/r_dx = (s_py+s_dy*T2-r_py)/r_dy
@@ -276,15 +287,15 @@ class AvO {
 
     // Must be within parametic whatevers for RAY/SEGMENT
     if (t1 === null || t2 === null) return null
-    if (t1 < 0) return null
+    if (t1 < 0 || t1 > 1) return null
     if (t2 < 0 || t2 > 1) return null
 
     // Return the POINT OF INTERSECTION
-    this.debugRays && console.log('   ==> ', t1, t2)
+    this.debugRays && console.log('   ==> distanceFactor: ', t1)
     return {
       x: r_px + r_dx * t1,
       y: r_py + r_dy * t1,
-      param: t1
+      distanceFactor: t1
     }
 
   }
@@ -411,7 +422,7 @@ class AvO {
     }
     // ----------------
     
-    this.paintRays()
+    this.paintLineOfSight()
   }
   
   processPlayerInput (timeStep) {
