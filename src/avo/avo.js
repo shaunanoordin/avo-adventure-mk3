@@ -155,7 +155,7 @@ class AvO {
     const c2d = this.canvas2d
     const camera = this.camera
     
-    const DEFAULT_RAY_LENGTH = 320
+    const DEFAULT_RAY_LENGTH = 480
     
     const lineOfSight = {
       start: {
@@ -163,7 +163,7 @@ class AvO {
         y: hero.y,
       },
       end: {
-        x: hero.x + DEFAULT_RAY_LENGTH* Math.cos(hero.rotation),
+        x: hero.x + DEFAULT_RAY_LENGTH * Math.cos(hero.rotation),
         y: hero.y + DEFAULT_RAY_LENGTH * Math.sin(hero.rotation),
       }
     }
@@ -259,6 +259,7 @@ class AvO {
     if(t2 < 0 || t2 > 1) return null
 
     // Return the POINT OF INTERSECTION
+    console.log(t1, t2)
     return {
       x: r_px + r_dx * t1,
       y: r_py + r_dy * t1,

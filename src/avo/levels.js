@@ -47,6 +47,9 @@ export default class Levels {
     app.entities.push(app.hero)
     app.camera.target = app.hero
     
+    app.entities.push(new Wall(app, 9, 5, 5, 5))  // TEMP
+    
+    /*
     app.entities.push(new Goal(app, 15, 20))
     
     app.entities.push(new Wall(app, 0, 0, 1, 23))  // West Wall
@@ -62,5 +65,6 @@ export default class Levels {
     const enemy = new Enemy(app, 4, 8)
     enemy.direction = DIRECTIONS.EAST
     app.entities.push(enemy)
+    */
   }
 }
