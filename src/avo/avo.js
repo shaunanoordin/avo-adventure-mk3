@@ -265,22 +265,19 @@ class AvO {
     let t2 = null
     let t1 = null
     
-    /*if ((s_dx * r_dy - s_dy * r_dx) === 0 || r_dx === 0) {
-      this.debugRays && console.log('   EXIT C: ', (s_dx * r_dy - s_dy * r_dx), r_dx)
-      return null
-    }*/
-    
-    t2 = (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx)
-    
-    if (r_dx !== 0) {
-      t1 = (s_px + s_dx * t2 - r_px) / r_dx
-    } else if (r_dy !== 0) {
-      t1 = (s_py + s_dy * t2 - r_py) / r_dy
+    if ((s_dx * r_dy - s_dy * r_dx) !== 0) {
+      t2 = (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx)
+      if (r_dx !== 0) {
+        t1 = (s_px + s_dx * t2 - r_px) / r_dx
+      } else if (r_dy !== 0) {
+        t1 = (s_py + s_dy * t2 - r_py) / r_dy
+      }
     }
 
     // Must be within parametic whatevers for RAY/SEGMENT
-    if(t1 < 0) return null
-    if(t2 < 0 || t2 > 1) return null
+    if (t1 === null || t2 === null) return null
+    if (t1 < 0) return null
+    if (t2 < 0 || t2 > 1) return null
 
     // Return the POINT OF INTERSECTION
     this.debugRays && console.log('   ==> ', t1, t2)
