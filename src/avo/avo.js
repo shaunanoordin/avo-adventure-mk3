@@ -205,6 +205,7 @@ class AvO {
     
     this.debug = true
     
+    // Line of sight
     c2d.beginPath()
     c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
     c2d.lineTo(endPoint.x + camera.x, endPoint.y + camera.y)
@@ -212,6 +213,13 @@ class AvO {
     c2d.strokeStyle = '#4cc'
     c2d.lineWidth = 3
     c2d.stroke()
+    
+    // Expected maximum line of sight
+    c2d.beginPath()
+    c2d.arc(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y, 8, 0, 2 * Math.PI)
+    c2d.closePath()
+    c2d.fillStyle = '#4cc'
+    c2d.fill()
   }
 
   /*
