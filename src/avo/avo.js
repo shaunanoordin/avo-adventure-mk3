@@ -156,17 +156,7 @@ class AvO {
     const camera = this.camera
     
     const DEFAULT_RAY_LENGTH = 1000
-    const ray = {
-      start: {
-        x: hero.x,
-        y: hero.y,
-      },
-      end: {
-        x: hero.x + DEFAULT_RAY_LENGTH* Math.cos(hero.rotation),
-        y: hero.y + DEFAULT_RAY_LENGTH * Math.sin(hero.rotation),
-      }
-    }
-
+    
     const lineOfSight = {
       start: {
         x: hero.x,
@@ -178,6 +168,31 @@ class AvO {
       }
     }
     
+    
+    this.entities.forEach(entity => {
+      if (entity === hero) return
+      
+      const vertices = entity.vertices
+      if (vertices.length < 2) return
+      
+      for (let i = 0 ; i < vertices.length - 1 ; i++) {
+        const segment = {
+          start: {
+            x: vertices[i].x,
+            y: vertices[i].y,
+          },
+          end: {
+            x: vertices[i + 1].x,
+            y: vertices[i + 1].y,
+          },
+        }
+        
+        if (!this.debug) console.log(this.calculateIntersection(lineOfSight, segment))
+      }
+    })
+    
+    this.debug = true
+    
     c2d.beginPath()
     c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
     c2d.lineTo(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y)
@@ -185,7 +200,22 @@ class AvO {
     c2d.strokeStyle = '#4cc'
     c2d.lineWidth = 3
     c2d.stroke()
-    
+  }
+
+  calculateIntersection (ray, segment) {
+    // RAY in parametric: Point + Direction*T1
+    var r_px = ray.start.x
+    var r_py = ray.start.y
+    var r_dx = ray.end.x-ray.start.x
+    var r_dy = ray.end.y-ray.start.y
+
+    // SEGMENT in parametric: Point + Direction*T2
+    var s_px = segment.start.x
+    var s_py = segment.start.y
+    var s_dx = segment.end.x-segment.start.x
+    var s_dy = segment.end.y-segment.start.y
+
+    return null
   }
   
   paint () {
