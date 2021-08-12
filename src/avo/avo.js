@@ -289,8 +289,6 @@ class AvO {
     let s_dx = segment.end.x - segment.start.x
     let s_dy = segment.end.y - segment.start.y
     
-    // TODO Optional: check if the lines are parallel by calculating their angles.
-    
     // The intersection occurs where ray.x === segment.x and ray.y === segment.y
     // So, we need to solve for r_factor and s_factor in...
     // r_ox + r_dx * r_factor = s_ox + s_dx * s_factor && r_oy + r_dy * r_factor = s_oy + s_dy * s_factor
@@ -315,9 +313,11 @@ class AvO {
 
     // Check if the intersection occurs within the length of both lines.
     // (The maths above calculates for infinitely long lines.)
-    if (r_factor === null || s_factor === null) return null
-    if (r_factor < 0 || r_factor > 1) return null
-    if (s_factor < 0 || s_factor > 1) return null
+    if (
+      r_factor === null || s_factor === null
+      || r_factor < 0 || r_factor > 1
+      || s_factor < 0 || s_factor > 1
+    ) return null
 
     this.debugRays && console.log('   ==> distanceFactor: ', r_factor)
     
