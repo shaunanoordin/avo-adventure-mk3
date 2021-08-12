@@ -9,6 +9,7 @@ import {
 import Physics from './physics'
 import Levels from './levels'
 import ImageAsset from './image-asset'
+import { isZero } from './misc'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false
@@ -296,18 +297,20 @@ class AvO {
     let r_factor = null
     let s_factor = null
     
-    if (s_dx * r_dy - s_dy * r_dx !== 0) {
+    if (!isZero(s_dx * r_dy - s_dy * r_dx)) {
       // Solve for s_factor.
       s_factor = (r_dx * (s_oy - r_oy) + r_dy * (r_ox - s_ox)) / (s_dx * r_dy - s_dy * r_dx)
       
       // There are two ways to solve for r_factor; one works when the ray
       // isn't perfectly horizontal, the other works when the ray isn't
       // perfectly vertical.
-      if (r_dx !== 0) {
+      if (!isZero(r_dx)) {
         r_factor = (s_ox + s_dx * s_factor - r_ox) / r_dx
-      } else if (r_dy !== 0) {
+      } else if (!isZero(r_dy)) {
         r_factor = (s_oy + s_dy * s_factor - r_oy) / r_dy
       }
+      
+      this.debugRays && console.log('   Checkpoint A: ', r_dx, isZero(r_dx))
     }
 
     // Check if the intersection occurs within the length of both lines.
