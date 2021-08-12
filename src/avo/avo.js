@@ -149,35 +149,46 @@ class AvO {
     this.processPlayerInput()
   }
 
+  /*
+  Draw a line of sight (cast a ray) starting from the hero, in the direction
+  of they are facing.
+   */
   paintLineOfSight () {
     if (!this.hero) return
     const hero = this.hero
     const c2d = this.canvas2d
     const camera = this.camera
     
-    const DEFAULT_RAY_LENGTH = 320
+    const MAX_LINE_OF_SIGHT_DISTANCE = 320
     
+    // Intended line of sight, i.e. a ray starting from the hero.
     const lineOfSight = {
       start: {
         x: hero.x,
         y: hero.y,
       },
       end: {
-        x: hero.x + DEFAULT_RAY_LENGTH * Math.cos(hero.rotation),
-        y: hero.y + DEFAULT_RAY_LENGTH * Math.sin(hero.rotation),
+        x: hero.x + MAX_LINE_OF_SIGHT_DISTANCE * Math.cos(hero.rotation),
+        y: hero.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(hero.rotation),
       }
     }
     
-    let endPoint = undefined
+    let actualLineOfSightEndPoint = undefined
     
     this.debugRays && console.log('-'.repeat(80))
     
+    // For each entity, see if it intersects with the hero's LOS
     this.entities.forEach(entity => {
       if (entity === hero) return
+      
+      // TODO: check for opaqueness and/or if the entity is visible.
       
       const vertices = entity.vertices
       if (vertices.length < 2) return
       
+      // Every entity has a "shape" that can be represented by a polygon.
+      // (Yes, even circles.) Check each segment (aka edge aka side) of the
+      // polygon.
       for (let i = 0 ; i < vertices.length ; i++) {
         const segment = {
           start: {
@@ -189,20 +200,22 @@ class AvO {
             y: vertices[(i + 1) % vertices.length].y,
           },
         }
-        
-        const intersection = this.calculateIntersection(lineOfSight, segment)
-        if (!endPoint || (intersection && intersection.distanceFactor < endPoint.distanceFactor)) {
-          endPoint = intersection
+
+        // Find the intersection. We want to find the intersection point
+        // closest to the hero (the LOS ray's starting point).
+        const intersection = this.getLineIntersection(lineOfSight, segment)
+        if (!actualLineOfSightEndPoint || (intersection && intersection.distanceFactor < actualLineOfSightEndPoint.distanceFactor)) {
+          actualLineOfSightEndPoint = intersection
         }
       }
     })
     
-    this.debugRays && console.log('ENDPOINT: ', endPoint)
+    this.debugRays && console.log('actualLineOfSightEndPoint: ', actualLineOfSightEndPoint)
                     
-    if (!endPoint) {
-      endPoint = {
-        x: hero.x + DEFAULT_RAY_LENGTH* Math.cos(hero.rotation),
-        y: hero.y + DEFAULT_RAY_LENGTH * Math.sin(hero.rotation),
+    if (!actualLineOfSightEndPoint) {
+      actualLineOfSightEndPoint = {
+        x: hero.x + MAX_LINE_OF_SIGHT_DISTANCE* Math.cos(hero.rotation),
+        y: hero.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(hero.rotation),
       }
     }
     
@@ -219,25 +232,25 @@ class AvO {
     c2d.stroke()
     c2d.setLineDash([])
     
-    // Line of sight
+    // Actual line of sight
     c2d.beginPath()
     c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
-    c2d.lineTo(endPoint.x + camera.x, endPoint.y + camera.y)
+    c2d.lineTo(actualLineOfSightEndPoint.x + camera.x, actualLineOfSightEndPoint.y + camera.y)
     c2d.closePath()
     c2d.strokeStyle = '#39f'
     c2d.lineWidth = 3
     c2d.stroke()
 
-    // Expected maximum line of sight
+    // Expected end of line of sight
     c2d.beginPath()
     c2d.arc(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y, 4, 0, 2 * Math.PI)
     c2d.closePath()
     c2d.fillStyle = '#c88'
     c2d.fill()
     
-    // Maximum line of sight
+    // Actual end of line of sight
     c2d.beginPath()
-    c2d.arc(endPoint.x + camera.x, endPoint.y + camera.y, 8, 0, 2 * Math.PI)
+    c2d.arc(actualLineOfSightEndPoint.x + camera.x, actualLineOfSightEndPoint.y + camera.y, 8, 0, 2 * Math.PI)
     c2d.closePath()
     c2d.fillStyle = '#39f'
     c2d.fill()
@@ -247,57 +260,70 @@ class AvO {
   Calculate intersection between two lines (a ray and a segment of a polygon)
   - Each line is in the format { start: { x, y }, end: { x, y } }
   - Returns null if there's no intersection.
-  - Returns { x, y, distanceFactor } if there's an intersection
-    distanceFactor is portion of 
+  - Returns { x, y, distanceFactor } if there's an intersection.
+    x, y are the coordinates of the intersection point. 
+    distanceFactor is how far from the ray's origin point the intersection
+    occurs. If 1, intersection occurs at the ray's end point. If 0.5,
+    intersection occurs halfway between the ray's origin point and end point.
+  
   Original code from https://ncase.me/sight-and-light/
    */
-  calculateIntersection (ray, segment) {
+  getLineIntersection (ray, segment) {
     this.debugRays && console.log('+++ ', ray, segment)
     
-    // RAY in parametric: Point + Direction*T1
-    let r_px = ray.start.x
-    let r_py = ray.start.y
+    // Each line is represented in the format:
+    // line = originPoint + directionVector * distanceFactor
+    // Or a bit more simply:
+    // line = origin (o) + direction (d) * factor (f)
+    
+    // Ray
+    let r_ox = ray.start.x
+    let r_oy = ray.start.y
     let r_dx = ray.end.x - ray.start.x
     let r_dy = ray.end.y - ray.start.y
 
-    // SEGMENT in parametric: Point + Direction*T2
-    let s_px = segment.start.x
-    let s_py = segment.start.y
+    // Segment
+    let s_ox = segment.start.x
+    let s_oy = segment.start.y
     let s_dx = segment.end.x - segment.start.x
     let s_dy = segment.end.y - segment.start.y
     
-    // Optional: check if the lines are parallel by calculating their angles.
+    // TODO Optional: check if the lines are parallel by calculating their angles.
     
-    // SOLVE FOR T1 & T2
-    // r_px+r_dx*T1 = s_px+s_dx*T2 && r_py+r_dy*T1 = s_py+s_dy*T2
-    // ==> T1 = (s_px+s_dx*T2-r_px)/r_dx = (s_py+s_dy*T2-r_py)/r_dy
-    // ==> s_px*r_dy + s_dx*T2*r_dy - r_px*r_dy = s_py*r_dx + s_dy*T2*r_dx - r_py*r_dx
-    // ==> T2 = (r_dx*(s_py-r_py) + r_dy*(r_px-s_px))/(s_dx*r_dy - s_dy*r_dx)
-    let t2 = null
-    let t1 = null
+    // The intersection occurs where ray.x === segment.x and ray.y === segment.y
+    // So, we need to solve for r_factor and s_factor in...
+    // r_ox + r_dx * r_factor = s_ox + s_dx * s_factor && r_oy + r_dy * r_factor = s_oy + s_dy * s_factor
+    let r_factor = null
+    let s_factor = null
     
-    if ((s_dx * r_dy - s_dy * r_dx) !== 0) {
-      t2 = (r_dx * (s_py - r_py) + r_dy * (r_px - s_px)) / (s_dx * r_dy - s_dy * r_dx)
+    if (s_dx * r_dy - s_dy * r_dx !== 0) {
+      // Solve for s_factor.
+      s_factor = (r_dx * (s_oy - r_oy) + r_dy * (r_ox - s_ox)) / (s_dx * r_dy - s_dy * r_dx)
+      
+      // There are two ways to solve for r_factor; one works when the ray
+      // isn't perfectly horizontal, the other works when the ray isn't
+      // perfectly vertical.
       if (r_dx !== 0) {
-        t1 = (s_px + s_dx * t2 - r_px) / r_dx
+        r_factor = (s_ox + s_dx * s_factor - r_ox) / r_dx
       } else if (r_dy !== 0) {
-        t1 = (s_py + s_dy * t2 - r_py) / r_dy
+        r_factor = (s_oy + s_dy * s_factor - r_oy) / r_dy
       }
     }
 
-    // Must be within parametic whatevers for RAY/SEGMENT
-    if (t1 === null || t2 === null) return null
-    if (t1 < 0 || t1 > 1) return null
-    if (t2 < 0 || t2 > 1) return null
+    // Check if the intersection occurs within the length of both lines.
+    // (The maths above calculates for infinitely long lines.)
+    if (r_factor === null || s_factor === null) return null
+    if (r_factor < 0 || r_factor > 1) return null
+    if (s_factor < 0 || s_factor > 1) return null
 
-    // Return the POINT OF INTERSECTION
-    this.debugRays && console.log('   ==> distanceFactor: ', t1)
+    this.debugRays && console.log('   ==> distanceFactor: ', r_factor)
+    
+    // Point of intersection
     return {
-      x: r_px + r_dx * t1,
-      y: r_py + r_dy * t1,
-      distanceFactor: t1
+      x: r_ox + r_dx * r_factor,
+      y: r_oy + r_dy * r_factor,
+      distanceFactor: r_factor
     }
-
   }
   
   paint () {
