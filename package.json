@@ -1,7 +1,7 @@
 {
   "name": "avo-adventure-mk3",
   "version": "1.0.0",
-  "description": "AvO: The Adventurers' Omnibus is a collection of small adventure games.",
+  "description": "AvO: Adventures Omnibus is a collection of small adventure games.",
   "main": "index.js",
   "scripts": {
     "start": "webpack && sass src:app && node server.js",
