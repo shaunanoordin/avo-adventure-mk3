@@ -1,4 +1,5 @@
 import { SHAPES } from './constants'
+import { isZero } from './misc'
 
 const USE_CIRCLE_APPROXIMATION = false
 
@@ -6,11 +7,12 @@ export default class Physics {
   
   //----------------------------------------------------------------
   
-  /*  Checks if objA is touching objB.
-      If true, returns the corrected coordinates for objA and objB, in form:
-        { a: { x, y },
-          b: { x, y } }
-      If false, returns null.
+  /*
+  Checks if objA is touching objB.
+  - If true, returns the corrected coordinates for objA and objB, in form:
+    { a: { x, y },
+      b: { x, y } }
+  - If false, returns null.
    */
   static checkCollision (objA, objB) {
     if (!objA || !objB || objA === objB) return null
@@ -329,6 +331,76 @@ export default class Physics {
     return vectorA.x * vectorB.x + vectorA.y * vectorB.y
   }
 
+  //----------------------------------------------------------------
+  
+  /*
+  Calculate intersection between two lines (a ray and a segment of a polygon).
+  Useful for determining valids line of sight.
+  
+  - Each line is in the format { start: { x, y }, end: { x, y } }
+  - Returns null if there's no intersection.
+  - Returns { x, y, distanceFactor } if there's an intersection.
+    x, y are the coordinates of the intersection point. 
+    distanceFactor is how far from the ray's origin point the intersection
+    occurs. If 1, intersection occurs at the ray's end point. If 0.5,
+    intersection occurs halfway between the ray's origin point and end point.
+  
+  Original code from https://ncase.me/sight-and-light/
+   */
+  static getLineIntersection (ray, segment) {
+    // Each line is represented in the format:
+    // line = originPoint + directionVector * distanceFactor
+    // Or a bit more simply:
+    // line = origin (o) + direction (d) * factor (f)
+    
+    // Ray
+    let r_ox = ray.start.x
+    let r_oy = ray.start.y
+    let r_dx = ray.end.x - ray.start.x
+    let r_dy = ray.end.y - ray.start.y
+
+    // Segment
+    let s_ox = segment.start.x
+    let s_oy = segment.start.y
+    let s_dx = segment.end.x - segment.start.x
+    let s_dy = segment.end.y - segment.start.y
+    
+    // The intersection occurs where ray.x === segment.x and ray.y === segment.y
+    // So, we need to solve for r_factor and s_factor in...
+    // r_ox + r_dx * r_factor = s_ox + s_dx * s_factor && r_oy + r_dy * r_factor = s_oy + s_dy * s_factor
+    let r_factor = null
+    let s_factor = null
+    
+    if (!isZero(s_dx * r_dy - s_dy * r_dx)) {
+      // Solve for s_factor.
+      s_factor = (r_dx * (s_oy - r_oy) + r_dy * (r_ox - s_ox)) / (s_dx * r_dy - s_dy * r_dx)
+      
+      // There are two ways to solve for r_factor; one works when the ray
+      // isn't perfectly horizontal, the other works when the ray isn't
+      // perfectly vertical.
+      if (!isZero(r_dx)) {
+        r_factor = (s_ox + s_dx * s_factor - r_ox) / r_dx
+      } else if (!isZero(r_dy)) {
+        r_factor = (s_oy + s_dy * s_factor - r_oy) / r_dy
+      }
+    }
+
+    // Check if the intersection occurs within the length of both lines.
+    // (The maths above calculates for infinitely long lines.)
+    if (
+      r_factor === null || s_factor === null
+      || r_factor < 0 || r_factor > 1
+      || s_factor < 0 || s_factor > 1
+    ) return null
+    
+    // Point of intersection
+    return {
+      x: r_ox + r_dx * r_factor,
+      y: r_oy + r_dy * r_factor,
+      distanceFactor: r_factor
+    }
+  }
+  
   //----------------------------------------------------------------
 
 }

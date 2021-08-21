@@ -9,7 +9,6 @@ import {
 import Physics from './physics'
 import Levels from './levels'
 import ImageAsset from './image-asset'
-import { isZero } from './misc'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false
@@ -176,8 +175,6 @@ class AvO {
     
     let actualLineOfSightEndPoint = undefined
     
-    this.debugRays && console.log('-'.repeat(80))
-    
     // For each entity, see if it intersects with the hero's LOS
     this.entities.forEach(entity => {
       if (entity === hero) return
@@ -204,23 +201,19 @@ class AvO {
 
         // Find the intersection. We want to find the intersection point
         // closest to the hero (the LOS ray's starting point).
-        const intersection = this.getLineIntersection(lineOfSight, segment)
+        const intersection = Physics.getLineIntersection(lineOfSight, segment)
         if (!actualLineOfSightEndPoint || (intersection && intersection.distanceFactor < actualLineOfSightEndPoint.distanceFactor)) {
           actualLineOfSightEndPoint = intersection
         }
       }
     })
     
-    this.debugRays && console.log('actualLineOfSightEndPoint: ', actualLineOfSightEndPoint)
-                    
     if (!actualLineOfSightEndPoint) {
       actualLineOfSightEndPoint = {
         x: hero.x + MAX_LINE_OF_SIGHT_DISTANCE* Math.cos(hero.rotation),
         y: hero.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(hero.rotation),
       }
     }
-    
-    this.debugRays = false
     
     // Expected line of sight
     c2d.beginPath()
@@ -255,78 +248,6 @@ class AvO {
     c2d.closePath()
     c2d.fillStyle = '#39f'
     c2d.fill()
-  }
-
-  /*
-  Calculate intersection between two lines (a ray and a segment of a polygon)
-  - Each line is in the format { start: { x, y }, end: { x, y } }
-  - Returns null if there's no intersection.
-  - Returns { x, y, distanceFactor } if there's an intersection.
-    x, y are the coordinates of the intersection point. 
-    distanceFactor is how far from the ray's origin point the intersection
-    occurs. If 1, intersection occurs at the ray's end point. If 0.5,
-    intersection occurs halfway between the ray's origin point and end point.
-  
-  Original code from https://ncase.me/sight-and-light/
-   */
-  getLineIntersection (ray, segment) {
-    this.debugRays && console.log('+++ ', ray, segment)
-    
-    // Each line is represented in the format:
-    // line = originPoint + directionVector * distanceFactor
-    // Or a bit more simply:
-    // line = origin (o) + direction (d) * factor (f)
-    
-    // Ray
-    let r_ox = ray.start.x
-    let r_oy = ray.start.y
-    let r_dx = ray.end.x - ray.start.x
-    let r_dy = ray.end.y - ray.start.y
-
-    // Segment
-    let s_ox = segment.start.x
-    let s_oy = segment.start.y
-    let s_dx = segment.end.x - segment.start.x
-    let s_dy = segment.end.y - segment.start.y
-    
-    // The intersection occurs where ray.x === segment.x and ray.y === segment.y
-    // So, we need to solve for r_factor and s_factor in...
-    // r_ox + r_dx * r_factor = s_ox + s_dx * s_factor && r_oy + r_dy * r_factor = s_oy + s_dy * s_factor
-    let r_factor = null
-    let s_factor = null
-    
-    if (!isZero(s_dx * r_dy - s_dy * r_dx)) {
-      // Solve for s_factor.
-      s_factor = (r_dx * (s_oy - r_oy) + r_dy * (r_ox - s_ox)) / (s_dx * r_dy - s_dy * r_dx)
-      
-      // There are two ways to solve for r_factor; one works when the ray
-      // isn't perfectly horizontal, the other works when the ray isn't
-      // perfectly vertical.
-      if (!isZero(r_dx)) {
-        r_factor = (s_ox + s_dx * s_factor - r_ox) / r_dx
-      } else if (!isZero(r_dy)) {
-        r_factor = (s_oy + s_dy * s_factor - r_oy) / r_dy
-      }
-      
-      this.debugRays && console.log('   Checkpoint A: ', r_dx, isZero(r_dx))
-    }
-
-    // Check if the intersection occurs within the length of both lines.
-    // (The maths above calculates for infinitely long lines.)
-    if (
-      r_factor === null || s_factor === null
-      || r_factor < 0 || r_factor > 1
-      || s_factor < 0 || s_factor > 1
-    ) return null
-
-    this.debugRays && console.log('   ==> distanceFactor: ', r_factor)
-    
-    // Point of intersection
-    return {
-      x: r_ox + r_dx * r_factor,
-      y: r_oy + r_dy * r_factor,
-      distanceFactor: r_factor
-    }
   }
   
   paint () {
@@ -465,12 +386,6 @@ class AvO {
       if (keysPressed['ArrowDown']) directionY++
       if (keysPressed['ArrowLeft']) directionX--
       if (keysPressed['ArrowUp']) directionY--
-      
-      // TEMP
-      if (keysPressed['r'] && !keysPressed['r'].acknowledged) {
-        this.debugRays = true
-        keysPressed['r'].acknowledged = true
-      }
       
       if (
         (keysPressed['x'] && !keysPressed['x'].acknowledged)
