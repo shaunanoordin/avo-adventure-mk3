@@ -113,54 +113,10 @@ table {
     visibility: visible;
     background: rgba(128, 128, 128, 0.5);
 
-    #banner {
-      display: block;
-      width: 50%;
-      margin: 0 auto;
-    }
-    
-    > p {
-      font-size: 0.8em;
-      margin: 1em auto;
-      background: $white;
-      max-width: 40em;
-      border-radius: 1em;
-      
-      padding: 0.5em 1em;
-    }
-
-    #levels-list {
-      font-size: 0.8em;
-      margin: 1em auto;
-      background: $white;
-      max-width: 40em;
-      border-radius: 1em;
-      
-      > div {
-        padding: 0.5em 1em;
-      
-        button {
-          cursor: pointer;
-          color: #fff;
-          background: #c44;
-          border: 2px solid #ccc;
-          border-radius: 1rem;
-          box-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.5);
-          width: 10em;
-          
-          &:hover {
-            border: 2px solid #fff;
-          }
-
-          &:active {
-            border: 2px solid #888;
-          }
-        }
-        
-        span {
-          margin-left: 1em;
-        }
-      }
+    > div {
+      background: #fff;
+      margin: 1em;
+      padding: 1em;
     }
   }
   

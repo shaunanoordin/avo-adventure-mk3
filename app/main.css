@@ -95,46 +95,10 @@ table th {
   visibility: visible;
   background: rgba(128, 128, 128, 0.5);
 }
-#app > main #menu #banner {
-  display: block;
-  width: 50%;
-  margin: 0 auto;
-}
-#app > main #menu > p {
-  font-size: 0.8em;
-  margin: 1em auto;
+#app > main #menu > div {
   background: #fff;
-  max-width: 40em;
-  border-radius: 1em;
-  padding: 0.5em 1em;
-}
-#app > main #menu #levels-list {
-  font-size: 0.8em;
-  margin: 1em auto;
-  background: #fff;
-  max-width: 40em;
-  border-radius: 1em;
-}
-#app > main #menu #levels-list > div {
-  padding: 0.5em 1em;
-}
-#app > main #menu #levels-list > div button {
-  cursor: pointer;
-  color: #fff;
-  background: #c44;
-  border: 2px solid #ccc;
-  border-radius: 1rem;
-  box-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.5);
-  width: 10em;
-}
-#app > main #menu #levels-list > div button:hover {
-  border: 2px solid #fff;
-}
-#app > main #menu #levels-list > div button:active {
-  border: 2px solid #888;
-}
-#app > main #menu #levels-list > div span {
-  margin-left: 1em;
+  margin: 1em;
+  padding: 1em;
 }
 #app > main .ui-button {
   position: absolute;

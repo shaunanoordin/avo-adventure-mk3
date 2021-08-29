@@ -528,6 +528,15 @@ class AvO {
   }
   
   onKeyDown (e) {
+    // Special cases
+    switch (e.key) {
+      // Open main menu
+      case 'Escape':
+        this.setMenu(!this.menu)
+        break
+    }
+    
+    // General input
     if (!this.playerInput.keysPressed[e.key]) {
       this.playerInput.keysPressed[e.key] = {
         duration: 0,
