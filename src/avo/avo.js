@@ -49,6 +49,10 @@ class AvO {
       "exampleImage": new ImageAsset('assets/simple-bg.png'),
       "exampleJson": new JsonAsset('assets/example.json'),
     }
+    this.secretAssets = {
+      "secretImage": new ImageAsset('secrets/simple-bg.png'),
+      "secretJson": new JsonAsset('secrets/example.json'),
+    }
     
     this.hero = null
     this.entities = []
@@ -85,6 +89,13 @@ class AvO {
       if (asset.ready) numReadyAssets++
       numTotalAssets++
     })
+    Object.keys(this.secretAssets).forEach((id) => {
+      const secretAsset = this.secretAssets[id]
+      const secretAssetIsReady = secretAsset.ready || secretAsset.error
+      allAssetsReady = allAssetsReady && secretAssetIsReady
+      if (secretAssetIsReady) numReadyAssets++
+      numTotalAssets++
+    })
     
     // Paint status
     this.canvas2d.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
@@ -95,6 +106,15 @@ class AvO {
     this.canvas2d.fillText(`Loading ${numReadyAssets} / ${numTotalAssets} `, TILE_SIZE, TILE_SIZE)
     
     if (allAssetsReady) {
+      // Clean up secret assets
+      Object.keys(this.secretAssets).forEach((id) => {
+        if (this.secretAssets[id].error) delete this.secretAssets[id]
+      })
+      
+      console.log('+++ assets: ', this.assets)
+      console.log('+++ secretAssets: ', this.secretAssets)
+      
+      // Let's go!
       this.initialised = true
       this.showUI()
       this.levels.load(STARTING_LEVEL)
