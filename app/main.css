@@ -92,7 +92,7 @@ table th {
   overflow: auto;
   position: absolute;
   border: 1px solid #fff;
-  visibility: visible;
+  visibility: hidden;
   background: rgba(128, 128, 128, 0.5);
 }
 #app > main #menu > div {

@@ -9,6 +9,7 @@ import {
 import Physics from './physics'
 import Levels from './levels'
 import ImageAsset from './image-asset'
+import JsonAsset from './json-asset'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false
@@ -44,7 +45,10 @@ class AvO {
     this.setupUI()
     
     this.initialised = false
-    this.assets = {}
+    this.assets = {
+      "exampleImage": new ImageAsset('assets/simple-bg.png'),
+      "exampleJson": new JsonAsset('assets/example.json'),
+    }
     
     this.hero = null
     this.entities = []

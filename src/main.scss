@@ -110,7 +110,7 @@ table {
     overflow: auto;
     position: absolute;
     border: 1px solid $white;
-    visibility: visible;
+    visibility: hidden;
     background: rgba(128, 128, 128, 0.5);
 
     > div {
