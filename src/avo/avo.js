@@ -72,13 +72,13 @@ class AvO {
   
   initialisationCheck () {
     // Assets check
-    let allAssetsLoaded = true
-    let numLoadedAssets = 0
+    let allAssetsReady = true
+    let numReadyAssets = 0
     let numTotalAssets = 0
     Object.keys(this.assets).forEach((id) => {
       const asset = this.assets[id]
-      allAssetsLoaded = allAssetsLoaded && asset.loaded
-      if (asset.loaded) numLoadedAssets++
+      allAssetsReady = allAssetsReady && asset.ready
+      if (asset.ready) numReadyAssets++
       numTotalAssets++
     })
     
@@ -88,9 +88,9 @@ class AvO {
     this.canvas2d.textBaseline = 'top'
     this.canvas2d.fillStyle = '#ccc'
     this.canvas2d.font = `1em monospace`
-    this.canvas2d.fillText(`Loading ${numLoadedAssets} / ${numTotalAssets} `, TILE_SIZE, TILE_SIZE)
+    this.canvas2d.fillText(`Loading ${numReadyAssets} / ${numTotalAssets} `, TILE_SIZE, TILE_SIZE)
     
-    if (allAssetsLoaded) {
+    if (allAssetsReady) {
       this.initialised = true
       this.showUI()
       this.levels.load(STARTING_LEVEL)
@@ -446,7 +446,7 @@ class AvO {
     
     window.addEventListener('resize', this.updateUI.bind(this))
     this.updateUI()
-    this.hideUI()  // Hide until all assets are loaded
+    this.hideUI()  // Hide until all assets are ready
     
     this.html.main.focus()
   }
