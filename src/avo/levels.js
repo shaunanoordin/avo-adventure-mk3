@@ -23,6 +23,7 @@ export default class Levels {
     app.playerAction = PLAYER_ACTIONS.IDLE
     app.victory = 0
     app.victoryCountdown = 0
+    app.setDialogMenu(false)
   }
   
   load (level = 0) {
