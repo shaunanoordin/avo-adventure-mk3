@@ -23,14 +23,17 @@ class AvO {
       main: document.getElementById('main'),
       canvas: document.getElementById('canvas'),
       homeMenu: document.getElementById('home-menu'),
+      dialogMenu: document.getElementById('dialog-menu'),
       buttonHome: document.getElementById('button-home'),
       buttonFullscreen: document.getElementById('button-fullscreen'),
       buttonReload: document.getElementById('button-reload'),
-      levelsList: document.getElementById('levels-list'),
     }
     
     this.homeMenu = false
     this.setHomeMenu(false)
+    
+    this.dialogMenu = false
+    this.setDialogMenu(false)
     
     this.canvas2d = this.html.canvas.getContext('2d')
     this.canvasWidth = APP_WIDTH
@@ -111,9 +114,6 @@ class AvO {
         if (this.secretAssets[id].error) delete this.secretAssets[id]
       })
       
-      console.log('+++ assets: ', this.assets)
-      console.log('+++ secretAssets: ', this.secretAssets)
-      
       // Let's go!
       this.initialised = true
       this.showUI()
@@ -141,8 +141,8 @@ class AvO {
   }
   
   play (timeStep) {
-    // If the home menu is open, pause all action gameplay
-    if (this.homeMenu) return
+    // If a menu is open, pause all action gameplay
+    if (this.homeMenu || this.dialogMenu) return
     
     // Run the action gameplay
     // ----------------
@@ -486,13 +486,19 @@ class AvO {
   }
   
   updateUI () {
-    // Fit the Interaction layer to the canvas
+    // Fit the interaction layers (menus, etc) to the canvas
     const mainDivBounds = this.html.main.getBoundingClientRect()
     const canvasBounds = this.html.canvas.getBoundingClientRect()
+    
     this.html.homeMenu.style.width = `${canvasBounds.width}px`
     this.html.homeMenu.style.height = `${canvasBounds.height}px`
     this.html.homeMenu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
     this.html.homeMenu.style.left = `${canvasBounds.left}px`
+    
+    this.html.dialogMenu.style.width = `${canvasBounds.width}px`
+    this.html.dialogMenu.style.height = `${canvasBounds.height}px`
+    this.html.dialogMenu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
+    this.html.dialogMenu.style.left = `${canvasBounds.left}px`
   }
   
   setHomeMenu (homeMenu) {
@@ -503,6 +509,16 @@ class AvO {
     } else {
       this.html.homeMenu.style.visibility = 'hidden'
       this.html.buttonReload.style.visibility = 'visible'
+      this.html.main.focus()
+    }
+  }
+
+  setDialogMenu (dialogMenu) {
+    this.dialogMenu = dialogMenu
+    if (dialogMenu) {
+      this.html.dialogMenu.style.visibility = 'visible'
+    } else {
+      this.html.dialogMenu.style.visibility = 'hidden'
       this.html.main.focus()
     }
   }
@@ -557,6 +573,14 @@ class AvO {
       // Open home menu
       case 'Escape':
         this.setHomeMenu(!this.homeMenu)
+        break
+      
+      // DEBUG
+      case 'z':
+        console.log('+++')
+        if (!this.dialogMenu) {
+          this.setDialogMenu(true)
+        }
         break
     }
     
