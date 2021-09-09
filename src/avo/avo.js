@@ -22,15 +22,15 @@ class AvO {
     this.html = {
       main: document.getElementById('main'),
       canvas: document.getElementById('canvas'),
-      menu: document.getElementById('menu'),
+      homeMenu: document.getElementById('home-menu'),
       buttonHome: document.getElementById('button-home'),
       buttonFullscreen: document.getElementById('button-fullscreen'),
       buttonReload: document.getElementById('button-reload'),
       levelsList: document.getElementById('levels-list'),
     }
     
-    this.menu = false
-    this.setMenu(false)
+    this.homeMenu = false
+    this.setHomeMenu(false)
     
     this.canvas2d = this.html.canvas.getContext('2d')
     this.canvasWidth = APP_WIDTH
@@ -141,8 +141,8 @@ class AvO {
   }
   
   play (timeStep) {
-    // If the menu is open, pause all action gameplay
-    if (this.menu) return
+    // If the home menu is open, pause all action gameplay
+    if (this.homeMenu) return
     
     // Run the action gameplay
     // ----------------
@@ -157,7 +157,7 @@ class AvO {
     // ----------------
     if (this.victory && this.victoryCountdown <= 0) {
       console.log('VICTORY')
-      this.setMenu(true)
+      this.setHomeMenu(true)
     }
     
     if (this.victoryCountdown > 0) {
@@ -489,19 +489,19 @@ class AvO {
     // Fit the Interaction layer to the canvas
     const mainDivBounds = this.html.main.getBoundingClientRect()
     const canvasBounds = this.html.canvas.getBoundingClientRect()
-    this.html.menu.style.width = `${canvasBounds.width}px`
-    this.html.menu.style.height = `${canvasBounds.height}px`
-    this.html.menu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
-    this.html.menu.style.left = `${canvasBounds.left}px`
+    this.html.homeMenu.style.width = `${canvasBounds.width}px`
+    this.html.homeMenu.style.height = `${canvasBounds.height}px`
+    this.html.homeMenu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
+    this.html.homeMenu.style.left = `${canvasBounds.left}px`
   }
   
-  setMenu (menu) {
-    this.menu = menu
-    if (menu) {
-      this.html.menu.style.visibility = 'visible'
+  setHomeMenu (homeMenu) {
+    this.homeMenu = homeMenu
+    if (homeMenu) {
+      this.html.homeMenu.style.visibility = 'visible'
       this.html.buttonReload.style.visibility = 'hidden'
     } else {
-      this.html.menu.style.visibility = 'hidden'
+      this.html.homeMenu.style.visibility = 'hidden'
       this.html.buttonReload.style.visibility = 'visible'
       this.html.main.focus()
     }
@@ -554,9 +554,9 @@ class AvO {
   onKeyDown (e) {
     // Special cases
     switch (e.key) {
-      // Open main menu
+      // Open home menu
       case 'Escape':
-        this.setMenu(!this.menu)
+        this.setHomeMenu(!this.homeMenu)
         break
     }
     
@@ -574,7 +574,7 @@ class AvO {
   }
   
   buttonHome_onClick () {
-    this.setMenu(!this.menu)
+    this.setHomeMenu(!this.homeMenu)
   }
   
   buttonFullscreen_onClick () {
