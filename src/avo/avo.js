@@ -23,7 +23,7 @@ class AvO {
       main: document.getElementById('main'),
       canvas: document.getElementById('canvas'),
       homeMenu: document.getElementById('home-menu'),
-      dialogMenu: document.getElementById('dialog-menu'),
+      interactionMenu: document.getElementById('interaction-menu'),
       buttonHome: document.getElementById('button-home'),
       buttonFullscreen: document.getElementById('button-fullscreen'),
       buttonReload: document.getElementById('button-reload'),
@@ -32,8 +32,8 @@ class AvO {
     this.homeMenu = false
     this.setHomeMenu(false)
     
-    this.dialogMenu = false
-    this.setDialogMenu(false)
+    this.interactionMenu = false
+    this.setInteractionMenu(false)
     
     this.canvas2d = this.html.canvas.getContext('2d')
     this.canvasWidth = APP_WIDTH
@@ -142,7 +142,7 @@ class AvO {
   
   play (timeStep) {
     // If a menu is open, pause all action gameplay
-    if (this.homeMenu || this.dialogMenu) return
+    if (this.homeMenu || this.interactionMenu) return
     
     // Run the action gameplay
     // ----------------
@@ -495,10 +495,10 @@ class AvO {
     this.html.homeMenu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
     this.html.homeMenu.style.left = `${canvasBounds.left}px`
     
-    this.html.dialogMenu.style.width = `${canvasBounds.width}px`
-    this.html.dialogMenu.style.height = `${canvasBounds.height}px`
-    this.html.dialogMenu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
-    this.html.dialogMenu.style.left = `${canvasBounds.left}px`
+    this.html.interactionMenu.style.width = `${canvasBounds.width}px`
+    this.html.interactionMenu.style.height = `${canvasBounds.height}px`
+    this.html.interactionMenu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
+    this.html.interactionMenu.style.left = `${canvasBounds.left}px`
   }
   
   setHomeMenu (homeMenu) {
@@ -513,12 +513,12 @@ class AvO {
     }
   }
 
-  setDialogMenu (dialogMenu) {
-    this.dialogMenu = dialogMenu
-    if (dialogMenu) {
-      this.html.dialogMenu.style.visibility = 'visible'
+  setInteractionMenu (interactionMenu) {
+    this.interactionMenu = interactionMenu
+    if (interactionMenu) {
+      this.html.interactionMenu.style.visibility = 'visible'
     } else {
-      this.html.dialogMenu.style.visibility = 'hidden'
+      this.html.interactionMenu.style.visibility = 'hidden'
       this.html.main.focus()
     }
   }
@@ -578,8 +578,8 @@ class AvO {
       // DEBUG
       case 'z':
         console.log('+++')
-        if (!this.dialogMenu) {
-          this.setDialogMenu(true)
+        if (!this.interactionMenu) {
+          this.setInteractionMenu(true)
         }
         break
     }
