@@ -1,4 +1,6 @@
-import { TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, PLAYER_ACTIONS, EXPECTED_TIMESTEP } from './constants'
+import {
+  TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, PLAYER_ACTIONS, EXPECTED_TIMESTEP
+} from '../constants'
 
 const MOVE_MAX_SPEED_MODIFIER = 2 / EXPECTED_TIMESTEP
 const PUSH_MAX_SPEED_MODIFIER = 12 / EXPECTED_TIMESTEP
@@ -9,13 +11,13 @@ const PUSH_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 class Entity {
   constructor (app) {
     this._app = app
-    
+
     // General identity stats
     this.colour = '#ccc'
-    
+
     // Expired entities are removed at the end of the cycle.
     this._expired = false
-    
+
     // Positional data
     this.x = 0
     this.y = 0
@@ -23,13 +25,13 @@ class Entity {
     this._rotation = ROTATIONS.SOUTH  // Rotation in radians
     this.shape = SHAPES.CIRCLE
     this.shapePolygonPath = null  // Only applicable if shape === SHAPES.POLYGON
-    
+
     // Physics (movement): self locomotion and external (pushed) movement.
     this.moveX = 0
     this.moveY = 0
     this.pushX = 0
     this.pushY = 0
-    
+
     // Additional physics
     this._solid = true
     this._movable = true
@@ -40,34 +42,34 @@ class Entity {
     this._pushDeceleration = this.size * PUSH_DECELERATION_MODIFIER
     this._pushMaxSpeed = this.size * PUSH_MAX_SPEED_MODIFIER
   }
-  
+
   /*
   Section: General Logic
   ----------------------------------------------------------------------------
    */
-  
+
   play (timeStep) {
     // Upkeep: limit speed
     this.doMaxSpeedLimit(timeStep)
-    
+
     // Update position
     const timeCorrection = 1
     // const timeCorrection = (timeStep / EXPECTED_TIMESTEP)  // Edit: time correction may not be needed since Entities fix their own moveXY/pushXY values
     this.x += (this.moveX + this.pushX) * timeCorrection
     this.y += (this.moveY + this.pushY) * timeCorrection
-    
+
     // Upkeep: deceleration
     this.doMoveDeceleration(timeStep)
     this.doPushDeceleration(timeStep)
   }
-  
+
   /*
   Paints entity's hitbox.
    */
   paint (layer = 0) {
     const c2d = this._app.canvas2d
     const camera = this._app.camera
-    
+
     if (layer === 0) {
       c2d.fillStyle = this.colour
       c2d.strokeStyle = '#444'
@@ -120,23 +122,23 @@ class Entity {
       c2d.closePath()
     }
   }
-  
+
   /*
   Section: Game Logic
   ----------------------------------------------------------------------------
    */
-  
+
   /*
   Applies an effect to this entity. Usually called by another antity.
   e.g. a fireball hits this character and applies an "ON FIRE" effect.
    */
   applyEffect (effect, source) {}
-  
+
   /*
   Section: Event Handling
   ----------------------------------------------------------------------------
    */
-  
+
   /*
   Triggers when this entity hits/touches/intersects with another.
    */
@@ -145,12 +147,12 @@ class Entity {
     this.x = collisionCorrection.x
     this.y = collisionCorrection.y
   }
-  
+
   /*
   Section: Physics
   ----------------------------------------------------------------------------
    */
-  
+
   /*
   By default, every moving entity decelerates (because we don't exist in a
   perfect vacuum and the game doesn't take place on a slippery ice).
@@ -164,7 +166,7 @@ class Entity {
     this.moveX = newMoveSpeed * Math.cos(curRotation)
     this.moveY = newMoveSpeed * Math.sin(curRotation)
   }
-  
+
   doPushDeceleration (timeStep) {
     const pushDeceleration = this.pushDeceleration * timeStep / EXPECTED_TIMESTEP || 0
     const curRotation = Math.atan2(this.pushY, this.pushX)
@@ -172,7 +174,7 @@ class Entity {
     this.pushX = newPushSpeed * Math.cos(curRotation)
     this.pushY = newPushSpeed * Math.sin(curRotation)
   }
-  
+
   /*
   Every entity has a maximum speed limit. Intentional movement speed and
   external force movement speed are treated separately.
@@ -185,7 +187,7 @@ class Entity {
       this.moveX = correctedSpeed * Math.cos(moveAngle)
       this.moveY = correctedSpeed * Math.sin(moveAngle)
     }
-    
+
     // Limit max push speed
     if (this.pushMaxSpeed >= 0) {
       const correctedSpeed = Math.min(this.pushMaxSpeed, this.pushSpeed)
@@ -194,7 +196,7 @@ class Entity {
       this.pushY = correctedSpeed * Math.sin(pushAngle)
     }
   }
-  
+
   /*
   When a solid pushed entity hits another solid entity, momentum is transferred.
   Usually, this leads to elastic collisions, because that chaos is fun!
@@ -207,7 +209,7 @@ class Entity {
       if (
         this.shape === SHAPES.CIRCLE && target.shape === SHAPES.CIRCLE
       ) {
-        
+
         // For circle + circle collisions, the collision correction already
         // tells us the bounce direction.
         const angle = Math.atan2(collisionCorrection.y - this.y, collisionCorrection.x - this.x)
@@ -220,7 +222,7 @@ class Entity {
         this.shape === SHAPES.CIRCLE
         && (target.shape === SHAPES.SQUARE || target.shape === SHAPES.POLYGON)
       ) {
-        
+
         // For circle + polygon collisions, we need to know...
         // - the original angle this circle was moving towards (or rather, its
         //   reverse, because we want a bounce)
@@ -236,7 +238,7 @@ class Entity {
 
         this.pushX = Math.cos(angle) * speed
         this.pushY = Math.sin(angle) * speed
-        
+
       } else {
         // For the moment, we're not too concerned about polygons bumping into each other
       }
@@ -250,34 +252,34 @@ class Entity {
       this.pushY = collisionCorrection.pushY
     }
   }
-  
+
   /*
   Section: Getters and Setters
   ----------------------------------------------------------------------------
    */
-  
+
   get left () { return this.x - this.size / 2 }
   get right () { return this.x + this.size / 2 }
   get top () { return this.y - this.size / 2 }
   get bottom () { return this.y + this.size / 2 }
-  
+
   set left (val) { this.x = val + this.size / 2 }
   set right (val) { this.x = val - this.size / 2 }
   set top (val) { this.y = val + this.size / 2 }
   set bottom (val) { this.y = val - this.size / 2 }
-  
+
   get radius () { return this.size / 2 }
-  
+
   set radius (val) { this.size = val * 2 }
-  
+
   get rotation () { return this._rotation }
-  
+
   set rotation (val) {
     this._rotation = val
     while (this._rotation > Math.PI) { this._rotation -= Math.PI * 2 }
     while (this._rotation <= -Math.PI) { this._rotation += Math.PI * 2 }
   }
-  
+
   get direction () {  //Get cardinal direction
     //Favour East and West when rotation is exactly SW, NW, SE or NE.
     if (this._rotation <= Math.PI * 0.25 && this._rotation >= Math.PI * -0.25) { return DIRECTIONS.EAST }
@@ -285,7 +287,7 @@ class Entity {
     else if (this._rotation < Math.PI * -0.25 && this._rotation > Math.PI * -0.75) { return DIRECTIONS.NORTH }
     else { return DIRECTIONS.WEST }
   }
-  
+
   set direction (val) {
     switch (val) {
       case DIRECTIONS.EAST:
@@ -302,7 +304,7 @@ class Entity {
         break
     }
   }
-  
+
   get vertices () {
     const v = []
     if (this.shape === SHAPES.SQUARE) {
@@ -322,32 +324,32 @@ class Entity {
     }
     return v
   }
-  
+
   set vertices (val) { console.error('ERROR: Entity.vertices is read only') }
-  
+
   get solid () { return this._solid }
   get movable () { return this._movable }
   get mass () {  return this._mass }
   get moveAcceleration () { return this._moveAcceleration }
-  get moveDeceleration () { return this._moveDeceleration } 
+  get moveDeceleration () { return this._moveDeceleration }
   get moveMaxSpeed () { return this._moveMaxSpeed }
   get pushDeceleration () { return this._pushDeceleration }
   get pushMaxSpeed () { return this._pushMaxSpeed }
-  
+
   set solid (val) { this._solid = val }
   set movable (val) { this._movable = val }
   set mass (val) {  this._mass = val }
   set moveAcceleration (val) { this._moveAcceleration = val }
-  set moveDeceleration (val) { this._moveDeceleration = val } 
+  set moveDeceleration (val) { this._moveDeceleration = val }
   set moveMaxSpeed (val) { this._moveMaxSpeed = val }
   set pushDeceleration (val) { this._pushDeceleration = val }
   set pushMaxSpeed (val) { this._pushMaxSpeed = val }
-  
+
   get moveSpeed () { return Math.sqrt(this.moveX * this.moveX + this.moveY * this.moveY) }
   get moveAngle () { return Math.atan2(this.moveY, this.moveX) }
   get pushSpeed () { return Math.sqrt(this.pushX * this.pushX + this.pushY * this.pushY) }
   get pushAngle () { return Math.atan2(this.pushY, this.pushX) }
-  
+
   set moveSpeed (val) { console.error('ERROR: Entity.moveSpeed is read only') }
   set moveAngle (val) { console.error('ERROR: Entity.moveAngle is read only') }
   set pushSpeed (val) { console.error('ERROR: Entity.pushSpeed is read only') }

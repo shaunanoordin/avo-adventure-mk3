@@ -1,4 +1,4 @@
-import Entity from '../entity'
+import Entity from './entity'
 import { TILE_SIZE, EXPECTED_TIMESTEP } from '../constants'
 
 class Shot extends Entity {
