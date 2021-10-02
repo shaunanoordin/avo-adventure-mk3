@@ -1,7 +1,7 @@
-class Transition {
+class Routine {
   constructor (app) {
     this._app = app
   }
 }
 
-export default Transition
+export default Routine
