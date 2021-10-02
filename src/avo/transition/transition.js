@@ -1,7 +1,7 @@
-class Interaction {
+class Transition {
   constructor (app) {
     this._app = app
   }
 }
 
-export default Interaction
+export default Transition
