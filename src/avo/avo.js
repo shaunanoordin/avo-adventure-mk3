@@ -10,6 +10,7 @@ import Physics from './physics'
 import Levels from './levels'
 import ImageAsset from './image-asset'
 import JsonAsset from './json-asset'
+import Interaction from './interaction'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false
@@ -53,8 +54,8 @@ class AvO {
       "exampleJson": new JsonAsset('assets/example.json'),
     }
     this.secretAssets = {
-      "secretImage": new ImageAsset('secrets/simple-bg.png'),
-      "secretJson": new JsonAsset('secrets/example.json'),
+      // "secretImage": new ImageAsset('secrets/simple-bg.png'),
+      // "secretJson": new JsonAsset('secrets/example.json'),
     }
 
     this.hero = null
@@ -513,11 +514,17 @@ class AvO {
   }
 
   setInteractionMenu (interactionMenu) {
-    this.interactionMenu = interactionMenu
+    const div = this.html.interactionMenu
+
+    this.interactionMenu && this.interactionMenu.unload()  // Unload the old menu, if any
+    this.interactionMenu = interactionMenu  // Set the new menu
+
     if (interactionMenu) {
-      this.html.interactionMenu.style.visibility = 'visible'
+      while (div.firstChild) { div.removeChild(div.firstChild) }  // Clear div
+      interactionMenu.load(div)  // load the new menu
+      div.style.visibility = 'visible'
     } else {
-      this.html.interactionMenu.style.visibility = 'hidden'
+      div.style.visibility = 'hidden'
       this.html.main.focus()
     }
   }
@@ -576,9 +583,8 @@ class AvO {
 
       // DEBUG
       case 'z':
-        console.log('+++')
         if (!this.interactionMenu) {
-          this.setInteractionMenu(true)
+          this.setInteractionMenu(new Interaction(this))
         }
         break
     }
