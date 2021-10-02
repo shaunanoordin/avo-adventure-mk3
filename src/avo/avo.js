@@ -9,6 +9,8 @@ import {
 import Physics from './physics'
 import Levels from './levels'
 import ImageAsset from './image-asset'
+import JsonAsset from './json-asset'
+import Interaction from './interaction'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false
@@ -21,131 +23,153 @@ class AvO {
     this.html = {
       main: document.getElementById('main'),
       canvas: document.getElementById('canvas'),
-      menu: document.getElementById('menu'),
+      homeMenu: document.getElementById('home-menu'),
+      interactionMenu: document.getElementById('interaction-menu'),
       buttonHome: document.getElementById('button-home'),
       buttonFullscreen: document.getElementById('button-fullscreen'),
       buttonReload: document.getElementById('button-reload'),
-      levelsList: document.getElementById('levels-list'),
     }
-    
-    this.menu = false
-    this.setMenu(false)
-    
+
+    this.homeMenu = false
+    this.setHomeMenu(false)
+
+    this.interactionMenu = false
+    this.setInteractionMenu(false)
+
     this.canvas2d = this.html.canvas.getContext('2d')
     this.canvasWidth = APP_WIDTH
     this.canvasHeight = APP_HEIGHT
-    
+
     this.camera = {
       target: null,  // Target entity to follow. If null, camera is static.
       x: 0,
-      y: 0,      
+      y: 0,
     }
-    
+
     this.setupUI()
-    
+
     this.initialised = false
-    this.assets = {}
-    
+    this.assets = {
+      "exampleImage": new ImageAsset('assets/simple-bg.png'),
+      "exampleJson": new JsonAsset('assets/example.json'),
+    }
+    this.secretAssets = {
+      // "secretImage": new ImageAsset('secrets/simple-bg.png'),
+      // "secretJson": new JsonAsset('secrets/example.json'),
+    }
+
     this.hero = null
     this.entities = []
     this.levels = new Levels(this)
-    
+
     this.playerAction = PLAYER_ACTIONS.IDLE
     this.playerInput = {
       // Mouse/touchscreen input
       pointerStart: undefined,
       pointerCurrent: undefined,
       pointerEnd: undefined,
-      
+
       // Keys that are currently being pressed.
       // keysPressed = { key: { duration, acknowledged } }
       keysPressed: {},
     }
-    
+
     this.victory = false
     this.victoryCountdown = 0
-    this.score = 0
 
     this.prevTime = null
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
   }
-  
+
   initialisationCheck () {
     // Assets check
-    let allAssetsLoaded = true
-    let numLoadedAssets = 0
+    let allAssetsReady = true
+    let numReadyAssets = 0
     let numTotalAssets = 0
     Object.keys(this.assets).forEach((id) => {
       const asset = this.assets[id]
-      allAssetsLoaded = allAssetsLoaded && asset.loaded
-      if (asset.loaded) numLoadedAssets++
+      allAssetsReady = allAssetsReady && asset.ready
+      if (asset.ready) numReadyAssets++
       numTotalAssets++
     })
-    
+    Object.keys(this.secretAssets).forEach((id) => {
+      const secretAsset = this.secretAssets[id]
+      const secretAssetIsReady = secretAsset.ready || secretAsset.error
+      allAssetsReady = allAssetsReady && secretAssetIsReady
+      if (secretAssetIsReady) numReadyAssets++
+      numTotalAssets++
+    })
+
     // Paint status
     this.canvas2d.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
     this.canvas2d.textAlign = 'start'
     this.canvas2d.textBaseline = 'top'
     this.canvas2d.fillStyle = '#ccc'
     this.canvas2d.font = `1em monospace`
-    this.canvas2d.fillText(`Loading ${numLoadedAssets} / ${numTotalAssets} `, TILE_SIZE, TILE_SIZE)
-    
-    if (allAssetsLoaded) {
+    this.canvas2d.fillText(`Loading ${numReadyAssets} / ${numTotalAssets} `, TILE_SIZE, TILE_SIZE)
+
+    if (allAssetsReady) {
+      // Clean up secret assets
+      Object.keys(this.secretAssets).forEach((id) => {
+        if (this.secretAssets[id].error) delete this.secretAssets[id]
+      })
+
+      // Let's go!
       this.initialised = true
       this.showUI()
       this.levels.load(STARTING_LEVEL)
     }
   }
-  
+
   /*
   Section: General Logic
   ----------------------------------------------------------------------------
    */
-  
+
   main (time) {
     const timeStep = (this.prevTime) ? time - this.prevTime : time
     this.prevTime = time
-    
+
     if (this.initialised) {
       this.play(timeStep)
       this.paint()
     } else {
       this.initialisationCheck()
     }
-    
+
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
   }
-  
+
   play (timeStep) {
-    // If the menu is open, pause all action gameplay
-    if (this.menu) return
-    
+    // If a menu is open, pause all action gameplay
+    if (this.homeMenu || this.interactionMenu) return
+
     // Run the action gameplay
     // ----------------
     this.entities.forEach(entity => entity.play(timeStep))
     this.checkCollisions(timeStep)
-    
+
     // Cleanup
     this.entities = this.entities.filter(entity => !entity._expired)
     // ----------------
-    
+
     // Victory check!
     // ----------------
     if (this.victory && this.victoryCountdown <= 0) {
       console.log('VICTORY')
-      this.setMenu(true)
+      this.setHomeMenu(true)
     }
-    
+
     if (this.victoryCountdown > 0) {
       this.victoryCountdown = Math.max(0, this.victoryCountdown - timeStep)
     }
     // ----------------
-    
+
     // Increment the duration of each currently pressed key
     Object.keys(this.playerInput.keysPressed).forEach(key => {
       if (this.playerInput.keysPressed[key]) this.playerInput.keysPressed[key].duration += timeStep
     })
-          
+
     this.processPlayerInput()
   }
 
@@ -158,9 +182,9 @@ class AvO {
     const hero = this.hero
     const c2d = this.canvas2d
     const camera = this.camera
-    
+
     const MAX_LINE_OF_SIGHT_DISTANCE = 320
-    
+
     // Intended line of sight, i.e. a ray starting from the hero.
     const lineOfSight = {
       start: {
@@ -172,18 +196,18 @@ class AvO {
         y: hero.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(hero.rotation),
       }
     }
-    
+
     let actualLineOfSightEndPoint = undefined
-    
+
     // For each entity, see if it intersects with the hero's LOS
     this.entities.forEach(entity => {
       if (entity === hero) return
-      
+
       // TODO: check for opaqueness and/or if the entity is visible.
-      
+
       const vertices = entity.vertices
       if (vertices.length < 2) return
-      
+
       // Every entity has a "shape" that can be represented by a polygon.
       // (Yes, even circles.) Check each segment (aka edge aka side) of the
       // polygon.
@@ -207,14 +231,14 @@ class AvO {
         }
       }
     })
-    
+
     if (!actualLineOfSightEndPoint) {
       actualLineOfSightEndPoint = {
         x: hero.x + MAX_LINE_OF_SIGHT_DISTANCE* Math.cos(hero.rotation),
         y: hero.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(hero.rotation),
       }
     }
-    
+
     // Expected line of sight
     c2d.beginPath()
     c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
@@ -225,7 +249,7 @@ class AvO {
     c2d.setLineDash([5, 5])
     c2d.stroke()
     c2d.setLineDash([])
-    
+
     // Actual line of sight
     c2d.beginPath()
     c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
@@ -241,7 +265,7 @@ class AvO {
     c2d.closePath()
     c2d.fillStyle = '#c88'
     c2d.fill()
-    
+
     // Actual end of line of sight
     c2d.beginPath()
     c2d.arc(actualLineOfSightEndPoint.x + camera.x, actualLineOfSightEndPoint.y + camera.y, 8, 0, 2 * Math.PI)
@@ -249,35 +273,35 @@ class AvO {
     c2d.fillStyle = '#39f'
     c2d.fill()
   }
-  
+
   paint () {
     const c2d = this.canvas2d
     const camera = this.camera
-    
+
     // Camera Controls: focus the camera on the target entity, if any.
     // ----------------
     if (camera.target) {
       camera.x = this.canvasWidth / 2 - camera.target.x
       camera.y = this.canvasHeight / 2 - camera.target.y
     }
-    
+
     c2d.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
-    
+
     c2d.strokeStyle = 'rgba(128, 128, 128, 0.05)'
     c2d.lineWidth = 2
     // ----------------
-    
+
     // Draw grid
     // ----------------
     const offsetX = (this.camera.x % TILE_SIZE) - TILE_SIZE
     const offsetY = (this.camera.y % TILE_SIZE) - TILE_SIZE
-    
+
     for (let y = offsetY ; y < APP_HEIGHT ; y += TILE_SIZE) {
       for (let x = offsetX ; x < APP_WIDTH ; x += TILE_SIZE) {
         c2d.beginPath()
         c2d.rect(x, y, TILE_SIZE, TILE_SIZE)
         c2d.stroke()
-        
+
         // Debug Grid
         if (DEBUG) {
           c2d.fillStyle = '#ccc'
@@ -299,7 +323,7 @@ class AvO {
       this.entities.forEach(entity => entity.paint(layer))
     }
     // ----------------
-    
+
     // Draw player input
     // ----------------
     if (
@@ -307,12 +331,12 @@ class AvO {
       && this.hero
       && this.playerInput.pointerCurrent
     ) {
-      
+
       const inputCoords = this.playerInput.pointerCurrent
-      
+
       c2d.strokeStyle = '#888'
       c2d.lineWidth = TILE_SIZE / 8
-      
+
       c2d.beginPath()
       c2d.arc(inputCoords.x, inputCoords.y, TILE_SIZE, 0, 2 * Math.PI)
       c2d.stroke()
@@ -335,8 +359,8 @@ class AvO {
       c2d.strokeText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
       c2d.fillStyle = '#c44'
       c2d.fillText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
-      
-      text = this.hero?.action?.name + ' (' + this.hero?.moveSpeed.toFixed(2) + ')' 
+
+      text = this.hero?.action?.name + ' (' + this.hero?.moveSpeed.toFixed(2) + ')'
       c2d.textAlign = 'right'
       c2d.strokeStyle = '#fff'
       c2d.strokeText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
@@ -344,7 +368,7 @@ class AvO {
       c2d.fillText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
     }
     // ----------------
-    
+
     // Draw victory
     // ----------------
     if (this.victory) {
@@ -352,18 +376,18 @@ class AvO {
       const fontSize1 = Math.floor((victoryAnimationTime / VICTORY_ANIMATION_TIME) * 50 + 10)
       const fontSize2 = Math.floor((victoryAnimationTime / VICTORY_ANIMATION_TIME) * 50 + 10)
       const VERTICAL_OFFSET = TILE_SIZE / 8
-      
+
       c2d.fillStyle = '#c44'
       c2d.lineWidth = 2
       c2d.textAlign = 'center'
       c2d.strokeStyle = '#fff'
-      
+
       /*
       c2d.font = `${fontSize1}em Source Code Pro`
       c2d.textBaseline = 'bottom'
       c2d.fillText('Nice!', APP_WIDTH / 2, APP_HEIGHT / 2 - VERTICAL_OFFSET)
       c2d.strokeText('Nice!', APP_WIDTH / 2, APP_HEIGHT / 2 - VERTICAL_OFFSET)
-      
+
       c2d.font = `${fontSize2}em Source Code Pro`
       c2d.textBaseline = 'top'
       c2d.fillText(`${this.score} points`, APP_WIDTH / 2, APP_HEIGHT / 2 + VERTICAL_OFFSET)
@@ -371,22 +395,22 @@ class AvO {
       */
     }
     // ----------------
-    
+
     this.paintLineOfSight()
   }
-  
+
   processPlayerInput (timeStep) {
     if (this.hero) {
       const keysPressed = this.playerInput.keysPressed
       let intent = undefined
       let directionX = 0
       let directionY = 0
-      
+
       if (keysPressed['ArrowRight']) directionX++
       if (keysPressed['ArrowDown']) directionY++
       if (keysPressed['ArrowLeft']) directionX--
       if (keysPressed['ArrowUp']) directionY--
-      
+
       if (
         (keysPressed['x'] && !keysPressed['x'].acknowledged)
         || (keysPressed['X'] && !keysPressed['X'].acknowledged)
@@ -398,7 +422,7 @@ class AvO {
         }
         if (keysPressed['x']) keysPressed['x'].acknowledged = true
         if (keysPressed['X']) keysPressed['X'].acknowledged = true
-      
+
       } else if (directionX || directionY) {
         intent = {
           name: 'move',
@@ -406,20 +430,20 @@ class AvO {
           directionY,
         }
       }
-  
+
       this.hero.intent = intent
     }
   }
-  
+
   /*
   Section: UI and Event Handling
   ----------------------------------------------------------------------------
    */
-  
+
   setupUI () {
     this.html.canvas.width = this.canvasWidth
     this.html.canvas.height = this.canvasHeight
-    
+
     if (window.PointerEvent) {
       this.html.canvas.addEventListener('pointerdown', this.onPointerDown.bind(this))
       this.html.canvas.addEventListener('pointermove', this.onPointerMove.bind(this))
@@ -430,104 +454,142 @@ class AvO {
       this.html.canvas.addEventListener('mousemove', this.onPointerMove.bind(this))
       this.html.canvas.addEventListener('mouseup', this.onPointerUp.bind(this))
     }
-    
+
     // Prevent "touch and hold to open context menu" menu on touchscreens.
     this.html.canvas.addEventListener('touchstart', stopEvent)
     this.html.canvas.addEventListener('touchmove', stopEvent)
     this.html.canvas.addEventListener('touchend', stopEvent)
     this.html.canvas.addEventListener('touchcancel', stopEvent)
-    
+
     this.html.buttonHome.addEventListener('click', this.buttonHome_onClick.bind(this))
     this.html.buttonFullscreen.addEventListener('click', this.buttonFullscreen_onClick.bind(this))
     this.html.buttonReload.addEventListener('click', this.buttonReload_onClick.bind(this))
-    
+
     this.html.main.addEventListener('keydown', this.onKeyDown.bind(this))
     this.html.main.addEventListener('keyup', this.onKeyUp.bind(this))
-    
+
     window.addEventListener('resize', this.updateUI.bind(this))
     this.updateUI()
-    this.hideUI()  // Hide until all assets are loaded
-    
+    this.hideUI()  // Hide until all assets are ready
+
     this.html.main.focus()
   }
-  
+
   hideUI () {
     this.html.buttonHome.style.visibility = 'hidden'
     this.html.buttonReload.style.visibility = 'hidden'
   }
-  
+
   showUI () {
     this.html.buttonHome.style.visibility = 'visible'
     this.html.buttonReload.style.visibility = 'visible'
   }
-  
+
   updateUI () {
-    // Fit the Interaction layer to the canvas
+    // Fit the interaction layers (menus, etc) to the canvas
     const mainDivBounds = this.html.main.getBoundingClientRect()
     const canvasBounds = this.html.canvas.getBoundingClientRect()
-    this.html.menu.style.width = `${canvasBounds.width}px`
-    this.html.menu.style.height = `${canvasBounds.height}px`
-    this.html.menu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
-    this.html.menu.style.left = `${canvasBounds.left}px`
+
+    this.html.homeMenu.style.width = `${canvasBounds.width}px`
+    this.html.homeMenu.style.height = `${canvasBounds.height}px`
+    this.html.homeMenu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
+    this.html.homeMenu.style.left = `${canvasBounds.left}px`
+
+    this.html.interactionMenu.style.width = `${canvasBounds.width}px`
+    this.html.interactionMenu.style.height = `${canvasBounds.height}px`
+    this.html.interactionMenu.style.top = `${canvasBounds.top - mainDivBounds.top}px`
+    this.html.interactionMenu.style.left = `${canvasBounds.left}px`
   }
-  
-  setMenu (menu) {
-    this.menu = menu
-    if (menu) {
-      this.html.menu.style.visibility = 'visible'
+
+  setHomeMenu (homeMenu) {
+    this.homeMenu = homeMenu
+    if (homeMenu) {
+      this.html.homeMenu.style.visibility = 'visible'
       this.html.buttonReload.style.visibility = 'hidden'
     } else {
-      this.html.menu.style.visibility = 'hidden'
+      this.html.homeMenu.style.visibility = 'hidden'
       this.html.buttonReload.style.visibility = 'visible'
       this.html.main.focus()
     }
   }
-  
+
+  setInteractionMenu (interactionMenu) {
+    const div = this.html.interactionMenu
+
+    this.interactionMenu && this.interactionMenu.unload()  // Unload the old menu, if any
+    this.interactionMenu = interactionMenu  // Set the new menu
+
+    if (interactionMenu) {
+      while (div.firstChild) { div.removeChild(div.firstChild) }  // Clear div
+      interactionMenu.load(div)  // load the new menu
+      div.style.visibility = 'visible'
+    } else {
+      div.style.visibility = 'hidden'
+      this.html.main.focus()
+    }
+  }
+
   onPointerDown (e) {
     const coords = getEventCoords(e, this.html.canvas)
     const camera = this.camera
-    
+
     this.playerInput.pointerStart = undefined
     this.playerInput.pointerCurrent = undefined
     this.playerInput.pointerEnd = undefined
-    
+
     if (this.hero) {
       const distX = this.hero.x - coords.x + camera.x
       const distY = this.hero.y - coords.y + camera.y
       const distFromHero = Math.sqrt(distX * distX + distY * distY)
       const rotation = Math.atan2(distY, distX)
-      
+
       if (distFromHero < ACCEPTABLE_INPUT_DISTANCE_FROM_HERO) {
         this.playerAction = PLAYER_ACTIONS.POINTER_DOWN
         this.playerInput.pointerStart = coords
         this.playerInput.pointerCurrent = coords
       }
     }
-    
+
     this.html.main.focus()
-    
+
     return stopEvent(e)
   }
-  
+
   onPointerMove (e) {
     const coords = getEventCoords(e, this.html.canvas)
     this.playerInput.pointerCurrent = coords
-    
+
     return stopEvent(e)
   }
-  
+
   onPointerUp (e) {
     const coords = getEventCoords(e, this.html.canvas)
-    
+
     if (this.playerAction === PLAYER_ACTIONS.POINTER_DOWN) {
       this.playerInput.pointerEnd = coords
       this.playerAction = PLAYER_ACTIONS.IDLE
     }
-    
+
     return stopEvent(e)
   }
-  
+
   onKeyDown (e) {
+    // Special cases
+    switch (e.key) {
+      // Open home menu
+      case 'Escape':
+        this.setHomeMenu(!this.homeMenu)
+        break
+
+      // DEBUG
+      case 'z':
+        if (!this.interactionMenu) {
+          this.setInteractionMenu(new Interaction(this))
+        }
+        break
+    }
+
+    // General input
     if (!this.playerInput.keysPressed[e.key]) {
       this.playerInput.keysPressed[e.key] = {
         duration: 0,
@@ -535,15 +597,15 @@ class AvO {
       }
     }
   }
-  
+
   onKeyUp (e) {
     this.playerInput.keysPressed[e.key] = undefined
   }
-  
+
   buttonHome_onClick () {
-    this.setMenu(!this.menu)
+    this.setHomeMenu(!this.homeMenu)
   }
-  
+
   buttonFullscreen_onClick () {
     const isFullscreen = document.fullscreenElement
     if (!isFullscreen) {
@@ -557,48 +619,48 @@ class AvO {
     }
     this.updateUI()
   }
-  
+
   buttonReload_onClick () {
     this.levels.reload()
   }
-  
+
   /*
   Section: Gameplay
   ----------------------------------------------------------------------------
    */
-  
+
   celebrateVictory () {
     if (this.victory) return
     this.victory = true
     this.victoryCountdown = VICTORY_ANIMATION_TIME + PAUSE_AFTER_VICTORY_ANIMATION
   }
-    
+
   /*
   Section: Misc
   ----------------------------------------------------------------------------
    */
-  
+
   checkCollisions (timeStep) {
     for (let a = 0 ; a < this.entities.length ; a++) {
       let entityA = this.entities[a]
-      
+
       for (let b = a + 1 ; b < this.entities.length ; b++) {
         let entityB = this.entities[b]
         let collisionCorrection = Physics.checkCollision(entityA, entityB)
-        
+
         if (collisionCorrection) {
           entityA.onCollision(entityB, collisionCorrection.a)
           entityB.onCollision(entityA, collisionCorrection.b)
         }
       }
-    }  
+    }
   }
 }
 
 function getEventCoords (event, element) {
   const xRatio = (element.width && element.offsetWidth) ? element.width / element.offsetWidth : 1
   const yRatio = (element.height && element.offsetHeight) ? element.height / element.offsetHeight : 1
-  
+
   const x = event.offsetX * xRatio
   const y = event.offsetY * yRatio
   return { x, y }

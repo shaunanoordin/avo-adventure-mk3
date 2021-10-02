@@ -1,4 +1,4 @@
-import Entity from '../entity'
+import Entity from './entity'
 import { PLAYER_ACTIONS, TILE_SIZE } from '../constants'
 
 class Goal extends Entity {

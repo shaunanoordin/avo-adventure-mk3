@@ -1,4 +1,4 @@
-import Entity from '../entity'
+import Entity from './entity'
 import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP } from '../constants'
 
 const INVULNERABILITY_WINDOW = 3000

@@ -1,4 +1,4 @@
-import Entity from '../entity'
+import Entity from './entity'
 import { SHAPES, TILE_SIZE } from '../constants'
 
 class Wall extends Entity {
