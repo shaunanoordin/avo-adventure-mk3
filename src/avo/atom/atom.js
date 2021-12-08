@@ -12,9 +12,9 @@ class Atom {
   constructor (app) {
     this._app = app
     this._type = 'atom'
+    this.name = ''  // Optional identifier
 
     // General atom attributes
-    this.name = ''
     this.colour = '#ccc'
 
     // Expired atoms are removed at the end of the cycle.
