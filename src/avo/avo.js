@@ -11,6 +11,7 @@ import Levels from '@avo/levels'
 import ImageAsset from '@avo/image-asset'
 import JsonAsset from '@avo/json-asset'
 import Interaction from '@avo/interaction'
+import DebugMenu from '@avo/interaction/types/debug-menu'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false
@@ -588,6 +589,12 @@ class AvO {
       case 'z':
         if (!this.interactionMenu) {
           this.setInteractionMenu(new Interaction(this))
+        }
+        break
+
+      case 'v':
+        if (!this.interactionMenu) {
+          this.setInteractionMenu(new DebugMenu(this))
         }
         break
     }

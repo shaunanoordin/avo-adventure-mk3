@@ -19,7 +19,8 @@ class Gravity extends Subscript {
     const app = this._app
     super.play(timeStep)
 
-    app.atoms.filter(atom => atom.movable).forEach(atom => {
+    app.atoms.filter(atom => atom.movable && atom.solid).forEach(atom => {
+      atom.moveY = 0
       if (atom.pushY + GRAVITY_ACCELERATION <= TERMINAL_VELOCITY) {
         atom.pushY += GRAVITY_ACCELERATION
       }

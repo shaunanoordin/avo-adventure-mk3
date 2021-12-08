@@ -12,7 +12,7 @@ class Interaction {
     `
 
     const closeButton = document.createElement('button')
-    closeButton._type = 'button'
+    closeButton.type = 'button'
     closeButton.innerText = 'OK!'
     closeButton.onclick = () => { this._app.setInteractionMenu(false) }
     menu.appendChild(closeButton)

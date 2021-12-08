@@ -18,6 +18,7 @@ export default class Levels {
     const app = this._app
     app.hero = undefined
     app.atoms = []
+    app.subscripts = []
     app.camera = {
       target: null, x: 0, y: 0,
     }
@@ -44,8 +45,6 @@ export default class Levels {
    */
   generate_default () {
     const app = this._app
-
-    app.subscripts.push(new Gravity(app))
 
     app.hero = new Hero(app, 11, 1)
     app.atoms.push(app.hero)
