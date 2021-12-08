@@ -6,6 +6,8 @@ import Wall from '@avo/atom/types/wall'
 import Ball from '@avo/atom/types/ball'
 import Enemy from '@avo/atom/types/enemy'
 
+import Gravity from '@avo/routine/types/gravity'
+
 export default class Levels {
   constructor (app) {
     this._app = app
@@ -43,6 +45,8 @@ export default class Levels {
   generate_default () {
     const app = this._app
 
+    app.routines.push(new Gravity(app))
+
     app.hero = new Hero(app, 11, 1)
     app.atoms.push(app.hero)
     app.camera.target = app.hero
@@ -59,7 +63,7 @@ export default class Levels {
     app.atoms.push(new Ball(app, 8, 6))
 
     const enemy = new Enemy(app, 4, 8)
-    enemy.direction = DIRECTIONS.EAST
+    enemy.rotation = -45 / 180 * Math.PI
     app.atoms.push(enemy)
   }
 }

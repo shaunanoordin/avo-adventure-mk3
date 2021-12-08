@@ -12,7 +12,7 @@ class Atom {
   constructor (app) {
     this._app = app
 
-    // General idatom stats
+    // General atom stats
     this.colour = '#ccc'
 
     // Expired atoms are removed at the end of the cycle.
