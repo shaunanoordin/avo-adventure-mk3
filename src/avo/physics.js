@@ -1,12 +1,12 @@
-import { SHAPES } from './constants'
-import { isZero } from './misc'
+import { SHAPES } from '@avo/constants'
+import { isZero } from '@avo/misc'
 
 const USE_CIRCLE_APPROXIMATION = false
 
 export default class Physics {
-  
+
   //----------------------------------------------------------------
-  
+
   /*
   Checks if objA is touching objB.
   - If true, returns the corrected coordinates for objA and objB, in form:
@@ -16,12 +16,12 @@ export default class Physics {
    */
   static checkCollision (objA, objB) {
     if (!objA || !objB || objA === objB) return null
-    
+
     // Circle + Circle collision
     if (objA.shape === SHAPES.CIRCLE && objB.shape === SHAPES.CIRCLE) {
       return Physics.checkCollision_circleCircle(objA, objB)
     }
-    
+
     // Polygon + Polygon collision. (Squares are polygons, of course.)
     else if (
       (objA.shape === SHAPES.SQUARE || objA.shape === SHAPES.POLYGON) &&
@@ -29,17 +29,17 @@ export default class Physics {
     ) {
       return Physics.checkCollision_polygonPolygon(objA, objB)
     }
-    
+
     // Circle + Polygon collision.
     else if (
       objA.shape === SHAPES.CIRCLE &&
       (objB.shape === SHAPES.SQUARE || objB.shape === SHAPES.POLYGON)
     ) {
       if (USE_CIRCLE_APPROXIMATION) return Physics.checkCollision_polygonPolygon(objA, objB)
-      
+
       return Physics.checkCollision_circlePolygon(objA, objB)
     }
-    
+
     // Polygon + Circle collision
     // It's the reverse of the previous scenario.
     else if (
@@ -47,7 +47,7 @@ export default class Physics {
       objB.shape === SHAPES.CIRCLE
     ) {
       if (USE_CIRCLE_APPROXIMATION) return Physics.checkCollision_polygonPolygon(objA, objB)
-      
+
       let correction = Physics.checkCollision_circlePolygon(objB, objA)
       if (correction) {
         correction = {
@@ -57,11 +57,11 @@ export default class Physics {
       }
       return correction
     }
-    
+
     return null
   }
   //----------------------------------------------------------------
-  
+
   static checkCollision_circleCircle (objA, objB) {
     let fractionA = 0
     let fractionB = 0
@@ -75,17 +75,17 @@ export default class Physics {
     } else if (objB.movable) {
       fractionB = 1
     }
-    
+
     const distX = objB.x - objA.x
     const distY = objB.y - objA.y
     const dist = Math.sqrt(distX * distX + distY * distY)
     const minimumDist = objA.radius + objB.radius
-    if (dist < minimumDist) {    
+    if (dist < minimumDist) {
       const angle = Math.atan2(distY, distX)
       const correctDist = minimumDist
       const cosAngle = Math.cos(angle)
       const sinAngle = Math.sin(angle)
-      
+
       const motion = Physics.getPostCollisionMotion(objA, objB)
 
       return {
@@ -103,12 +103,12 @@ export default class Physics {
         }
       }
     }
-    
+
     return null
   }
-  
+
   //----------------------------------------------------------------
-  
+
   static checkCollision_polygonPolygon (objA, objB) {
     let fractionA = 0
     let fractionB = 0
@@ -122,7 +122,7 @@ export default class Physics {
     } else if (objB.movable) {
       fractionB = 1
     }
-    
+
     let correction = null
     const verticesA = objA.vertices
     const verticesB = objB.vertices
@@ -166,12 +166,12 @@ export default class Physics {
         }
       }
     }
-    
+
     return null
   }
-  
+
   //----------------------------------------------------------------
-  
+
   static checkCollision_circlePolygon (objA, objB) {
     let fractionA = 0
     let fractionB = 0
@@ -185,7 +185,7 @@ export default class Physics {
     } else if (objB.movable) {
       fractionB = 1
     }
-    
+
     const distX = objB.x - objA.x
     const distY = objB.y - objA.y
     const dist = Math.sqrt(distX * distX + distY * distY)
@@ -202,7 +202,7 @@ export default class Physics {
       const scalarA = Physics.dotProduct(axis, { x: objA.x, y: objA.y })
       const projectionA = { min: scalarA - objA.radius, max: scalarA + objA.radius }
       const projectionB = { min: Infinity, max: -Infinity }
-      
+
       for (let j = 0 ; j < verticesB.length ; j++) {
         const val = Physics.dotProduct(axis, verticesB[j])
         projectionB.min = Math.min(projectionB.min, val)
@@ -233,16 +233,16 @@ export default class Physics {
       }
     }
   }
-  
+
   //----------------------------------------------------------------
-  
+
   /*  Gets the NORMALISED normals for each edge of the object's shape. Assumes the object has the 'vertices' property.
    */
   static getShapeNormals (obj) {
     const vertices = obj.vertices
     if (!vertices) return null
     if (vertices.length < 2) return []  //Look, you need to have at least three vertices to be a shape.
-    
+
     //First, calculate the edges connecting each vertice.
     //--------------------------------
     const edges = []
@@ -255,7 +255,7 @@ export default class Physics {
       })
     }
     //--------------------------------
-    
+
     //Calculate the NORMALISED normals for each edge.
     //--------------------------------
     return edges.map((edge) => {
@@ -273,13 +273,13 @@ export default class Physics {
 
   static getPostCollisionMotion (objA, objB) {
     if (!objA || !objB) return null
-    
+
     if (
       !objA.movable || !objA.solid || objA.mass === 0
       || !objB.movable || !objB.solid || objB.mass === 0
       || (objA.mass + objB.mass) === 0
     ) return null
-    
+
     const collisionAngle = Math.atan2(objB.y - objA.y, objB.x - objA.x)
     const ANGLE_90 = Math.PI / 2
     const totalMass = objA.mass + objB.mass
@@ -289,7 +289,7 @@ export default class Physics {
     const bAng = objB.pushAngle
     const aMass = objA.mass
     const bMass = objB.mass
-    
+
     const aGroup =
       ( aSpd * Math.cos(aAng - collisionAngle) * (aMass - bMass)
         + 2 * bMass * bSpd * Math.cos(bAng - collisionAngle)
@@ -298,7 +298,7 @@ export default class Physics {
       ( bSpd * Math.cos(bAng - collisionAngle) * (bMass - aMass)
         + 2 * aMass * aSpd * Math.cos(aAng - collisionAngle)
       ) / totalMass
-    
+
     const objA_pushX =
       aGroup * Math.cos(collisionAngle)
       + aSpd * Math.sin(aAng - collisionAngle) * Math.cos(collisionAngle + ANGLE_90)
@@ -311,7 +311,7 @@ export default class Physics {
     const objB_pushY =
       bGroup * Math.sin(collisionAngle)
       + bSpd * Math.sin(bAng - collisionAngle) * Math.sin(collisionAngle + ANGLE_90)
-    
+
     return {
       a: {
         pushX: objA_pushX,
@@ -323,28 +323,28 @@ export default class Physics {
       },
     }
   }
-  
+
   //----------------------------------------------------------------
-  
+
   static dotProduct (vectorA, vectorB) {
     if (!vectorA || !vectorB) return null
     return vectorA.x * vectorB.x + vectorA.y * vectorB.y
   }
 
   //----------------------------------------------------------------
-  
+
   /*
   Calculate intersection between two lines (a ray and a segment of a polygon).
   Useful for determining valids line of sight.
-  
+
   - Each line is in the format { start: { x, y }, end: { x, y } }
   - Returns null if there's no intersection.
   - Returns { x, y, distanceFactor } if there's an intersection.
-    x, y are the coordinates of the intersection point. 
+    x, y are the coordinates of the intersection point.
     distanceFactor is how far from the ray's origin point the intersection
     occurs. If 1, intersection occurs at the ray's end point. If 0.5,
     intersection occurs halfway between the ray's origin point and end point.
-  
+
   Original code from https://ncase.me/sight-and-light/
    */
   static getLineIntersection (ray, segment) {
@@ -352,7 +352,7 @@ export default class Physics {
     // line = originPoint + directionVector * distanceFactor
     // Or a bit more simply:
     // line = origin (o) + direction (d) * factor (f)
-    
+
     // Ray
     let r_ox = ray.start.x
     let r_oy = ray.start.y
@@ -364,17 +364,17 @@ export default class Physics {
     let s_oy = segment.start.y
     let s_dx = segment.end.x - segment.start.x
     let s_dy = segment.end.y - segment.start.y
-    
+
     // The intersection occurs where ray.x === segment.x and ray.y === segment.y
     // So, we need to solve for r_factor and s_factor in...
     // r_ox + r_dx * r_factor = s_ox + s_dx * s_factor && r_oy + r_dy * r_factor = s_oy + s_dy * s_factor
     let r_factor = null
     let s_factor = null
-    
+
     if (!isZero(s_dx * r_dy - s_dy * r_dx)) {
       // Solve for s_factor.
       s_factor = (r_dx * (s_oy - r_oy) + r_dy * (r_ox - s_ox)) / (s_dx * r_dy - s_dy * r_dx)
-      
+
       // There are two ways to solve for r_factor; one works when the ray
       // isn't perfectly horizontal, the other works when the ray isn't
       // perfectly vertical.
@@ -392,7 +392,7 @@ export default class Physics {
       || r_factor < 0 || r_factor > 1
       || s_factor < 0 || s_factor > 1
     ) return null
-    
+
     // Point of intersection
     return {
       x: r_ox + r_dx * r_factor,
@@ -400,7 +400,7 @@ export default class Physics {
       distanceFactor: r_factor
     }
   }
-  
+
   //----------------------------------------------------------------
 
 }
