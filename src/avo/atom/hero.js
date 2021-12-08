@@ -1,5 +1,5 @@
 import Atom from './atom'
-import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP } from '../constants'
+import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants'
 
 const INVULNERABILITY_WINDOW = 3000
 

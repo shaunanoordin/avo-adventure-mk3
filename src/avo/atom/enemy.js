@@ -1,5 +1,5 @@
 import Atom from './atom'
-import { PLAYER_ACTIONS, TILE_SIZE } from '../constants'
+import { PLAYER_ACTIONS, TILE_SIZE } from '@avo/constants'
 import Shot from './shot'
 
 class Enemy extends Atom {

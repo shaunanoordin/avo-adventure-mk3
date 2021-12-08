@@ -1,5 +1,5 @@
 import Atom from './atom'
-import { SHAPES, TILE_SIZE } from '../constants'
+import { SHAPES, TILE_SIZE } from '@avo/constants'
 
 class Wall extends Atom {
   constructor (app, col = 0, row = 0, width = 1, height = 1, cutCorner = false) {

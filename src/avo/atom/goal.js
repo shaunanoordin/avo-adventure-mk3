@@ -1,5 +1,5 @@
 import Atom from './atom'
-import { PLAYER_ACTIONS, TILE_SIZE } from '../constants'
+import { PLAYER_ACTIONS, TILE_SIZE } from '@avo/constants'
 
 class Goal extends Atom {
   constructor (app, col = 0, row = 0) {

@@ -1,5 +1,5 @@
 import Atom from './atom'
-import { TILE_SIZE } from '../constants'
+import { TILE_SIZE } from '@avo/constants'
 
 class Ball extends Atom {
   constructor (app, col = 0, row = 0) {

@@ -1,5 +1,5 @@
 import Atom from './atom'
-import { TILE_SIZE, EXPECTED_TIMESTEP } from '../constants'
+import { TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants'
 
 class Shot extends Atom {
   constructor (app, x = 0, y = 0, rotation = 0, source = undefined) {
