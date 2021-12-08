@@ -1,4 +1,4 @@
-import Atom from './atom'
+import Atom from '@avo/atom'
 import { PLAYER_ACTIONS, TILE_SIZE } from '@avo/constants'
 
 class Goal extends Atom {

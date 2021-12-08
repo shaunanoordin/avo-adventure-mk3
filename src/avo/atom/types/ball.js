@@ -1,4 +1,4 @@
-import Atom from './atom'
+import Atom from '@avo/atom'
 import { TILE_SIZE } from '@avo/constants'
 
 class Ball extends Atom {

@@ -1,10 +1,10 @@
 import { PLAYER_ACTIONS, DIRECTIONS } from './constants'
 
-import Hero from './atom/hero'
-import Goal from './atom/goal'
-import Wall from './atom/wall'
-import Ball from './atom/ball'
-import Enemy from './atom/enemy'
+import Hero from '@avo/atom/types/hero'
+import Goal from '@avo/atom/types/goal'
+import Wall from '@avo/atom/types/wall'
+import Ball from '@avo/atom/types/ball'
+import Enemy from '@avo/atom/types/enemy'
 
 export default class Levels {
   constructor (app) {

@@ -1,6 +1,6 @@
-import Atom from './atom'
+import Atom from '@avo/atom'
+import Shot from '@avo/atom/types/shot'
 import { PLAYER_ACTIONS, TILE_SIZE } from '@avo/constants'
-import Shot from './shot'
 
 class Enemy extends Atom {
   constructor (app, col = 0, row = 0) {

@@ -1,4 +1,4 @@
-import Atom from './atom'
+import Atom from '@avo/atom'
 import { TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants'
 
 class Shot extends Atom {
