@@ -6,7 +6,7 @@ import Wall from '@avo/atom/types/wall'
 import Ball from '@avo/atom/types/ball'
 import Enemy from '@avo/atom/types/enemy'
 
-import Gravity from '@avo/routine/types/gravity'
+import Gravity from '@avo/subscript/types/gravity'
 
 export default class Levels {
   constructor (app) {
@@ -45,7 +45,7 @@ export default class Levels {
   generate_default () {
     const app = this._app
 
-    app.routines.push(new Gravity(app))
+    app.subscripts.push(new Gravity(app))
 
     app.hero = new Hero(app, 11, 1)
     app.atoms.push(app.hero)

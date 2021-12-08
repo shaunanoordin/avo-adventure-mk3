@@ -1,8 +1,8 @@
-class Routine {
+class Subscript {
   constructor (app) {
     this._app = app
 
-    // Expired routines are removed at the end of the cycle.
+    // Expired subscripts are removed at the end of the cycle.
     this._expired = false
   }
 
@@ -14,4 +14,4 @@ class Routine {
   play (timeStep) {}
 }
 
-export default Routine
+export default Subscript

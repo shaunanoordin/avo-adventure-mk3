@@ -60,7 +60,7 @@ class AvO {
 
     this.hero = null
     this.atoms = []
-    this.routines = []
+    this.subscripts = []
     this.levels = new Levels(this)
 
     this.playerAction = PLAYER_ACTIONS.IDLE
@@ -148,12 +148,12 @@ class AvO {
     // Run the action gameplay
     // ----------------
     this.atoms.forEach(atom => atom.play(timeStep))
-    this.routines.forEach(routine => routine.play(timeStep))
+    this.subscripts.forEach(subscript => subscript.play(timeStep))
     this.checkCollisions(timeStep)
 
     // Cleanup
     this.atoms = this.atoms.filter(atom => !atom._expired)
-    this.routines = this.routines.filter(routine => !routine._expired)
+    this.subscripts = this.subscripts.filter(subscript => !subscript._expired)
     // ----------------
 
     // Victory check!

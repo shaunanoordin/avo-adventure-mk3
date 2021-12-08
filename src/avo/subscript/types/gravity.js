@@ -1,10 +1,10 @@
-import Routine from '@avo/routine'
+import Subscript from '@avo/subscript'
 import { EXPECTED_TIMESTEP } from '@avo/constants'
 
 const TERMINAL_VELOCITY = 8
 const GRAVITY_ACCELERATION = 1
 
-class Gravity extends Routine {
+class Gravity extends Subscript {
   constructor (app) {
     super(app)
   }
