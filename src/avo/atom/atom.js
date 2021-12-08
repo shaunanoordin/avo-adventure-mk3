@@ -11,8 +11,10 @@ const PUSH_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 class Atom {
   constructor (app) {
     this._app = app
+    this._type = 'atom'
 
-    // General atom stats
+    // General atom attributes
+    this.name = ''
     this.colour = '#ccc'
 
     // Expired atoms are removed at the end of the cycle.

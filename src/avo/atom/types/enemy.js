@@ -5,6 +5,7 @@ import { PLAYER_ACTIONS, TILE_SIZE } from '@avo/constants'
 class Enemy extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
+    this._type = 'enemy'
 
     this.colour = '#4c4'
     this.x = col * TILE_SIZE + TILE_SIZE / 2

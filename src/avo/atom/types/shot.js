@@ -4,8 +4,9 @@ import { TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants'
 class Shot extends Atom {
   constructor (app, x = 0, y = 0, rotation = 0, source = undefined) {
     super(app)
+    this._type = 'shot'
 
-    this.source = source  // Where
+    this.source = source  // The atom that this shot came from
 
     this.colour = '#cc4'
     this.solid = false

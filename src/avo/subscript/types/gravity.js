@@ -7,6 +7,7 @@ const GRAVITY_ACCELERATION = 1
 class Gravity extends Subscript {
   constructor (app) {
     super(app)
+    this._type = 'gravity'
   }
 
   /*

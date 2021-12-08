@@ -4,6 +4,7 @@ import { TILE_SIZE } from '@avo/constants'
 class Ball extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
+    this._type = 'ball'
 
     this.colour = '#48c'
     this.solid = true
