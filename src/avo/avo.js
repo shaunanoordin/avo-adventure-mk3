@@ -5,12 +5,12 @@ import {
   VICTORY_ANIMATION_TIME,
   PAUSE_AFTER_VICTORY_ANIMATION,
   MAX_PULL_DISTANCE,
-} from './constants'
-import Physics from './physics'
-import Levels from './levels'
-import ImageAsset from './image-asset'
-import JsonAsset from './json-asset'
-import Interaction from './interaction'
+} from '@avo/constants'
+import Physics from '@avo/physics'
+import Levels from '@avo/levels'
+import ImageAsset from '@avo/image-asset'
+import JsonAsset from '@avo/json-asset'
+import Interaction from '@avo/interaction'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false

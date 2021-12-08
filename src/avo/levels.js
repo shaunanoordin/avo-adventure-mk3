@@ -1,4 +1,4 @@
-import { PLAYER_ACTIONS, DIRECTIONS } from './constants'
+import { PLAYER_ACTIONS, DIRECTIONS } from '@avo/constants'
 
 import Hero from '@avo/atom/types/hero'
 import Goal from '@avo/atom/types/goal'
