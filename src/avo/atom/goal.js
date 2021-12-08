@@ -1,7 +1,7 @@
-import Entity from './entity'
+import Atom from './atom'
 import { PLAYER_ACTIONS, TILE_SIZE } from '../constants'
 
-class Goal extends Entity {
+class Goal extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
     

@@ -41,7 +41,7 @@ class AvO {
     this.canvasHeight = APP_HEIGHT
 
     this.camera = {
-      target: null,  // Target entity to follow. If null, camera is static.
+      target: null,  // Target atom to follow. If null, camera is static.
       x: 0,
       y: 0,
     }
@@ -59,7 +59,7 @@ class AvO {
     }
 
     this.hero = null
-    this.entities = []
+    this.atoms = []
     this.levels = new Levels(this)
 
     this.playerAction = PLAYER_ACTIONS.IDLE
@@ -146,11 +146,11 @@ class AvO {
 
     // Run the action gameplay
     // ----------------
-    this.entities.forEach(entity => entity.play(timeStep))
+    this.atoms.forEach(atom => atom.play(timeStep))
     this.checkCollisions(timeStep)
 
     // Cleanup
-    this.entities = this.entities.filter(entity => !entity._expired)
+    this.atoms = this.atoms.filter(atom => !atom._expired)
     // ----------------
 
     // Victory check!
@@ -199,16 +199,16 @@ class AvO {
 
     let actualLineOfSightEndPoint = undefined
 
-    // For each entity, see if it intersects with the hero's LOS
-    this.entities.forEach(entity => {
-      if (entity === hero) return
+    // For each atom, see if it intersects with the hero's LOS
+    this.atoms.forEach(atom => {
+      if (atom === hero) return
 
-      // TODO: check for opaqueness and/or if the entity is visible.
+      // TODO: check for opaqueness and/or if the atom is visible.
 
-      const vertices = entity.vertices
+      const vertices = atom.vertices
       if (vertices.length < 2) return
 
-      // Every entity has a "shape" that can be represented by a polygon.
+      // Every atom has a "shape" that can be represented by a polygon.
       // (Yes, even circles.) Check each segment (aka edge aka side) of the
       // polygon.
       for (let i = 0 ; i < vertices.length ; i++) {
@@ -278,7 +278,7 @@ class AvO {
     const c2d = this.canvas2d
     const camera = this.camera
 
-    // Camera Controls: focus the camera on the target entity, if any.
+    // Camera Controls: focus the camera on the target atom, if any.
     // ----------------
     if (camera.target) {
       camera.x = this.canvasWidth / 2 - camera.target.x
@@ -316,11 +316,11 @@ class AvO {
     }
     // ----------------
 
-    // Draw entities
+    // Draw atoms
     // ----------------
     const MAX_LAYER = 2
     for (let layer = 0 ; layer < MAX_LAYER ; layer++) {
-      this.entities.forEach(entity => entity.paint(layer))
+      this.atoms.forEach(atom => atom.paint(layer))
     }
     // ----------------
 
@@ -641,16 +641,16 @@ class AvO {
    */
 
   checkCollisions (timeStep) {
-    for (let a = 0 ; a < this.entities.length ; a++) {
-      let entityA = this.entities[a]
+    for (let a = 0 ; a < this.atoms.length ; a++) {
+      let atomA = this.atoms[a]
 
-      for (let b = a + 1 ; b < this.entities.length ; b++) {
-        let entityB = this.entities[b]
-        let collisionCorrection = Physics.checkCollision(entityA, entityB)
+      for (let b = a + 1 ; b < this.atoms.length ; b++) {
+        let atomB = this.atoms[b]
+        let collisionCorrection = Physics.checkCollision(atomA, atomB)
 
         if (collisionCorrection) {
-          entityA.onCollision(entityB, collisionCorrection.a)
-          entityB.onCollision(entityA, collisionCorrection.b)
+          atomA.onCollision(atomB, collisionCorrection.a)
+          atomB.onCollision(atomA, collisionCorrection.b)
         }
       }
     }

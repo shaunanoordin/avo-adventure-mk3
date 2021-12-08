@@ -1,9 +1,9 @@
-import Entity from './entity'
+import Atom from './atom'
 import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP } from '../constants'
 
 const INVULNERABILITY_WINDOW = 3000
 
-class Hero extends Entity {
+class Hero extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
     
@@ -218,7 +218,7 @@ class Hero extends Entity {
    */
   
   /*
-  Triggers when this entity hits/touches/intersects with another.
+  Triggers when this atom hits/touches/intersects with another.
    */
   onCollision (target, collisionCorrection) {
     super.onCollision(target, collisionCorrection)

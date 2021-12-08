@@ -1,7 +1,7 @@
-import Entity from './entity'
+import Atom from './atom'
 import { TILE_SIZE } from '../constants'
 
-class Ball extends Entity {
+class Ball extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
 

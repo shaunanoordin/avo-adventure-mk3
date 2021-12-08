@@ -1,7 +1,7 @@
-import Entity from './entity'
+import Atom from './atom'
 import { TILE_SIZE, EXPECTED_TIMESTEP } from '../constants'
 
-class Shot extends Entity {
+class Shot extends Atom {
   constructor (app, x = 0, y = 0, rotation = 0, source = undefined) {
     super(app)
     

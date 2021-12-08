@@ -1,7 +1,7 @@
-import Entity from './entity'
+import Atom from './atom'
 import { SHAPES, TILE_SIZE } from '../constants'
 
-class Wall extends Entity {
+class Wall extends Atom {
   constructor (app, col = 0, row = 0, width = 1, height = 1, cutCorner = false) {
     super(app)
     
