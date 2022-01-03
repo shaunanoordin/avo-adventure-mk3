@@ -1,7 +1,7 @@
 import Atom from '@avo/atom'
 import { TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants'
 
-class Shot extends Atom {
+export default class Shot extends Atom {
   constructor (app, x = 0, y = 0, rotation = 0, source = undefined) {
     super(app)
     this._type = 'shot'
@@ -45,5 +45,3 @@ class Shot extends Atom {
     if (this.distance <= 0) this._expired = true
   }
 }
-
-export default Shot

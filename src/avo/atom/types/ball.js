@@ -1,7 +1,7 @@
 import Atom from '@avo/atom'
 import { TILE_SIZE } from '@avo/constants'
 
-class Ball extends Atom {
+export default class Ball extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'ball'
@@ -13,5 +13,3 @@ class Ball extends Atom {
     this.y = row * TILE_SIZE + TILE_SIZE / 2
   }
 }
-
-export default Ball

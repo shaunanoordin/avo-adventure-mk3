@@ -1,4 +1,4 @@
-class Subscript {
+export default class Subscript {
   constructor (app) {
     this._app = app
     this._type = 'subscript'
@@ -17,5 +17,3 @@ class Subscript {
 
   paint (layer = 0) {}
 }
-
-export default Subscript

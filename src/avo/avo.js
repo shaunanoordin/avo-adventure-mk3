@@ -19,7 +19,7 @@ const STARTING_LEVEL = (Number.isInteger(parseInt(searchParams.get('level'))))
   ? parseInt(searchParams.get('level')) - 1
   : 0
 
-class AvO {
+export default class AvO {
   constructor () {
     this.html = {
       main: document.getElementById('main'),
@@ -647,5 +647,3 @@ function stopEvent (e) {
   e.cancelBubble = true
   return false
 }
-
-export default AvO

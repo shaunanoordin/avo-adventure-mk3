@@ -1,4 +1,4 @@
-class Interaction {
+export default class Interaction {
   constructor (app) {
     this._app = app
     this._type = 'interaction'
@@ -23,5 +23,3 @@ class Interaction {
 
   unload () {}
 }
-
-export default Interaction

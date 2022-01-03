@@ -8,7 +8,7 @@ const MOVE_ACCELERATION_MODIFIER = 1 / EXPECTED_TIMESTEP
 const MOVE_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 const PUSH_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 
-class Atom {
+export default class Atom {
   constructor (app) {
     this._app = app
     this._type = 'atom'
@@ -366,5 +366,3 @@ const CIRCLE_TO_POLYGON_APPROXIMATOR =
   .map((angle) => {
     return ({ cosAngle: Math.cos(angle), sinAngle: Math.sin(angle) })
   })
-
-export default Atom

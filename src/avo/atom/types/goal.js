@@ -1,7 +1,7 @@
 import Atom from '@avo/atom'
 import { PLAYER_ACTIONS, TILE_SIZE } from '@avo/constants'
 
-class Goal extends Atom {
+export default class Goal extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'goal'
@@ -59,5 +59,3 @@ class Goal extends Atom {
     c2d.drawImage(animationSpritesheet.img, srcX, srcY, srcSizeX, srcSizeY, tgtX, tgtY, tgtSizeX, tgtSizeY)
   }
 }
-
-export default Goal

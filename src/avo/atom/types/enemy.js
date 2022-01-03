@@ -2,7 +2,7 @@ import Atom from '@avo/atom'
 import Shot from '@avo/atom/types/shot'
 import { PLAYER_ACTIONS, TILE_SIZE } from '@avo/constants'
 
-class Enemy extends Atom {
+export default class Enemy extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'enemy'
@@ -48,5 +48,3 @@ class Enemy extends Atom {
     }
   }
 }
-
-export default Enemy

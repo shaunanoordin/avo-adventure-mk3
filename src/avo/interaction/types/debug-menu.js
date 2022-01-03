@@ -1,7 +1,7 @@
 import Interaction from '@avo/interaction'
 import Gravity from '@avo/subscript/types/gravity'
 
-class DebugMenu extends Interaction {
+export default class DebugMenu extends Interaction {
   constructor (app) {
     super(app)
     this._type = 'debugMenu'
@@ -48,5 +48,3 @@ class DebugMenu extends Interaction {
     setTimeout(() => { closeButton.focus() }, 100)
   }
 }
-
-export default DebugMenu
