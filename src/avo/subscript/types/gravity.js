@@ -4,7 +4,7 @@ import { EXPECTED_TIMESTEP } from '@avo/constants'
 const TERMINAL_VELOCITY = 8
 const GRAVITY_ACCELERATION = 1
 
-class Gravity extends Subscript {
+export default class Gravity extends Subscript {
   constructor (app) {
     super(app)
     this._type = 'gravity'
@@ -27,5 +27,3 @@ class Gravity extends Subscript {
     })
   }
 }
-
-export default Gravity

@@ -173,8 +173,6 @@ class AvO {
     Object.keys(this.playerInput.keysPressed).forEach(key => {
       if (this.playerInput.keysPressed[key]) this.playerInput.keysPressed[key].duration += timeStep
     })
-
-    this.processPlayerInput()
   }
 
   /*
@@ -402,42 +400,6 @@ class AvO {
     // ----------------
 
     this.paintLineOfSight()
-  }
-
-  processPlayerInput (timeStep) {
-    if (this.hero) {
-      const keysPressed = this.playerInput.keysPressed
-      let intent = undefined
-      let directionX = 0
-      let directionY = 0
-
-      if (keysPressed['ArrowRight']) directionX++
-      if (keysPressed['ArrowDown']) directionY++
-      if (keysPressed['ArrowLeft']) directionX--
-      if (keysPressed['ArrowUp']) directionY--
-
-      if (
-        (keysPressed['x'] && !keysPressed['x'].acknowledged)
-        || (keysPressed['X'] && !keysPressed['X'].acknowledged)
-      ) {
-        intent = {
-          name: 'dash',
-          directionX,
-          directionY,
-        }
-        if (keysPressed['x']) keysPressed['x'].acknowledged = true
-        if (keysPressed['X']) keysPressed['X'].acknowledged = true
-
-      } else if (directionX || directionY) {
-        intent = {
-          name: 'move',
-          directionX,
-          directionY,
-        }
-      }
-
-      this.hero.intent = intent
-    }
   }
 
   /*
