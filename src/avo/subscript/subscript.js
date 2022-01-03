@@ -14,6 +14,8 @@ class Subscript {
    */
 
   play (timeStep) {}
+
+  paint (layer = 0) {}
 }
 
 export default Subscript

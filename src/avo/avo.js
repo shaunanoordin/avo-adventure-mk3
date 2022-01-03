@@ -320,11 +320,12 @@ class AvO {
     }
     // ----------------
 
-    // Draw atoms
+    // Draw atoms and other elements
     // ----------------
     const MAX_LAYER = 2
     for (let layer = 0 ; layer < MAX_LAYER ; layer++) {
       this.atoms.forEach(atom => atom.paint(layer))
+      this.subscripts.forEach(subscript => subscript.paint(layer))
     }
     // ----------------
 
