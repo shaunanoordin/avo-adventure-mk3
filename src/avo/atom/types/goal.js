@@ -28,9 +28,7 @@ export default class Goal extends Atom {
     hero.moveX = Math.cos(angleToGoal) * Math.min(distanceToGoal, hero.moveSpeed)
     hero.moveY = Math.sin(angleToGoal) * Math.min(distanceToGoal, hero.moveSpeed)
 
-    if (!this._app.victory) {
-      this._app.celebrateVictory()
-    }
+    // TODO: run victory script
   }
 
   paint (layer = 0) {
