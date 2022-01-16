@@ -6,7 +6,7 @@ import Wall from '@avo/atom/types/wall'
 import Ball from '@avo/atom/types/ball'
 import Enemy from '@avo/atom/types/enemy'
 
-import ZeldaControls from '@avo/subscript/types/zelda-controls'
+import ZeldaControls from '@avo/rule/types/zelda-controls'
 
 export default class Levels {
   constructor (app) {
@@ -18,7 +18,7 @@ export default class Levels {
     const app = this._app
     app.hero = undefined
     app.atoms = []
-    app.subscripts = []
+    app.rules = []
     app.camera = {
       target: null, x: 0, y: 0,
     }
@@ -48,7 +48,7 @@ export default class Levels {
     app.atoms.push(app.hero)
     app.camera.target = app.hero
 
-    app.subscripts.push(new ZeldaControls(app))
+    app.rules.push(new ZeldaControls(app))
 
     // app.atoms.push(new Goal(app, 15, 20))
 

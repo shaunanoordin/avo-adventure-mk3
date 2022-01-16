@@ -1,10 +1,10 @@
-import Subscript from '@avo/subscript'
+import Rule from '@avo/rule'
 import { EXPECTED_TIMESTEP } from '@avo/constants'
 
 /*
 Standard player controls for top-down adventure games.
  */
-export default class ZeldaControls extends Subscript {
+export default class ZeldaControls extends Rule {
   constructor (app) {
     super(app)
     this._type = 'zelda-controls'

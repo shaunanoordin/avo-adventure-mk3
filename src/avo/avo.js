@@ -58,7 +58,7 @@ export default class AvO {
 
     this.hero = null
     this.atoms = []
-    this.subscripts = []
+    this.rules = []
     this.levels = new Levels(this)
 
     this.playerAction = PLAYER_ACTIONS.IDLE
@@ -143,12 +143,12 @@ export default class AvO {
     // Run the action gameplay
     // ----------------
     this.atoms.forEach(atom => atom.play(timeStep))
-    this.subscripts.forEach(subscript => subscript.play(timeStep))
+    this.rules.forEach(rule => rule.play(timeStep))
     this.checkCollisions(timeStep)
 
     // Cleanup
     this.atoms = this.atoms.filter(atom => !atom._expired)
-    this.subscripts = this.subscripts.filter(subscript => !subscript._expired)
+    this.rules = this.rules.filter(rule => !rule._expired)
     // ----------------
 
     // Increment the duration of each currently pressed key
@@ -305,7 +305,7 @@ export default class AvO {
     const MAX_LAYER = 2
     for (let layer = 0 ; layer < MAX_LAYER ; layer++) {
       this.atoms.forEach(atom => atom.paint(layer))
-      this.subscripts.forEach(subscript => subscript.paint(layer))
+      this.rules.forEach(rule => rule.paint(layer))
     }
     // ----------------
 
