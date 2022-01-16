@@ -1,12 +1,10 @@
 ## Rule
 
-A Rule is catch-all term for small self-contained routines that run
-in-game events.
+A Rule (or Game Rule) is a catch-all term for small scripts. Each Rule should be
+written similarly to gameplay instructons for a tabletop game, with one Rule
+describing how the players move, one Rule describing how players win, etc.
 
-For example, if the player reaches the exit of a dungeon, we can start the
-"VictoryCountdown" Rule to transition the game from a playable state to the
-"Congratulations, you won!" screen, over 5 seconds, with some visual flourish.
+For example, the "VictoryCondition" Rule might check to see when the player
+reaches the exit of a dungeon, and plays a splashy win screen when they do.
 
 - `Rule.js` provides the base code for all Rule types.
-- They're called "sub" scripts to differentitate them from the "main" JavaScript
-  code.
