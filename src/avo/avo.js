@@ -2,8 +2,6 @@ import {
   APP_WIDTH, APP_HEIGHT, TILE_SIZE,
   PLAYER_ACTIONS, SHAPES,
   ACCEPTABLE_INPUT_DISTANCE_FROM_HERO,
-  VICTORY_ANIMATION_TIME,
-  PAUSE_AFTER_VICTORY_ANIMATION,
   MAX_PULL_DISTANCE,
 } from '@avo/constants'
 import Physics from '@avo/physics'
@@ -11,7 +9,6 @@ import Levels from '@avo/levels'
 import ImageAsset from '@avo/image-asset'
 import JsonAsset from '@avo/json-asset'
 import Interaction from '@avo/interaction'
-import DebugMenu from '@avo/interaction/types/debug-menu'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false
@@ -19,7 +16,7 @@ const STARTING_LEVEL = (Number.isInteger(parseInt(searchParams.get('level'))))
   ? parseInt(searchParams.get('level')) - 1
   : 0
 
-class AvO {
+export default class AvO {
   constructor () {
     this.html = {
       main: document.getElementById('main'),
@@ -61,7 +58,7 @@ class AvO {
 
     this.hero = null
     this.atoms = []
-    this.subscripts = []
+    this.rules = []
     this.levels = new Levels(this)
 
     this.playerAction = PLAYER_ACTIONS.IDLE
@@ -75,9 +72,6 @@ class AvO {
       // keysPressed = { key: { duration, acknowledged } }
       keysPressed: {},
     }
-
-    this.victory = false
-    this.victoryCountdown = 0
 
     this.prevTime = null
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
@@ -149,32 +143,18 @@ class AvO {
     // Run the action gameplay
     // ----------------
     this.atoms.forEach(atom => atom.play(timeStep))
-    this.subscripts.forEach(subscript => subscript.play(timeStep))
+    this.rules.forEach(rule => rule.play(timeStep))
     this.checkCollisions(timeStep)
 
     // Cleanup
     this.atoms = this.atoms.filter(atom => !atom._expired)
-    this.subscripts = this.subscripts.filter(subscript => !subscript._expired)
-    // ----------------
-
-    // Victory check!
-    // ----------------
-    if (this.victory && this.victoryCountdown <= 0) {
-      console.log('VICTORY')
-      this.setHomeMenu(true)
-    }
-
-    if (this.victoryCountdown > 0) {
-      this.victoryCountdown = Math.max(0, this.victoryCountdown - timeStep)
-    }
+    this.rules = this.rules.filter(rule => !rule._expired)
     // ----------------
 
     // Increment the duration of each currently pressed key
     Object.keys(this.playerInput.keysPressed).forEach(key => {
       if (this.playerInput.keysPressed[key]) this.playerInput.keysPressed[key].duration += timeStep
     })
-
-    this.processPlayerInput()
   }
 
   /*
@@ -320,11 +300,12 @@ class AvO {
     }
     // ----------------
 
-    // Draw atoms
+    // Draw atoms and other elements
     // ----------------
     const MAX_LAYER = 2
     for (let layer = 0 ; layer < MAX_LAYER ; layer++) {
       this.atoms.forEach(atom => atom.paint(layer))
+      this.rules.forEach(rule => rule.paint(layer))
     }
     // ----------------
 
@@ -349,94 +330,29 @@ class AvO {
 
     // Draw UI data
     // ----------------
-    if (!this.victory) {
-      const X_OFFSET = TILE_SIZE * 2.5
-      const Y_OFFSET = TILE_SIZE * -1.0
-      c2d.font = '3em Source Code Pro'
-      c2d.textBaseline = 'bottom'
-      c2d.lineWidth = 8
+    const X_OFFSET = TILE_SIZE * 2.5
+    const Y_OFFSET = TILE_SIZE * -1.0
+    c2d.font = '3em Source Code Pro'
+    c2d.textBaseline = 'bottom'
+    c2d.lineWidth = 8
 
-      const health = Math.max(this.hero?.health, 0) || 0
-      let text = '❤️'.repeat(health)
-      c2d.textAlign = 'left'
-      c2d.strokeStyle = '#fff'
-      c2d.strokeText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
-      c2d.fillStyle = '#c44'
-      c2d.fillText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    const health = Math.max(this.hero?.health, 0) || 0
+    let text = '❤️'.repeat(health)
+    c2d.textAlign = 'left'
+    c2d.strokeStyle = '#fff'
+    c2d.strokeText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.fillStyle = '#c44'
+    c2d.fillText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
 
-      text = this.hero?.action?.name + ' (' + this.hero?.moveSpeed.toFixed(2) + ')'
-      c2d.textAlign = 'right'
-      c2d.strokeStyle = '#fff'
-      c2d.strokeText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
-      c2d.fillStyle = '#c44'
-      c2d.fillText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
-    }
-    // ----------------
-
-    // Draw victory
-    // ----------------
-    if (this.victory) {
-      const victoryAnimationTime = Math.max(this.victoryCountdown - PAUSE_AFTER_VICTORY_ANIMATION, 0)
-      const fontSize1 = Math.floor((victoryAnimationTime / VICTORY_ANIMATION_TIME) * 50 + 10)
-      const fontSize2 = Math.floor((victoryAnimationTime / VICTORY_ANIMATION_TIME) * 50 + 10)
-      const VERTICAL_OFFSET = TILE_SIZE / 8
-
-      c2d.fillStyle = '#c44'
-      c2d.lineWidth = 2
-      c2d.textAlign = 'center'
-      c2d.strokeStyle = '#fff'
-
-      /*
-      c2d.font = `${fontSize1}em Source Code Pro`
-      c2d.textBaseline = 'bottom'
-      c2d.fillText('Nice!', APP_WIDTH / 2, APP_HEIGHT / 2 - VERTICAL_OFFSET)
-      c2d.strokeText('Nice!', APP_WIDTH / 2, APP_HEIGHT / 2 - VERTICAL_OFFSET)
-
-      c2d.font = `${fontSize2}em Source Code Pro`
-      c2d.textBaseline = 'top'
-      c2d.fillText(`${this.score} points`, APP_WIDTH / 2, APP_HEIGHT / 2 + VERTICAL_OFFSET)
-      c2d.strokeText(`${this.score} points`, APP_WIDTH / 2, APP_HEIGHT / 2 + VERTICAL_OFFSET)
-      */
-    }
+    text = this.hero?.action?.name + ' (' + this.hero?.moveSpeed.toFixed(2) + ')'
+    c2d.textAlign = 'right'
+    c2d.strokeStyle = '#fff'
+    c2d.strokeText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.fillStyle = '#c44'
+    c2d.fillText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
     // ----------------
 
     this.paintLineOfSight()
-  }
-
-  processPlayerInput (timeStep) {
-    if (this.hero) {
-      const keysPressed = this.playerInput.keysPressed
-      let intent = undefined
-      let directionX = 0
-      let directionY = 0
-
-      if (keysPressed['ArrowRight']) directionX++
-      if (keysPressed['ArrowDown']) directionY++
-      if (keysPressed['ArrowLeft']) directionX--
-      if (keysPressed['ArrowUp']) directionY--
-
-      if (
-        (keysPressed['x'] && !keysPressed['x'].acknowledged)
-        || (keysPressed['X'] && !keysPressed['X'].acknowledged)
-      ) {
-        intent = {
-          name: 'dash',
-          directionX,
-          directionY,
-        }
-        if (keysPressed['x']) keysPressed['x'].acknowledged = true
-        if (keysPressed['X']) keysPressed['X'].acknowledged = true
-
-      } else if (directionX || directionY) {
-        intent = {
-          name: 'move',
-          directionX,
-          directionY,
-        }
-      }
-
-      this.hero.intent = intent
-    }
   }
 
   /*
@@ -591,12 +507,6 @@ class AvO {
           this.setInteractionMenu(new Interaction(this))
         }
         break
-
-      case 'v':
-        if (!this.interactionMenu) {
-          this.setInteractionMenu(new DebugMenu(this))
-        }
-        break
     }
 
     // General input
@@ -639,12 +549,6 @@ class AvO {
   ----------------------------------------------------------------------------
    */
 
-  celebrateVictory () {
-    if (this.victory) return
-    this.victory = true
-    this.victoryCountdown = VICTORY_ANIMATION_TIME + PAUSE_AFTER_VICTORY_ANIMATION
-  }
-
   /*
   Section: Misc
   ----------------------------------------------------------------------------
@@ -684,5 +588,3 @@ function stopEvent (e) {
   e.cancelBubble = true
   return false
 }
-
-export default AvO

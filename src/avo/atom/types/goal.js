@@ -1,7 +1,7 @@
 import Atom from '@avo/atom'
 import { PLAYER_ACTIONS, TILE_SIZE } from '@avo/constants'
 
-class Goal extends Atom {
+export default class Goal extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'goal'
@@ -28,9 +28,7 @@ class Goal extends Atom {
     hero.moveX = Math.cos(angleToGoal) * Math.min(distanceToGoal, hero.moveSpeed)
     hero.moveY = Math.sin(angleToGoal) * Math.min(distanceToGoal, hero.moveSpeed)
 
-    if (!this._app.victory) {
-      this._app.celebrateVictory()
-    }
+    // TODO: run victory script
   }
 
   paint (layer = 0) {
@@ -59,5 +57,3 @@ class Goal extends Atom {
     c2d.drawImage(animationSpritesheet.img, srcX, srcY, srcSizeX, srcSizeY, tgtX, tgtY, tgtSizeX, tgtSizeY)
   }
 }
-
-export default Goal
