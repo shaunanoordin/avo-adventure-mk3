@@ -1,9 +1,9 @@
 import Subscript from '@avo/subscript'
 import { EXPECTED_TIMESTEP } from '@avo/constants'
 
-const TERMINAL_VELOCITY = 8
-const GRAVITY_ACCELERATION = 1
-
+/*
+Standard player controls for top-down adventure games.
+ */
 export default class ZeldaControls extends Subscript {
   constructor (app) {
     super(app)
