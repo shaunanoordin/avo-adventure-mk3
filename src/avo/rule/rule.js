@@ -1,10 +1,10 @@
-class Subscript {
+export default class Rule {
   constructor (app) {
     this._app = app
-    this._type = 'subscript'
+    this._type = 'rule'
     this.name = ''  // Optional identifier
 
-    // Expired subscripts are removed at the end of the cycle.
+    // Expired rules are removed at the end of the cycle.
     this._expired = false
   }
 
@@ -14,6 +14,6 @@ class Subscript {
    */
 
   play (timeStep) {}
-}
 
-export default Subscript
+  paint (layer = 0) {}
+}

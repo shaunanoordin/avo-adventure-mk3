@@ -1,7 +1,7 @@
 import Atom from '@avo/atom'
 import { SHAPES, TILE_SIZE } from '@avo/constants'
 
-class Wall extends Atom {
+export default class Wall extends Atom {
   constructor (app, col = 0, row = 0, width = 1, height = 1, cutCorner = false) {
     super(app)
     this._type = 'wall'
@@ -21,5 +21,3 @@ class Wall extends Atom {
     if (cutCorner !== 'sw') this.shapePolygonPath.push(0, height * TILE_SIZE)
   }
 }
-
-export default Wall

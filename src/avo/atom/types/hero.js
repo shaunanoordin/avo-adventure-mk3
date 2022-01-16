@@ -3,7 +3,7 @@ import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants'
 
 const INVULNERABILITY_WINDOW = 3000
 
-class Hero extends Atom {
+export default class Hero extends Atom {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'hero'
@@ -242,5 +242,3 @@ class Hero extends Atom {
     return this._pushDeceleration
   }
 }
-
-export default Hero

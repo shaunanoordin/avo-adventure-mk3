@@ -8,7 +8,7 @@ const MOVE_ACCELERATION_MODIFIER = 1 / EXPECTED_TIMESTEP
 const MOVE_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 const PUSH_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 
-class Atom {
+export default class Atom {
   constructor (app) {
     this._app = app
     this._type = 'atom'
@@ -204,7 +204,10 @@ class Atom {
   Usually, this leads to elastic collisions, because that chaos is fun!
    */
   doBounce (target, collisionCorrection) {
-    if (
+    // If this object isn't a movable solid, it can't bounce.
+    if (!(this.movable && this.solid)) return
+
+    if (  // this object is bouncing off an unmovable object
       this.movable && this.solid
       && !target.movable && target.solid
     ) {
@@ -244,9 +247,8 @@ class Atom {
       } else {
         // For the moment, we're not too concerned about polygons bumping into each other
       }
-    } else if (
-      this.movable && this.solid
-      && target.movable && target.solid
+    } else if (  // this object is bouncing off another movable object
+      target.movable && target.solid
       && collisionCorrection.pushX !== undefined
       && collisionCorrection.pushY !== undefined
     ) {
@@ -364,5 +366,3 @@ const CIRCLE_TO_POLYGON_APPROXIMATOR =
   .map((angle) => {
     return ({ cosAngle: Math.cos(angle), sinAngle: Math.sin(angle) })
   })
-
-export default Atom
