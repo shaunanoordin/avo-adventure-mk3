@@ -7,6 +7,7 @@ import Ball from '@avo/atom/types/ball'
 import Enemy from '@avo/atom/types/enemy'
 
 import ZeldaControls from '@avo/rule/types/zelda-controls'
+import CNY2022Controls from '@avo/rule/types/cny2022-controls'
 
 export default class Levels {
   constructor (app) {
@@ -49,6 +50,7 @@ export default class Levels {
     app.camera.target = app.hero
 
     app.rules.push(new ZeldaControls(app))
+    app.rules.push(new CNY2022Controls(app))
 
     // app.atoms.push(new Goal(app, 15, 20))
 

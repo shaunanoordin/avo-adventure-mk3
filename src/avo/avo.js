@@ -451,24 +451,11 @@ export default class AvO {
 
   onPointerDown (e) {
     const coords = getEventCoords(e, this.html.canvas)
-    const camera = this.camera
 
-    this.playerInput.pointerStart = undefined
-    this.playerInput.pointerCurrent = undefined
+    this.playerAction = PLAYER_ACTIONS.POINTER_DOWN
+    this.playerInput.pointerStart = coords
+    this.playerInput.pointerCurrent = coords
     this.playerInput.pointerEnd = undefined
-
-    if (this.hero) {
-      const distX = this.hero.x - coords.x + camera.x
-      const distY = this.hero.y - coords.y + camera.y
-      const distFromHero = Math.sqrt(distX * distX + distY * distY)
-      const rotation = Math.atan2(distY, distX)
-
-      if (distFromHero < ACCEPTABLE_INPUT_DISTANCE_FROM_HERO) {
-        this.playerAction = PLAYER_ACTIONS.POINTER_DOWN
-        this.playerInput.pointerStart = coords
-        this.playerInput.pointerCurrent = coords
-      }
-    }
 
     this.html.main.focus()
 
