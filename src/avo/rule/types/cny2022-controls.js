@@ -11,8 +11,24 @@ export default class CNY2022Controls extends Rule {
     const app = this._app
     super.play(timeStep)
 
-    if (app.hero) {
+    const pointer = app.playerInput.pointerCurrent
+    const hero = app.hero
 
+    if (hero && pointer) {
+      const camera = app.camera
+      const target = {
+        x: pointer.x - camera.x,
+        y: pointer.y - camera.y,
+      }
+
+      const distX = target.x - app.hero.x
+      const distY = target.y - app.hero.y
+      const angleToTarget = Math.atan2(distY, distX)
+      const ACCELERATION = 1
+
+      hero.rotation = angleToTarget
+      hero.pushX += ACCELERATION * Math.cos(angleToTarget)
+      hero.pushY += ACCELERATION * Math.sin(angleToTarget)
     }
   }
 
@@ -30,8 +46,7 @@ export default class CNY2022Controls extends Rule {
       const crosshairTop = crosshairY - crosshairSize
       const crosshairBottom = crosshairY + crosshairSize
 
-      console.log(crosshairX, crosshairY)
-
+      // Draw crosshair at mouse cursor
       c2d.beginPath()
       c2d.moveTo(crosshairLeft, crosshairY)
       c2d.lineTo(crosshairRight, crosshairY)
