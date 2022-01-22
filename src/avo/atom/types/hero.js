@@ -189,20 +189,6 @@ export default class Hero extends Atom {
           this.goIdle()
         }
       }
-
-      /*
-      let pushPower = Math.min(
-        PUSH_IMPULSE * timeStep / 1000,
-        MAX_DISTANCE - action.counter
-      )
-      this.pushX += pushPower  * Math.cos(action.rotation)
-      this.pushY += pushPower * Math.sin(action.rotation)
-      action.counter += pushPower
-
-      if (action.counter >= MAX_DISTANCE) {
-        this.goIdle()
-      }
-      */
     }
   }
 
@@ -224,7 +210,6 @@ export default class Hero extends Atom {
   onCollision (target, collisionCorrection) {
     super.onCollision(target, collisionCorrection)
     if (!target) return
-    // if (target.solid && this.action?.name === 'dash') this.goIdle()
   }
 
   /*
