@@ -1,5 +1,5 @@
 import {
-  APP_WIDTH, APP_HEIGHT, TILE_SIZE,
+  TILE_SIZE,
   PLAYER_ACTIONS, SHAPES,
   ACCEPTABLE_INPUT_DISTANCE_FROM_HERO,
   MAX_PULL_DISTANCE,
@@ -17,7 +17,12 @@ const STARTING_LEVEL = (Number.isInteger(parseInt(searchParams.get('level'))))
   : 0
 
 export default class AvO {
-  constructor () {
+  constructor (args = {}) {
+    const {
+      width = 24 * TILE_SIZE,  // Canvas width
+      height = 16 * TILE_SIZE,  // Canvas height
+    } = args
+
     this.html = {
       main: document.getElementById('main'),
       canvas: document.getElementById('canvas'),
@@ -35,8 +40,8 @@ export default class AvO {
     this.setInteractionMenu(false)
 
     this.canvas2d = this.html.canvas.getContext('2d')
-    this.canvasWidth = APP_WIDTH
-    this.canvasHeight = APP_HEIGHT
+    this.canvasWidth = width
+    this.canvasHeight = height
 
     this.camera = {
       target: null,  // Target atom to follow. If null, camera is static.
@@ -280,8 +285,8 @@ export default class AvO {
     const offsetX = (this.camera.x % TILE_SIZE) - TILE_SIZE
     const offsetY = (this.camera.y % TILE_SIZE) - TILE_SIZE
 
-    for (let y = offsetY ; y < APP_HEIGHT ; y += TILE_SIZE) {
-      for (let x = offsetX ; x < APP_WIDTH ; x += TILE_SIZE) {
+    for (let y = offsetY ; y < this.canvasHeight ; y += TILE_SIZE) {
+      for (let x = offsetX ; x < this.canvasWidth ; x += TILE_SIZE) {
         c2d.beginPath()
         c2d.rect(x, y, TILE_SIZE, TILE_SIZE)
         c2d.stroke()
@@ -340,16 +345,16 @@ export default class AvO {
     let text = '❤️'.repeat(health)
     c2d.textAlign = 'left'
     c2d.strokeStyle = '#fff'
-    c2d.strokeText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.strokeText(text, X_OFFSET, this.canvasHeight + Y_OFFSET)
     c2d.fillStyle = '#c44'
-    c2d.fillText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.fillText(text, X_OFFSET, this.canvasHeight + Y_OFFSET)
 
     text = this.hero?.action?.name + ' (' + this.hero?.moveSpeed.toFixed(2) + ')'
     c2d.textAlign = 'right'
     c2d.strokeStyle = '#fff'
-    c2d.strokeText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.strokeText(text, this.canvasWidth - X_OFFSET, this.canvasHeight + Y_OFFSET)
     c2d.fillStyle = '#c44'
-    c2d.fillText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.fillText(text, this.canvasWidth - X_OFFSET, this.canvasHeight + Y_OFFSET)
     // ----------------
 
     this.paintLineOfSight()
