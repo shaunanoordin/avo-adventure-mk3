@@ -10,11 +10,6 @@ export default class ZeldaControls extends Rule {
     this._type = 'zelda-controls'
   }
 
-  /*
-  Section: General Logic
-  ----------------------------------------------------------------------------
-   */
-
   play (timeStep) {
     const app = this._app
     super.play(timeStep)

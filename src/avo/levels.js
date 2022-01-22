@@ -1,12 +1,12 @@
 import { PLAYER_ACTIONS, DIRECTIONS } from '@avo/constants'
 
 import Hero from '@avo/atom/types/hero'
-import Goal from '@avo/atom/types/goal'
 import Wall from '@avo/atom/types/wall'
 import Ball from '@avo/atom/types/ball'
 import Enemy from '@avo/atom/types/enemy'
 
 import ZeldaControls from '@avo/rule/types/zelda-controls'
+import CNY2022Controls from '@avo/rule/types/cny2022-controls'
 
 export default class Levels {
   constructor (app) {
@@ -18,7 +18,7 @@ export default class Levels {
     const app = this._app
     app.hero = undefined
     app.atoms = []
-    app.rules = []
+    app.clearRules()
     app.camera = {
       target: null, x: 0, y: 0,
     }
@@ -31,7 +31,7 @@ export default class Levels {
     this.current = level
 
     this.reset()
-    this.generate_default()
+    this.generate_zelda_default()
   }
 
   reload () {
@@ -39,18 +39,17 @@ export default class Levels {
   }
 
   /*
-  Default level.
+  Default top-down adventure level.
    */
-  generate_default () {
+  generate_zelda_default () {
     const app = this._app
 
     app.hero = new Hero(app, 11, 1)
     app.atoms.push(app.hero)
     app.camera.target = app.hero
 
-    app.rules.push(new ZeldaControls(app))
-
-    // app.atoms.push(new Goal(app, 15, 20))
+    app.addRule(new ZeldaControls(app))
+    // app.addRule(new CNY2022Controls(app))
 
     app.atoms.push(new Wall(app, 0, 0, 1, 23))  // West Wall
     app.atoms.push(new Wall(app, 22, 0, 1, 23))  // East Wall

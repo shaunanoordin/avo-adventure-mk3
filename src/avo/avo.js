@@ -1,5 +1,5 @@
 import {
-  APP_WIDTH, APP_HEIGHT, TILE_SIZE,
+  TILE_SIZE,
   PLAYER_ACTIONS, SHAPES,
   ACCEPTABLE_INPUT_DISTANCE_FROM_HERO,
   MAX_PULL_DISTANCE,
@@ -17,7 +17,12 @@ const STARTING_LEVEL = (Number.isInteger(parseInt(searchParams.get('level'))))
   : 0
 
 export default class AvO {
-  constructor () {
+  constructor (args = {}) {
+    const {
+      width = 24 * TILE_SIZE,  // Canvas width
+      height = 16 * TILE_SIZE,  // Canvas height
+    } = args
+
     this.html = {
       main: document.getElementById('main'),
       canvas: document.getElementById('canvas'),
@@ -35,8 +40,8 @@ export default class AvO {
     this.setInteractionMenu(false)
 
     this.canvas2d = this.html.canvas.getContext('2d')
-    this.canvasWidth = APP_WIDTH
-    this.canvasHeight = APP_HEIGHT
+    this.canvasWidth = width
+    this.canvasHeight = height
 
     this.camera = {
       target: null,  // Target atom to follow. If null, camera is static.
@@ -58,7 +63,7 @@ export default class AvO {
 
     this.hero = null
     this.atoms = []
-    this.rules = []
+    this.rules = {}
     this.levels = new Levels(this)
 
     this.playerAction = PLAYER_ACTIONS.IDLE
@@ -143,12 +148,14 @@ export default class AvO {
     // Run the action gameplay
     // ----------------
     this.atoms.forEach(atom => atom.play(timeStep))
-    this.rules.forEach(rule => rule.play(timeStep))
+    for (const id in this.rules) { this.rules[id].play(timeStep) }
     this.checkCollisions(timeStep)
 
     // Cleanup
     this.atoms = this.atoms.filter(atom => !atom._expired)
-    this.rules = this.rules.filter(rule => !rule._expired)
+    for (const id in this.rules) {
+      if (this.rules[id]._expired) delete this.rules[id]
+    }
     // ----------------
 
     // Increment the duration of each currently pressed key
@@ -280,8 +287,8 @@ export default class AvO {
     const offsetX = (this.camera.x % TILE_SIZE) - TILE_SIZE
     const offsetY = (this.camera.y % TILE_SIZE) - TILE_SIZE
 
-    for (let y = offsetY ; y < APP_HEIGHT ; y += TILE_SIZE) {
-      for (let x = offsetX ; x < APP_WIDTH ; x += TILE_SIZE) {
+    for (let y = offsetY ; y < this.canvasHeight ; y += TILE_SIZE) {
+      for (let x = offsetX ; x < this.canvasWidth ; x += TILE_SIZE) {
         c2d.beginPath()
         c2d.rect(x, y, TILE_SIZE, TILE_SIZE)
         c2d.stroke()
@@ -305,7 +312,7 @@ export default class AvO {
     const MAX_LAYER = 2
     for (let layer = 0 ; layer < MAX_LAYER ; layer++) {
       this.atoms.forEach(atom => atom.paint(layer))
-      this.rules.forEach(rule => rule.paint(layer))
+      for (const id in this.rules) { this.rules[id].paint(layer) }
     }
     // ----------------
 
@@ -340,16 +347,16 @@ export default class AvO {
     let text = '❤️'.repeat(health)
     c2d.textAlign = 'left'
     c2d.strokeStyle = '#fff'
-    c2d.strokeText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.strokeText(text, X_OFFSET, this.canvasHeight + Y_OFFSET)
     c2d.fillStyle = '#c44'
-    c2d.fillText(text, X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.fillText(text, X_OFFSET, this.canvasHeight + Y_OFFSET)
 
     text = this.hero?.action?.name + ' (' + this.hero?.moveSpeed.toFixed(2) + ')'
     c2d.textAlign = 'right'
     c2d.strokeStyle = '#fff'
-    c2d.strokeText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.strokeText(text, this.canvasWidth - X_OFFSET, this.canvasHeight + Y_OFFSET)
     c2d.fillStyle = '#c44'
-    c2d.fillText(text, APP_WIDTH - X_OFFSET, APP_HEIGHT + Y_OFFSET)
+    c2d.fillText(text, this.canvasWidth - X_OFFSET, this.canvasHeight + Y_OFFSET)
     // ----------------
 
     this.paintLineOfSight()
@@ -451,24 +458,11 @@ export default class AvO {
 
   onPointerDown (e) {
     const coords = getEventCoords(e, this.html.canvas)
-    const camera = this.camera
 
-    this.playerInput.pointerStart = undefined
-    this.playerInput.pointerCurrent = undefined
+    this.playerAction = PLAYER_ACTIONS.POINTER_DOWN
+    this.playerInput.pointerStart = coords
+    this.playerInput.pointerCurrent = coords
     this.playerInput.pointerEnd = undefined
-
-    if (this.hero) {
-      const distX = this.hero.x - coords.x + camera.x
-      const distY = this.hero.y - coords.y + camera.y
-      const distFromHero = Math.sqrt(distX * distX + distY * distY)
-      const rotation = Math.atan2(distY, distX)
-
-      if (distFromHero < ACCEPTABLE_INPUT_DISTANCE_FROM_HERO) {
-        this.playerAction = PLAYER_ACTIONS.POINTER_DOWN
-        this.playerInput.pointerStart = coords
-        this.playerInput.pointerCurrent = coords
-      }
-    }
 
     this.html.main.focus()
 
@@ -548,6 +542,16 @@ export default class AvO {
   Section: Gameplay
   ----------------------------------------------------------------------------
    */
+
+  addRule (rule) {
+    if (!rule) return
+    const id = rule._type
+    this.rules[id] = rule
+  }
+
+  clearRules () {
+    for (const id in this.rules) { delete this.rules[id] }
+  }
 
   /*
   Section: Misc
