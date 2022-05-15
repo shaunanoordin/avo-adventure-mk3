@@ -147,8 +147,9 @@ export default class AvO {
 
     // Run the action gameplay
     // ----------------
-    this.atoms.forEach(atom => atom.play(timeStep))
     for (const id in this.rules) { this.rules[id].play(timeStep) }
+
+    this.atoms.forEach(atom => atom.play(timeStep))
     this.checkCollisions(timeStep)
 
     // Cleanup
