@@ -346,30 +346,6 @@ export default class AvO {
     }
     // ----------------
 
-    // Draw UI data
-    // ----------------
-    const X_OFFSET = TILE_SIZE * 2.5
-    const Y_OFFSET = TILE_SIZE * -1.0
-    c2d.font = '3em Source Code Pro'
-    c2d.textBaseline = 'bottom'
-    c2d.lineWidth = 8
-
-    const health = Math.max(this.hero?.health, 0) || 0
-    let text = '❤️'.repeat(health)
-    c2d.textAlign = 'left'
-    c2d.strokeStyle = '#fff'
-    c2d.strokeText(text, X_OFFSET, this.canvasHeight + Y_OFFSET)
-    c2d.fillStyle = '#c44'
-    c2d.fillText(text, X_OFFSET, this.canvasHeight + Y_OFFSET)
-
-    text = this.hero?.action?.name + ' (' + this.hero?.moveSpeed.toFixed(2) + ')'
-    c2d.textAlign = 'right'
-    c2d.strokeStyle = '#fff'
-    c2d.strokeText(text, this.canvasWidth - X_OFFSET, this.canvasHeight + Y_OFFSET)
-    c2d.fillStyle = '#c44'
-    c2d.fillText(text, this.canvasWidth - X_OFFSET, this.canvasHeight + Y_OFFSET)
-    // ----------------
-
     this.paintLineOfSight()
   }
 
