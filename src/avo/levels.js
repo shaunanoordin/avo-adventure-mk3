@@ -49,7 +49,6 @@ export default class Levels {
     app.camera.target = app.hero
 
     app.addRule(new ZeldaControls(app))
-    // app.addRule(new CNY2022Controls(app))
 
     app.atoms.push(new Wall(app, 0, 0, 1, 23))  // West Wall
     app.atoms.push(new Wall(app, 22, 0, 1, 23))  // East Wall

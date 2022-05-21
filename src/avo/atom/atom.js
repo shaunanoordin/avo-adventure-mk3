@@ -1,5 +1,5 @@
 import {
-  TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, PLAYER_ACTIONS, EXPECTED_TIMESTEP
+  TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, EXPECTED_TIMESTEP, LAYERS,
 } from '@avo/constants'
 
 const MOVE_MAX_SPEED_MODIFIER = 2 / EXPECTED_TIMESTEP
@@ -66,13 +66,13 @@ export default class Atom {
   }
 
   /*
-  Paints atom's hitbox.
+  Paint atom's hitbox.
    */
   paint (layer = 0) {
     const c2d = this._app.canvas2d
     const camera = this._app.camera
 
-    if (layer === 0) {
+    if (layer === LAYERS.ATOMS_LOWER) {
       c2d.fillStyle = this.colour
       c2d.strokeStyle = '#444'
       c2d.lineWidth = this.mass
