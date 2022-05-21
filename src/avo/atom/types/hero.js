@@ -1,5 +1,5 @@
 import Atom from '@avo/atom'
-import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants'
+import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS } from '@avo/constants'
 
 const INVULNERABILITY_WINDOW = 3000
 
@@ -64,7 +64,7 @@ export default class Hero extends Atom {
     const tgtSizeX = SPRITE_SIZE * 1.25
     const tgtSizeY = SPRITE_SIZE * 1.25
 
-    if (layer === 0) {
+    if (layer === LAYERS.ATOMS_LOWER) {
       const srcX = 0
       const srcY = 0
       const tgtX = Math.floor(this.x + camera.x) - srcSizeX / 2 + SPRITE_OFFSET_X - (tgtSizeX - srcSizeX) / 2

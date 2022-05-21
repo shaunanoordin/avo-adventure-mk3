@@ -1,8 +1,7 @@
 import {
   TILE_SIZE,
-  PLAYER_ACTIONS, SHAPES,
-  ACCEPTABLE_INPUT_DISTANCE_FROM_HERO,
-  MAX_PULL_DISTANCE,
+  PLAYER_ACTIONS,
+  MIN_LAYER, MAX_LAYER,
 } from '@avo/constants'
 import Physics from '@avo/physics'
 import Levels from '@avo/levels'
@@ -127,6 +126,10 @@ export default class AvO {
   ----------------------------------------------------------------------------
    */
 
+  /*
+  The main loop. Run a single frame of gameplay.
+  - time: the current/total time (milliseconds) since the game started.
+   */
   main (time) {
     const timeStep = (this.prevTime) ? time - this.prevTime : time
     this.prevTime = time
@@ -141,6 +144,11 @@ export default class AvO {
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
   }
 
+  /*
+  Run the gameplay/physics logic for a single frame.
+  - timeStep: the time (milliseconds) since the last frame.
+    We expect 60 frames per second.
+   */
   play (timeStep) {
     // If a menu is open, pause all action gameplay
     if (this.homeMenu || this.interactionMenu) return
@@ -266,6 +274,9 @@ export default class AvO {
     c2d.fill()
   }
 
+  /*
+  Paint/draw the game visuals onto the canvas.
+   */
   paint () {
     const c2d = this.canvas2d
     const camera = this.camera
@@ -310,8 +321,7 @@ export default class AvO {
 
     // Draw atoms and other elements
     // ----------------
-    const MAX_LAYER = 2
-    for (let layer = 0 ; layer < MAX_LAYER ; layer++) {
+    for (let layer = MIN_LAYER ; layer <= MAX_LAYER ; layer++) {
       this.atoms.forEach(atom => atom.paint(layer))
       for (const id in this.rules) { this.rules[id].paint(layer) }
     }

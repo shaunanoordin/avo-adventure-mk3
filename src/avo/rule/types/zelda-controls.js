@@ -48,4 +48,10 @@ export default class ZeldaControls extends Rule {
       app.hero.intent = intent
     }
   }
+
+  paint (layer = 0) {
+    const c2d = this._app.canvas2d
+    const camera = this._app.camera
+    const pointer = this._app.playerInput.pointerCurrent
+  }
 }

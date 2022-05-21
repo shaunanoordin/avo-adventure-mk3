@@ -1,8 +1,8 @@
 export const TILE_SIZE = 64
 
-export const ACCEPTABLE_INPUT_DISTANCE_FROM_HERO = TILE_SIZE * 2
-export const MAX_PULL_DISTANCE = TILE_SIZE * 6
-
+/*
+Each Atom has a physical shape.
+ */
 export const SHAPES = {
   NONE: 'none',
   CIRCLE: 'circle',
@@ -10,6 +10,11 @@ export const SHAPES = {
   POLYGON: 'polygon',
 }
 
+/*
+Each Atom has a directional orientation, which can be interpreted as either
+"rotation" (if we want to know the precise angle for physics calculations) or
+"direction" (if we just want to match it with the up/down/left/right sprites)
+ */
 export const ROTATIONS = {
   EAST: 0,
   SOUTHEAST: Math.PI * 0.25,
@@ -32,6 +37,19 @@ export const PLAYER_ACTIONS = {
   IDLE: 'idle',  // Player isn't doing anything
   POINTER_DOWN: 'pointer down',  // Player is actively interacting with the canvas.
 }
+
+/*
+The paint() step of the core engine, each Atom, and each Rule can paint
+information in different visual layers.
+ */
+export const LAYERS = {
+  BACKGROUND: 0,  // Background layer, mostly for floors.
+  ATOMS_LOWER: 1,  // Main object layer.
+  ATOMS_UPPER: 2,  // Additional object layer (e.g. flying objects)
+  HUD: 3,
+}
+export const MIN_LAYER = 0
+export const MAX_LAYER = 3
 
 /*
 While the engine is technically able to support any given framerate (determined
