@@ -174,107 +174,6 @@ export default class AvO {
   }
 
   /*
-  Draw a line of sight (cast a ray) starting from the hero, in the direction
-  of they are facing.
-   */
-  paintLineOfSight () {
-    if (!this.hero) return
-    const hero = this.hero
-    const c2d = this.canvas2d
-    const camera = this.camera
-
-    const MAX_LINE_OF_SIGHT_DISTANCE = 320
-
-    // Intended line of sight, i.e. a ray starting from the hero.
-    const lineOfSight = {
-      start: {
-        x: hero.x,
-        y: hero.y,
-      },
-      end: {
-        x: hero.x + MAX_LINE_OF_SIGHT_DISTANCE * Math.cos(hero.rotation),
-        y: hero.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(hero.rotation),
-      }
-    }
-
-    let actualLineOfSightEndPoint = undefined
-
-    // For each atom, see if it intersects with the hero's LOS
-    this.atoms.forEach(atom => {
-      if (atom === hero) return
-
-      // TODO: check for opaqueness and/or if the atom is visible.
-
-      const vertices = atom.vertices
-      if (vertices.length < 2) return
-
-      // Every atom has a "shape" that can be represented by a polygon.
-      // (Yes, even circles.) Check each segment (aka edge aka side) of the
-      // polygon.
-      for (let i = 0 ; i < vertices.length ; i++) {
-        const segment = {
-          start: {
-            x: vertices[i].x,
-            y: vertices[i].y,
-          },
-          end: {
-            x: vertices[(i + 1) % vertices.length].x,
-            y: vertices[(i + 1) % vertices.length].y,
-          },
-        }
-
-        // Find the intersection. We want to find the intersection point
-        // closest to the hero (the LOS ray's starting point).
-        const intersection = Physics.getLineIntersection(lineOfSight, segment)
-        if (!actualLineOfSightEndPoint || (intersection && intersection.distanceFactor < actualLineOfSightEndPoint.distanceFactor)) {
-          actualLineOfSightEndPoint = intersection
-        }
-      }
-    })
-
-    if (!actualLineOfSightEndPoint) {
-      actualLineOfSightEndPoint = {
-        x: hero.x + MAX_LINE_OF_SIGHT_DISTANCE* Math.cos(hero.rotation),
-        y: hero.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(hero.rotation),
-      }
-    }
-
-    // Expected line of sight
-    c2d.beginPath()
-    c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
-    c2d.lineTo(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y)
-    c2d.closePath()
-    c2d.strokeStyle = '#c88'
-    c2d.lineWidth = 3
-    c2d.setLineDash([5, 5])
-    c2d.stroke()
-    c2d.setLineDash([])
-
-    // Actual line of sight
-    c2d.beginPath()
-    c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
-    c2d.lineTo(actualLineOfSightEndPoint.x + camera.x, actualLineOfSightEndPoint.y + camera.y)
-    c2d.closePath()
-    c2d.strokeStyle = '#39f'
-    c2d.lineWidth = 3
-    c2d.stroke()
-
-    // Expected end of line of sight
-    c2d.beginPath()
-    c2d.arc(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y, 4, 0, 2 * Math.PI)
-    c2d.closePath()
-    c2d.fillStyle = '#c88'
-    c2d.fill()
-
-    // Actual end of line of sight
-    c2d.beginPath()
-    c2d.arc(actualLineOfSightEndPoint.x + camera.x, actualLineOfSightEndPoint.y + camera.y, 8, 0, 2 * Math.PI)
-    c2d.closePath()
-    c2d.fillStyle = '#39f'
-    c2d.fill()
-  }
-
-  /*
   Paint/draw the game visuals onto the canvas.
    */
   paint () {
@@ -345,8 +244,6 @@ export default class AvO {
       c2d.stroke()
     }
     // ----------------
-
-    this.paintLineOfSight()
   }
 
   /*
