@@ -75,8 +75,8 @@ export default class Hero extends Atom {
 
     const srcSizeX = SPRITE_SIZE
     const srcSizeY = SPRITE_SIZE
-    const tgtSizeX = SPRITE_SIZE * 2.5
-    const tgtSizeY = SPRITE_SIZE * 2.5
+    const tgtSizeX = SPRITE_SIZE * 2
+    const tgtSizeY = SPRITE_SIZE * 2
 
     if (layer === LAYERS.ATOMS_LOWER) {
       const srcX = getSpriteColumn(this.direction) * SPRITE_SIZE

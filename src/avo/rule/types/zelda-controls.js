@@ -64,7 +64,7 @@ export default class ZeldaControls extends Rule {
       const LEFT = X_OFFSET
       const RIGHT = this._app.canvasWidth - X_OFFSET
       const BOTTOM = this._app.canvasHeight + Y_OFFSET
-      c2d.font = '3em Source Code Pro'
+      c2d.font = '2em Source Code Pro'
       c2d.textBaseline = 'bottom'
       c2d.lineWidth = 8
 
@@ -84,6 +84,7 @@ export default class ZeldaControls extends Rule {
       c2d.fillText(text, RIGHT, BOTTOM)
       // ----------------
 
+    } else if (layer === LAYERS.BACKGROUND) {
       this.paintLineOfSight(hero)
     }
   }
