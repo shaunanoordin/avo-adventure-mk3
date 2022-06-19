@@ -99,7 +99,7 @@ export default class ZeldaControls extends Rule {
     const camera = this._app.camera
     const atoms = this._app.atoms
 
-    const MAX_LINE_OF_SIGHT_DISTANCE = 320
+    const MAX_LINE_OF_SIGHT_DISTANCE = TILE_SIZE * 5
 
     // Intended line of sight, i.e. a ray starting from the hero/source Atom.
     const lineOfSight = {

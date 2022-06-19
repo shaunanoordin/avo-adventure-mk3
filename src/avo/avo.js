@@ -166,6 +166,10 @@ export default class AvO {
     for (const id in this.rules) {
       if (this.rules[id]._expired) delete this.rules[id]
     }
+
+    // Sort Atoms along the y-axis, for paint()/rendering purposes.
+    // WARNING: inefficient
+    this.atoms.sort((a, b) => a.y - b.y)
     // ----------------
 
     // Increment the duration of each currently pressed key
