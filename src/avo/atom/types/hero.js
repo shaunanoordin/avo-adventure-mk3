@@ -1,7 +1,21 @@
 import Atom from '@avo/atom'
-import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS } from '@avo/constants'
+import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants'
 
 const INVULNERABILITY_WINDOW = 3000
+
+function getSpriteColumn (direction) {
+  switch (direction) {
+    case DIRECTIONS.SOUTH:
+      return 0
+    case DIRECTIONS.NORTH:
+      return 1
+    case DIRECTIONS.EAST:
+      return 2
+    case DIRECTIONS.WEST:
+      return 3
+  }
+  return 0
+}
 
 export default class Hero extends Atom {
   constructor (app, col = 0, row = 0) {
@@ -55,17 +69,17 @@ export default class Hero extends Atom {
     const animationSpritesheet = app.assets.hero
     if (!animationSpritesheet) return
 
-    const SPRITE_SIZE = 64
+    const SPRITE_SIZE = 48
     let SPRITE_OFFSET_X = 0
-    let SPRITE_OFFSET_Y = 0
+    let SPRITE_OFFSET_Y = -16
 
     const srcSizeX = SPRITE_SIZE
     const srcSizeY = SPRITE_SIZE
-    const tgtSizeX = SPRITE_SIZE * 1.25
-    const tgtSizeY = SPRITE_SIZE * 1.25
+    const tgtSizeX = SPRITE_SIZE * 2.5
+    const tgtSizeY = SPRITE_SIZE * 2.5
 
     if (layer === LAYERS.ATOMS_LOWER) {
-      const srcX = 0
+      const srcX = getSpriteColumn(this.direction) * SPRITE_SIZE
       const srcY = 0
       const tgtX = Math.floor(this.x + camera.x) - srcSizeX / 2 + SPRITE_OFFSET_X - (tgtSizeX - srcSizeX) / 2
       const tgtY = Math.floor(this.y + camera.y) - srcSizeY / 2 + SPRITE_OFFSET_Y - (tgtSizeY - srcSizeY) / 2
