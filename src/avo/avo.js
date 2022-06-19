@@ -254,6 +254,7 @@ export default class AvO {
   setupUI () {
     this.html.canvas.width = this.canvasWidth
     this.html.canvas.height = this.canvasHeight
+    this.canvas2d.imageSmoothingEnabled = false  /* Pixel art: Maintains sprites' pixel sharpness when scaled up via drawImage() */
 
     if (window.PointerEvent) {
       this.html.canvas.addEventListener('pointerdown', this.onPointerDown.bind(this))
