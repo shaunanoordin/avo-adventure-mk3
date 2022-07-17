@@ -54,8 +54,8 @@ export default class Levels {
     app.atoms.push(new Wall(app, 22, 0, 1, 23))  // East Wall
     app.atoms.push(new Wall(app, 1, 0, 21, 1))  // North Wall
     app.atoms.push(new Wall(app, 1, 22, 21, 1))  // South Wall
-    app.atoms.push(new Wall(app, 3, 2, 3, 1))
-    app.atoms.push(new Wall(app, 3, 4, 3, 1))
+    app.atoms.push(new Wall(app, 3, 2.5, 3, 1))
+    app.atoms.push(new Wall(app, 3, 5, 3, 1))
 
     app.atoms.push(new Ball(app, 8, 6))
 

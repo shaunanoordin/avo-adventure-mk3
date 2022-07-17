@@ -32,7 +32,7 @@ body {
 a {
   color: $primary;
   text-decoration: none;
-  
+
   &:hover {
     color: $primary-highlight;
   }
@@ -41,13 +41,13 @@ a {
 table {
   width: 100%;
   border-collapse: collapse;
-  
+
   td,
   th {
     border: 1px solid $dark;
   }
 }
-  
+
 #app {
   display: flex;
   flex-direction: column;
@@ -75,7 +75,7 @@ table {
 
 #app > footer {
   text-align: right;
-  
+
   a {
     color: $white;
     text-decoration: underline;
@@ -88,8 +88,9 @@ table {
   flex: 1 1 auto;
   flex-direction: column;
   position: relative;
-  
+
   #canvas {
+    image-rendering: pixelated;  /* Pixel art: Maintains sprites' pixel sharpness when canvas's CSS width/height is scaled up from its HTML width/height */
     flex: 0 0 auto;
     display: block;
     margin: auto auto;
@@ -100,11 +101,11 @@ table {
     touch-action: none;
     background: $white;
   }
-  
+
   &.fullscreen #canvas {
     max-height: 100vh;
   }
-  
+
   #home-menu, #interaction-menu {
     display: block;
     overflow: auto;
@@ -119,7 +120,7 @@ table {
       padding: 1em;
     }
   }
-  
+
   .ui-button {
     position: absolute;
     cursor: pointer;
@@ -128,32 +129,32 @@ table {
     border: 2px solid #ccc;
     border-radius: 1rem;
     box-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.5);
-    
+
     &:hover {
       border: 2px solid #fff;
     }
-    
+
     &:active {
       border: 2px solid #888;
     }
-    
+
     img {
       display: block;
       width: 1.5rem;
       height: 1.5rem;
     }
   }
-  
+
   #button-home {
     top: 0.5em;
     left: 0.5em;
   }
-  
+
   #button-fullscreen {
     top: 0.5em;
     right: 0.5em;
   }
-  
+
   #button-reload {
     top: 3.5em;
     left: 0.5em;

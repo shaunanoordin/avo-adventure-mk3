@@ -52,6 +52,7 @@ export default class AvO {
 
     this.initialised = false
     this.assets = {
+      "hero": new ImageAsset('assets/avo-sprites-2022-05-samiel.png'),
       "exampleImage": new ImageAsset('assets/simple-bg.png'),
       "exampleJson": new JsonAsset('assets/example.json'),
     }
@@ -165,6 +166,10 @@ export default class AvO {
     for (const id in this.rules) {
       if (this.rules[id]._expired) delete this.rules[id]
     }
+
+    // Sort Atoms along the y-axis, for paint()/rendering purposes.
+    // WARNING: inefficient
+    this.atoms.sort((a, b) => a.y - b.y)
     // ----------------
 
     // Increment the duration of each currently pressed key
@@ -254,6 +259,7 @@ export default class AvO {
   setupUI () {
     this.html.canvas.width = this.canvasWidth
     this.html.canvas.height = this.canvasHeight
+    this.canvas2d.imageSmoothingEnabled = false  /* Pixel art: Maintains sprites' pixel sharpness when scaled up via drawImage() */
 
     if (window.PointerEvent) {
       this.html.canvas.addEventListener('pointerdown', this.onPointerDown.bind(this))

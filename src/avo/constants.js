@@ -1,4 +1,4 @@
-export const TILE_SIZE = 64
+export const TILE_SIZE = 32
 
 /*
 Each Atom has a physical shape.
