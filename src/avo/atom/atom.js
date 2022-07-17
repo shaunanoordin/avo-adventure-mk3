@@ -23,7 +23,7 @@ export default class Atom {
     // Positional data
     this.x = 0
     this.y = 0
-    this.size = TILE_SIZE
+    this.size = 48
     this._rotation = ROTATIONS.SOUTH  // Rotation in radians
     this.shape = SHAPES.CIRCLE
     this.shapePolygonPath = null  // Only applicable if shape === SHAPES.POLYGON
