@@ -65,6 +65,23 @@ export default class Hero extends Atom {
     const tgtSizeX = SPRITE_SIZE * 2
     const tgtSizeY = SPRITE_SIZE * 2
 
+    // Draw any special vfx
+    const action = this.action
+    if (action?.name === 'dash' && action?.state === 'execution' && layer === LAYERS.ATOMS_LOWER) {
+      // Draw a "dash line"
+      const dashLength = this.size * 2
+      const dashWidth = this.size
+      const dashTailX = this.x - dashLength * Math.cos(this.rotation)
+      const dashTailY = this.y - dashLength * Math.sin(this.rotation)
+      c2d.beginPath()
+      c2d.moveTo(this.x + camera.x, this.y + camera.y)
+      c2d.lineTo(dashTailX + camera.x, dashTailY + camera.y)
+      c2d.strokeStyle = 'rgba(255, 255, 0, 0.5)'
+      c2d.lineWidth = dashWidth
+      c2d.stroke()
+    }
+
+    // Draw the sprite
     if (layer === LAYERS.ATOMS_LOWER) {
       const srcX = this.getAnimationSpriteColumn() * SPRITE_SIZE
       const srcY = this.getAnimationSpriteRow() * SPRITE_SIZE
