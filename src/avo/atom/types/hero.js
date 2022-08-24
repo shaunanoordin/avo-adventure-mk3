@@ -2,20 +2,7 @@ import Atom from '@avo/atom'
 import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants'
 
 const INVULNERABILITY_WINDOW = 3000
-
-function getSpriteColumn (direction) {
-  switch (direction) {
-    case DIRECTIONS.SOUTH:
-      return 0
-    case DIRECTIONS.NORTH:
-      return 1
-    case DIRECTIONS.EAST:
-      return 2
-    case DIRECTIONS.WEST:
-      return 3
-  }
-  return 0
-}
+const MOVE_ACTION_CYCLE_DURATION = 1000
 
 export default class Hero extends Atom {
   constructor (app, col = 0, row = 0) {
@@ -66,8 +53,8 @@ export default class Hero extends Atom {
 
     const c2d = app.canvas2d
     const camera = app.camera
-    const animationSpritesheet = app.assets.hero
-    if (!animationSpritesheet) return
+    const animationSpriteSheet = app.assets.hero
+    if (!animationSpriteSheet) return
 
     const SPRITE_SIZE = 48
     let SPRITE_OFFSET_X = 0
@@ -79,12 +66,12 @@ export default class Hero extends Atom {
     const tgtSizeY = SPRITE_SIZE * 2
 
     if (layer === LAYERS.ATOMS_LOWER) {
-      const srcX = getSpriteColumn(this.direction) * SPRITE_SIZE
-      const srcY = 0
+      const srcX = this.getAnimationSpriteColumn() * SPRITE_SIZE
+      const srcY = this.getAnimationSpriteRow() * SPRITE_SIZE
       const tgtX = Math.floor(this.x + camera.x) - srcSizeX / 2 + SPRITE_OFFSET_X - (tgtSizeX - srcSizeX) / 2
       const tgtY = Math.floor(this.y + camera.y) - srcSizeY / 2 + SPRITE_OFFSET_Y - (tgtSizeY - srcSizeY) / 2
 
-      c2d.drawImage(animationSpritesheet.img, srcX, srcY, srcSizeX, srcSizeY, tgtX, tgtY, tgtSizeX, tgtSizeY)
+      c2d.drawImage(animationSpriteSheet.img, srcX, srcY, srcSizeX, srcSizeY, tgtX, tgtY, tgtSizeX, tgtSizeY)
     }
   }
 
@@ -158,7 +145,7 @@ export default class Hero extends Atom {
       this.moveY += moveAcceleration * Math.sin(actionRotation)
       this.rotation = actionRotation
 
-      action.counter += timeStep
+      action.counter = (action.counter + timeStep) % MOVE_ACTION_CYCLE_DURATION
 
     } else if (action.name === 'dash') {
       const WINDUP_DURATION = EXPECTED_TIMESTEP * 5
@@ -239,5 +226,35 @@ export default class Hero extends Atom {
   get pushDeceleration () {
     if (this.action?.name === 'dash' && this.action?.state === 'execution') return 0
     return this._pushDeceleration
+  }
+
+  /*
+  Section: Animation
+  ----------------------------------------------------------------------------
+   */
+  getAnimationSpriteColumn () {
+    switch (this.direction) {
+      case DIRECTIONS.NORTH: return 1
+      case DIRECTIONS.EAST: return 2
+      case DIRECTIONS.SOUTH: return 0
+      case DIRECTIONS.WEST: return 3
+    }
+    return 0
+  }
+
+  getAnimationSpriteRow () {
+    const action = this.action
+    if (!action) return 0
+
+    if (action?.name === 'move') {
+      const progress = action.counter / MOVE_ACTION_CYCLE_DURATION
+      if (progress < 0.3) return 2
+      else if (progress < 0.5) return 1
+      else if (progress < 0.8) return 3
+      else if (progress < 1) return 1
+      return 1
+    }
+
+    return 0
   }
 }
