@@ -246,13 +246,18 @@ export default class Hero extends Atom {
     const action = this.action
     if (!action) return 0
 
-    if (action?.name === 'move') {
+    if (action.name === 'move') {
       const progress = action.counter / MOVE_ACTION_CYCLE_DURATION
       if (progress < 0.3) return 2
       else if (progress < 0.5) return 1
       else if (progress < 0.8) return 3
       else if (progress < 1) return 1
-      return 1
+
+    } else if (action.name === 'dash') {
+      if (action.state === 'windup') return 4
+      else if (action.state === 'execution') return 1
+      else if (action.state === 'winddown') return 1
+
     }
 
     return 0
