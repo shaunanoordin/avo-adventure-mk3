@@ -1,6 +1,6 @@
-# AvO: Adventures Omnibus
+# AvO: Adventurer's Omnibus
 
-AvO: Adventures Omnibus is a collection of small adventure games.
+AvO: Adventurer's Omnibus is a collection of small adventure games.
 
 Original code was based on [an unfinished Ludum Dare 48 game](https://github.com/shaunanoordin/ludumdare-48), [CNY2021](https://github.com/shaunanoordin/cny2021), and [AvO mk2](https://github.com/shaunanoordin/avo-adventure-mk2/).
 
