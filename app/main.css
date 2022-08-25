@@ -74,6 +74,8 @@ table th {
   position: relative;
 }
 #app > main #canvas {
+  image-rendering: pixelated;
+  /* Pixel art: Maintains sprites' pixel sharpness when canvas's CSS width/height is scaled up from its HTML width/height */
   flex: 0 0 auto;
   display: block;
   margin: auto auto;
