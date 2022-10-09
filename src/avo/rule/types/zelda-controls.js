@@ -90,41 +90,41 @@ export default class ZeldaControls extends Rule {
   }
 
   /*
-  Draw a line of sight (cast a ray) starting from a specified Atom (usually the
+  Draw a line of sight (cast a ray) starting from a specified Entity (usually the
   hero), in the direction they're facing.
    */
-  paintLineOfSight (srcAtom) {
-    if (!srcAtom) return
+  paintLineOfSight (srcEntity) {
+    if (!srcEntity) return
     const c2d = this._app.canvas2d
     const camera = this._app.camera
-    const atoms = this._app.atoms
+    const entities = this._app.entities
 
     const MAX_LINE_OF_SIGHT_DISTANCE = TILE_SIZE * 5
 
-    // Intended line of sight, i.e. a ray starting from the hero/source Atom.
+    // Intended line of sight, i.e. a ray starting from the hero/source Entity.
     const lineOfSight = {
       start: {
-        x: srcAtom.x,
-        y: srcAtom.y,
+        x: srcEntity.x,
+        y: srcEntity.y,
       },
       end: {
-        x: srcAtom.x + MAX_LINE_OF_SIGHT_DISTANCE * Math.cos(srcAtom.rotation),
-        y: srcAtom.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(srcAtom.rotation),
+        x: srcEntity.x + MAX_LINE_OF_SIGHT_DISTANCE * Math.cos(srcEntity.rotation),
+        y: srcEntity.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(srcEntity.rotation),
       }
     }
 
     let actualLineOfSightEndPoint = undefined
 
-    // For each other Atom, see if it intersects with the source Atom's LOS
-    atoms.forEach(atom => {
-      if (atom === srcAtom) return
+    // For each other Entity, see if it intersects with the source Entity's LOS
+    entities.forEach(entity => {
+      if (entity === srcEntity) return
 
-      // TODO: check for opaqueness and/or if the atom is visible.
+      // TODO: check for opaqueness and/or if the entity is visible.
 
-      const vertices = atom.vertices
+      const vertices = entity.vertices
       if (vertices.length < 2) return
 
-      // Every atom has a "shape" that can be represented by a polygon.
+      // Every entity has a "shape" that can be represented by a polygon.
       // (Yes, even circles.) Check each segment (aka edge aka side) of the
       // polygon.
       for (let i = 0 ; i < vertices.length ; i++) {
@@ -140,7 +140,7 @@ export default class ZeldaControls extends Rule {
         }
 
         // Find the intersection. We want to find the intersection point
-        // closest to the source Atom (the LOS ray's starting point).
+        // closest to the source Entity (the LOS ray's starting point).
         const intersection = Physics.getLineIntersection(lineOfSight, segment)
         if (!actualLineOfSightEndPoint || (intersection && intersection.distanceFactor < actualLineOfSightEndPoint.distanceFactor)) {
           actualLineOfSightEndPoint = intersection
@@ -150,8 +150,8 @@ export default class ZeldaControls extends Rule {
 
     if (!actualLineOfSightEndPoint) {
       actualLineOfSightEndPoint = {
-        x: srcAtom.x + MAX_LINE_OF_SIGHT_DISTANCE* Math.cos(srcAtom.rotation),
-        y: srcAtom.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(srcAtom.rotation),
+        x: srcEntity.x + MAX_LINE_OF_SIGHT_DISTANCE* Math.cos(srcEntity.rotation),
+        y: srcEntity.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(srcEntity.rotation),
       }
     }
 

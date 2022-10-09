@@ -1,10 +1,10 @@
-import Atom from '@avo/atom'
+import Entity from '@avo/entity'
 import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants'
 
 const INVULNERABILITY_WINDOW = 3000
 const MOVE_ACTION_CYCLE_DURATION = 1000
 
-export default class Hero extends Atom {
+export default class Hero extends Entity {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'hero'
@@ -223,7 +223,7 @@ export default class Hero extends Atom {
    */
 
   /*
-  Triggers when this atom hits/touches/intersects with another.
+  Triggers when this entity hits/touches/intersects with another.
    */
   onCollision (target, collisionCorrection) {
     super.onCollision(target, collisionCorrection)

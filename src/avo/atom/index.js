@@ -1,3 +1,3 @@
-import Atom from './atom'
+import Entity from './entity'
 
-export default Atom
+export default Entity

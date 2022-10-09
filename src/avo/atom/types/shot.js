@@ -1,12 +1,12 @@
-import Atom from '@avo/atom'
+import Entity from '@avo/entity'
 import { TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants'
 
-export default class Shot extends Atom {
+export default class Shot extends Entity {
   constructor (app, x = 0, y = 0, rotation = 0, source = undefined) {
     super(app)
     this._type = 'shot'
 
-    this.source = source  // The atom that this shot came from
+    this.source = source  // The entity that this shot came from
 
     this.colour = '#cc4'
     this.solid = false

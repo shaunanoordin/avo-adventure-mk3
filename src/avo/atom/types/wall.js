@@ -1,7 +1,7 @@
-import Atom from '@avo/atom'
+import Entity from '@avo/entity'
 import { SHAPES, TILE_SIZE } from '@avo/constants'
 
-export default class Wall extends Atom {
+export default class Wall extends Entity {
   constructor (app, col = 0, row = 0, width = 1, height = 1, cutCorner = false) {
     super(app)
     this._type = 'wall'
