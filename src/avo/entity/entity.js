@@ -295,16 +295,16 @@ export default class Entity {
   set direction (val) {
     switch (val) {
       case DIRECTIONS.EAST:
-        this._rotation = ROTATIONS.EAST
+        this.rotation = ROTATIONS.EAST
         break
       case DIRECTIONS.SOUTH:
-        this._rotation = ROTATIONS.SOUTH
+        this.rotation = ROTATIONS.SOUTH
         break
       case DIRECTIONS.WEST:
-        this._rotation = ROTATIONS.WEST
+        this.rotation = ROTATIONS.WEST
         break
       case DIRECTIONS.NORTH:
-        this._rotation = ROTATIONS.NORTH
+        this.rotation = ROTATIONS.NORTH
         break
     }
   }

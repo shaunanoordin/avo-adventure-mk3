@@ -1,6 +1,7 @@
 import { PLAYER_ACTIONS, DIRECTIONS } from '@avo/constants'
 
 import Hero from '@avo/entity/types/hero'
+import HeroV2 from '@avo/entity/types/hero-v2'
 import Wall from '@avo/entity/types/wall'
 import Ball from '@avo/entity/types/ball'
 import Enemy from '@avo/entity/types/enemy'
@@ -44,7 +45,7 @@ export default class Levels {
   generate_zelda_default () {
     const app = this._app
 
-    app.hero = new Hero(app, 11, 1)
+    app.hero = new HeroV2(app, 11, 1)
     app.entities.push(app.hero)
     app.camera.target = app.hero
 
