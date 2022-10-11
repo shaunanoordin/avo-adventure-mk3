@@ -62,12 +62,12 @@ export default class HeroV2 extends Entity {
 
     const SPRITE_SIZE = 48
     let SPRITE_OFFSET_X = 0
-    let SPRITE_OFFSET_Y = -16
+    let SPRITE_OFFSET_Y = -40
 
     const srcSizeX = SPRITE_SIZE
     const srcSizeY = SPRITE_SIZE
-    const tgtSizeX = SPRITE_SIZE
-    const tgtSizeY = SPRITE_SIZE
+    const tgtSizeX = SPRITE_SIZE * 2
+    const tgtSizeY = SPRITE_SIZE * 2
 
     // Draw any special vfx
     const action = this.action
