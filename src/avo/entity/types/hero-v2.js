@@ -270,9 +270,9 @@ export default class HeroV2 extends Entity {
       this.animationHorizontalFacing = DIRECTIONS.WEST
     }
 
-    if (this._rotation < 0) {
+    if (this._rotation < 0 && this.rotation > -Math.PI) {
       this.animationVerticalFacing = DIRECTIONS.NORTH
-    } else if (this._rotation > 0) {
+    } else if (this._rotation >= 0 && this.rotation <= Math.PI) {  // Favour facing south
       this.animationVerticalFacing = DIRECTIONS.SOUTH
     }
   }
