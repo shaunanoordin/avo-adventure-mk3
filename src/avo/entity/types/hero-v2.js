@@ -62,12 +62,10 @@ export default class HeroV2 extends Entity {
 
     const SPRITE_SIZE = 48
     let SPRITE_OFFSET_X = 0
-    let SPRITE_OFFSET_Y = -40
+    let SPRITE_OFFSET_Y = -20
 
-    const srcSizeX = SPRITE_SIZE
-    const srcSizeY = SPRITE_SIZE
-    const tgtSizeX = SPRITE_SIZE * 2
-    const tgtSizeY = SPRITE_SIZE * 2
+    const sizeX = SPRITE_SIZE
+    const sizeY = SPRITE_SIZE
 
     // Draw any special vfx
     const action = this.action
@@ -89,10 +87,15 @@ export default class HeroV2 extends Entity {
     if (layer === LAYERS.ATOMS_LOWER) {
       const srcX = this.getAnimationSpriteColumn() * SPRITE_SIZE
       const srcY = this.getAnimationSpriteRow() * SPRITE_SIZE
-      const tgtX = Math.floor(this.x + camera.x) - srcSizeX / 2 + SPRITE_OFFSET_X - (tgtSizeX - srcSizeX) / 2
-      const tgtY = Math.floor(this.y + camera.y) - srcSizeY / 2 + SPRITE_OFFSET_Y - (tgtSizeY - srcSizeY) / 2
+      const tgtX = Math.floor(this.x + camera.x)
+      const tgtY = Math.floor(this.y + camera.y)
 
-      c2d.drawImage(animationSpriteSheet.img, srcX, srcY, srcSizeX, srcSizeY, tgtX, tgtY, tgtSizeX, tgtSizeY)
+      // Experiment: use canvas transforms
+      c2d.save()
+      c2d.translate(tgtX, tgtY)
+      c2d.scale(2, 2)
+      c2d.drawImage(animationSpriteSheet.img, srcX, srcY, sizeX, sizeY, -sizeX / 2 + SPRITE_OFFSET_X, -sizeY / 2 + SPRITE_OFFSET_Y, sizeX, sizeY)
+      c2d.restore()
     }
   }
 
