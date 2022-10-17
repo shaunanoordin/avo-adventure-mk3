@@ -1,8 +1,8 @@
-import Atom from '@avo/atom'
-import Shot from '@avo/atom/types/shot'
+import Entity from '@avo/entity'
+import Shot from '@avo/entity/types/shot'
 import { TILE_SIZE } from '@avo/constants'
 
-export default class Enemy extends Atom {
+export default class Enemy extends Entity {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'enemy'
@@ -35,7 +35,7 @@ export default class Enemy extends Atom {
 
       if (!action.acknowledged && progress > 0.5) {
         action.acknowledged = true
-        app.atoms.push(new Shot(app, this.x, this.y, this.rotation, this))
+        app.entities.push(new Shot(app, this.x, this.y, this.rotation, this))
       }
 
       action.counter += timeStep

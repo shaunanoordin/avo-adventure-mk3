@@ -43,7 +43,7 @@ export default class AvO {
     this.canvasHeight = height
 
     this.camera = {
-      target: null,  // Target atom to follow. If null, camera is static.
+      target: null,  // Target entity to follow. If null, camera is static.
       x: 0,
       y: 0,
     }
@@ -62,7 +62,7 @@ export default class AvO {
     }
 
     this.hero = null
-    this.atoms = []
+    this.entities = []
     this.rules = {}
     this.levels = new Levels(this)
 
@@ -158,18 +158,18 @@ export default class AvO {
     // ----------------
     for (const id in this.rules) { this.rules[id].play(timeStep) }
 
-    this.atoms.forEach(atom => atom.play(timeStep))
+    this.entities.forEach(entity => entity.play(timeStep))
     this.checkCollisions(timeStep)
 
     // Cleanup
-    this.atoms = this.atoms.filter(atom => !atom._expired)
+    this.entities = this.entities.filter(entity => !entity._expired)
     for (const id in this.rules) {
       if (this.rules[id]._expired) delete this.rules[id]
     }
 
-    // Sort Atoms along the y-axis, for paint()/rendering purposes.
+    // Sort Entities along the y-axis, for paint()/rendering purposes.
     // WARNING: inefficient
-    this.atoms.sort((a, b) => a.y - b.y)
+    this.entities.sort((a, b) => a.y - b.y)
     // ----------------
 
     // Increment the duration of each currently pressed key
@@ -185,7 +185,7 @@ export default class AvO {
     const c2d = this.canvas2d
     const camera = this.camera
 
-    // Camera Controls: focus the camera on the target atom, if any.
+    // Camera Controls: focus the camera on the target entity, if any.
     // ----------------
     if (camera.target) {
       camera.x = this.canvasWidth / 2 - camera.target.x
@@ -223,10 +223,10 @@ export default class AvO {
     }
     // ----------------
 
-    // Draw atoms and other elements
+    // Draw entities and other elements
     // ----------------
     for (let layer = MIN_LAYER ; layer <= MAX_LAYER ; layer++) {
-      this.atoms.forEach(atom => atom.paint(layer))
+      this.entities.forEach(entity => entity.paint(layer))
       for (const id in this.rules) { this.rules[id].paint(layer) }
     }
     // ----------------
@@ -449,16 +449,16 @@ export default class AvO {
    */
 
   checkCollisions (timeStep) {
-    for (let a = 0 ; a < this.atoms.length ; a++) {
-      let atomA = this.atoms[a]
+    for (let a = 0 ; a < this.entities.length ; a++) {
+      let entityA = this.entities[a]
 
-      for (let b = a + 1 ; b < this.atoms.length ; b++) {
-        let atomB = this.atoms[b]
-        let collisionCorrection = Physics.checkCollision(atomA, atomB)
+      for (let b = a + 1 ; b < this.entities.length ; b++) {
+        let entityB = this.entities[b]
+        let collisionCorrection = Physics.checkCollision(entityA, entityB)
 
         if (collisionCorrection) {
-          atomA.onCollision(atomB, collisionCorrection.a)
-          atomB.onCollision(atomA, collisionCorrection.b)
+          entityA.onCollision(entityB, collisionCorrection.a)
+          entityB.onCollision(entityA, collisionCorrection.b)
         }
       }
     }

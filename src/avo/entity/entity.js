@@ -8,16 +8,16 @@ const MOVE_ACCELERATION_MODIFIER = 1 / EXPECTED_TIMESTEP
 const MOVE_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 const PUSH_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 
-export default class Atom {
+export default class Entity {
   constructor (app) {
     this._app = app
-    this._type = 'atom'
+    this._type = 'entity'
     this.name = ''  // Optional identifier
 
-    // General atom attributes
+    // General entity attributes
     this.colour = '#ccc'
 
-    // Expired atoms are removed at the end of the cycle.
+    // Expired entities are removed at the end of the cycle.
     this._expired = false
 
     // Positional data
@@ -56,7 +56,7 @@ export default class Atom {
 
     // Update position
     const timeCorrection = 1
-    // const timeCorrection = (timeStep / EXPECTED_TIMESTEP)  // Edit: time correction may not be needed since Atoms fix their own moveXY/pushXY values
+    // const timeCorrection = (timeStep / EXPECTED_TIMESTEP)  // Edit: time correction may not be needed since Entities fix their own moveXY/pushXY values
     this.x += (this.moveX + this.pushX) * timeCorrection
     this.y += (this.moveY + this.pushY) * timeCorrection
 
@@ -66,7 +66,7 @@ export default class Atom {
   }
 
   /*
-  Paint atom's hitbox.
+  Paint entity's hitbox.
    */
   paint (layer = 0) {
     const c2d = this._app.canvas2d
@@ -131,7 +131,7 @@ export default class Atom {
    */
 
   /*
-  Applies an effect to this atom. Usually called by another antity.
+  Applies an effect to this entity. Usually called by another antity.
   e.g. a fireball hits this character and applies an "ON FIRE" effect.
    */
   applyEffect (effect, source) {}
@@ -142,7 +142,7 @@ export default class Atom {
    */
 
   /*
-  Triggers when this atom hits/touches/intersects with another.
+  Triggers when this entity hits/touches/intersects with another.
    */
   onCollision (target, collisionCorrection) {
     this.doBounce(target, collisionCorrection)
@@ -156,9 +156,9 @@ export default class Atom {
    */
 
   /*
-  By default, every moving atom decelerates (because we don't exist in a
+  By default, every moving entity decelerates (because we don't exist in a
   perfect vacuum and the game doesn't take place on a slippery ice).
-  Atoms can intentionally override this logic,
+  Entities can intentionally override this logic,
   e.g. "if a hero is walking, ignore deceleration."
    */
   doMoveDeceleration (timeStep) {
@@ -178,7 +178,7 @@ export default class Atom {
   }
 
   /*
-  Every atom has a maximum speed limit. Intentional movement speed and
+  Every entity has a maximum speed limit. Intentional movement speed and
   external force movement speed are treated separately.
    */
   doMaxSpeedLimit (timeStep) {
@@ -200,7 +200,7 @@ export default class Atom {
   }
 
   /*
-  When a solid pushed atom hits another solid atom, momentum is transferred.
+  When a solid pushed entity hits another solid entity, momentum is transferred.
   Usually, this leads to elastic collisions, because that chaos is fun!
    */
   doBounce (target, collisionCorrection) {
@@ -329,7 +329,7 @@ export default class Atom {
     return v
   }
 
-  set vertices (val) { console.error('ERROR: Atom.vertices is read only') }
+  set vertices (val) { console.error('ERROR: Entity.vertices is read only') }
 
   get solid () { return this._solid }
   get movable () { return this._movable }
@@ -354,10 +354,10 @@ export default class Atom {
   get pushSpeed () { return Math.sqrt(this.pushX * this.pushX + this.pushY * this.pushY) }
   get pushAngle () { return Math.atan2(this.pushY, this.pushX) }
 
-  set moveSpeed (val) { console.error('ERROR: Atom.moveSpeed is read only') }
-  set moveAngle (val) { console.error('ERROR: Atom.moveAngle is read only') }
-  set pushSpeed (val) { console.error('ERROR: Atom.pushSpeed is read only') }
-  set pushAngle (val) { console.error('ERROR: Atom.pushAngle is read only') }
+  set moveSpeed (val) { console.error('ERROR: Entity.moveSpeed is read only') }
+  set moveAngle (val) { console.error('ERROR: Entity.moveAngle is read only') }
+  set pushSpeed (val) { console.error('ERROR: Entity.pushSpeed is read only') }
+  set pushAngle (val) { console.error('ERROR: Entity.pushAngle is read only') }
 }
 
 const CIRCLE_TO_POLYGON_APPROXIMATOR =

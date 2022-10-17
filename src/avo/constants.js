@@ -1,7 +1,7 @@
 export const TILE_SIZE = 32
 
 /*
-Each Atom has a physical shape.
+Each Entity has a physical shape.
  */
 export const SHAPES = {
   NONE: 'none',
@@ -11,7 +11,7 @@ export const SHAPES = {
 }
 
 /*
-Each Atom has a directional orientation, which can be interpreted as either
+Each Entity has a directional orientation, which can be interpreted as either
 "rotation" (if we want to know the precise angle for physics calculations) or
 "direction" (if we just want to match it with the up/down/left/right sprites)
  */
@@ -39,7 +39,7 @@ export const PLAYER_ACTIONS = {
 }
 
 /*
-The paint() step of the core engine, each Atom, and each Rule can paint
+The paint() step of the core engine, each Entity, and each Rule can paint
 information in different visual layers.
  */
 export const LAYERS = {
