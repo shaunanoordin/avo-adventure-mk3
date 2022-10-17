@@ -8,6 +8,8 @@ const MOVE_ACCELERATION_MODIFIER = 1 / EXPECTED_TIMESTEP
 const MOVE_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 const PUSH_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 
+const MASS_TO_LINEWIDTH_RATIO = 5
+
 export default class Entity {
   constructor (app) {
     this._app = app
@@ -37,7 +39,7 @@ export default class Entity {
     // Additional physics
     this._solid = true
     this._movable = true
-    this._mass = 2  // Only matters if solid && movable
+    this._mass = 10  // Only matters if solid && movable
     this._moveAcceleration = this.size * MOVE_ACCELERATION_MODIFIER
     this._moveDeceleration = this.size * MOVE_DECELERATION_MODIFIER
     this._moveMaxSpeed = this.size * MOVE_MAX_SPEED_MODIFIER
@@ -75,7 +77,7 @@ export default class Entity {
     if (layer === LAYERS.ATOMS_LOWER) {
       c2d.fillStyle = this.colour
       c2d.strokeStyle = '#444'
-      c2d.lineWidth = this.mass
+      c2d.lineWidth = this.mass / MASS_TO_LINEWIDTH_RATIO
 
       // Draw shape outline
       switch (this.shape) {
@@ -276,6 +278,11 @@ export default class Entity {
 
   set radius (val) { this.size = val * 2 }
 
+  /*
+  Rotation tracks the precise angle the entity is facing, in radians, clockwise
+  positive. 0° (0 rad) is east/right-facing, 90° (+pi/4 rad) is
+  south/down-facing.
+   */
   get rotation () { return this._rotation }
 
   set rotation (val) {
@@ -284,7 +291,11 @@ export default class Entity {
     while (this._rotation <= -Math.PI) { this._rotation += Math.PI * 2 }
   }
 
-  get direction () {  //Get cardinal direction
+  /*
+  Direction tracks the cardinal direction the entity is facing. This is mostly
+  used to match the entity with a up/down/left/right-facing sprite.
+   */
+  get direction () {
     //Favour East and West when rotation is exactly SW, NW, SE or NE.
     if (this._rotation <= Math.PI * 0.25 && this._rotation >= Math.PI * -0.25) { return DIRECTIONS.EAST }
     else if (this._rotation > Math.PI * 0.25 && this._rotation < Math.PI * 0.75) { return DIRECTIONS.SOUTH }
@@ -295,16 +306,16 @@ export default class Entity {
   set direction (val) {
     switch (val) {
       case DIRECTIONS.EAST:
-        this._rotation = ROTATIONS.EAST
+        this.rotation = ROTATIONS.EAST
         break
       case DIRECTIONS.SOUTH:
-        this._rotation = ROTATIONS.SOUTH
+        this.rotation = ROTATIONS.SOUTH
         break
       case DIRECTIONS.WEST:
-        this._rotation = ROTATIONS.WEST
+        this.rotation = ROTATIONS.WEST
         break
       case DIRECTIONS.NORTH:
-        this._rotation = ROTATIONS.NORTH
+        this.rotation = ROTATIONS.NORTH
         break
     }
   }

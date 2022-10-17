@@ -13,7 +13,7 @@ export const SHAPES = {
 /*
 Each Entity has a directional orientation, which can be interpreted as either
 "rotation" (if we want to know the precise angle for physics calculations) or
-"direction" (if we just want to match it with the up/down/left/right sprites)
+"direction" (if we want to match it with up/down/left/right-facing sprites).
  */
 export const ROTATIONS = {
   EAST: 0,
