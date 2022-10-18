@@ -202,24 +202,25 @@ export default class AvO {
 
     // Draw grid
     // ----------------
-    const offsetX = (this.camera.x % TILE_SIZE) - TILE_SIZE
-    const offsetY = (this.camera.y % TILE_SIZE) - TILE_SIZE
+    const GRID_SIZE = TILE_SIZE * camera.zoom
+    const offsetX = (this.camera.x % GRID_SIZE) - GRID_SIZE
+    const offsetY = (this.camera.y % GRID_SIZE) - GRID_SIZE
 
-    for (let y = offsetY ; y < this.canvasHeight ; y += TILE_SIZE) {
-      for (let x = offsetX ; x < this.canvasWidth ; x += TILE_SIZE) {
+    for (let y = offsetY ; y < this.canvasHeight ; y += GRID_SIZE) {
+      for (let x = offsetX ; x < this.canvasWidth ; x += GRID_SIZE) {
         c2d.beginPath()
-        c2d.rect(x, y, TILE_SIZE, TILE_SIZE)
+        c2d.rect(x, y, GRID_SIZE, GRID_SIZE)
         c2d.stroke()
 
         // Debug Grid
         if (DEBUG) {
           c2d.fillStyle = '#ccc'
-          c2d.font = `1em Source Code Pro`
+          c2d.font = `${camera.zoom * 0.5}em Source Code Pro`
           c2d.textAlign = 'center'
           c2d.textBaseline = 'middle'
-          const col = Math.floor((x - this.camera.x) / TILE_SIZE)
-          const row = Math.floor((y - this.camera.y) / TILE_SIZE)
-          c2d.fillText(col + ',' + row, x + TILE_SIZE / 2, y + TILE_SIZE / 2)  // using template strings here messes up colours in Brackets.
+          const col = Math.floor((x - this.camera.x) / GRID_SIZE)
+          const row = Math.floor((y - this.camera.y) / GRID_SIZE)
+          c2d.fillText(col + ',' + row, x + GRID_SIZE / 2, y + GRID_SIZE / 2)  // using template strings here messes up colours in Brackets.
         }
       }
     }
