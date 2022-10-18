@@ -54,7 +54,6 @@ export default class ZeldaControls extends Rule {
   paint (layer = 0) {
     const hero = this._app.hero
     const c2d = this._app.canvas2d
-    const camera = this._app.camera
 
     if (layer === LAYERS.HUD) {
       // Draw UI data
@@ -103,7 +102,7 @@ export default class ZeldaControls extends Rule {
     c2d.save()
     c2d.translate(camera.x, camera.y)
     c2d.scale(camera.zoom, camera.zoom)
-    
+
     // Intended line of sight, i.e. a ray starting from the hero/source Entity.
     const lineOfSight = {
       start: {
