@@ -393,6 +393,16 @@ export default class AvO {
           this.setInteractionMenu(new Interaction(this))
         }
         break
+
+      case '-':
+      case '_':
+        this.camera.zoom = Math.max(0.5, this.camera.zoom - 0.5)
+        break
+
+      case '+':
+      case '=':
+        this.camera.zoom = Math.min(4, this.camera.zoom + 0.5)
+        break
     }
 
     // General input
