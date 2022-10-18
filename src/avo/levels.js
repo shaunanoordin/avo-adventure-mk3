@@ -1,9 +1,9 @@
 import { PLAYER_ACTIONS, DIRECTIONS } from '@avo/constants'
 
-import Hero from '@avo/atom/types/hero'
-import Wall from '@avo/atom/types/wall'
-import Ball from '@avo/atom/types/ball'
-import Enemy from '@avo/atom/types/enemy'
+import Hero from '@avo/entity/types/hero'
+import Wall from '@avo/entity/types/wall'
+import Ball from '@avo/entity/types/ball'
+import Enemy from '@avo/entity/types/enemy'
 
 import ZeldaControls from '@avo/rule/types/zelda-controls'
 import CNY2022Controls from '@avo/rule/types/cny2022-controls'
@@ -17,11 +17,12 @@ export default class Levels {
   reset () {
     const app = this._app
     app.hero = undefined
-    app.atoms = []
+    app.entities = []
     app.clearRules()
-    app.camera = {
-      target: null, x: 0, y: 0,
-    }
+    app.camera.target = null
+    app.camera.x = 0
+    app.camera.y = 0
+    app.camera.zoom = 1
     app.playerAction = PLAYER_ACTIONS.IDLE
     app.setInteractionMenu(false)
   }
@@ -45,22 +46,22 @@ export default class Levels {
     const app = this._app
 
     app.hero = new Hero(app, 11, 1)
-    app.atoms.push(app.hero)
+    app.entities.push(app.hero)
     app.camera.target = app.hero
 
     app.addRule(new ZeldaControls(app))
 
-    app.atoms.push(new Wall(app, 0, 0, 1, 23))  // West Wall
-    app.atoms.push(new Wall(app, 22, 0, 1, 23))  // East Wall
-    app.atoms.push(new Wall(app, 1, 0, 21, 1))  // North Wall
-    app.atoms.push(new Wall(app, 1, 22, 21, 1))  // South Wall
-    app.atoms.push(new Wall(app, 3, 2, 3, 1))
-    app.atoms.push(new Wall(app, 3, 4, 3, 1))
+    app.entities.push(new Wall(app, 0, 0, 1, 23))  // West Wall
+    app.entities.push(new Wall(app, 22, 0, 1, 23))  // East Wall
+    app.entities.push(new Wall(app, 1, 0, 21, 1))  // North Wall
+    app.entities.push(new Wall(app, 1, 22, 21, 1))  // South Wall
+    app.entities.push(new Wall(app, 3, 2, 3, 1))
+    app.entities.push(new Wall(app, 3, 4, 3, 1))
 
-    app.atoms.push(new Ball(app, 8, 6))
+    app.entities.push(new Ball(app, 8, 6))
 
     const enemy = new Enemy(app, 4, 8)
     enemy.rotation = -45 / 180 * Math.PI
-    app.atoms.push(enemy)
+    app.entities.push(enemy)
   }
 }

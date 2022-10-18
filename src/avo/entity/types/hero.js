@@ -1,10 +1,10 @@
-import Atom from '@avo/atom'
+import Entity from '@avo/entity'
 import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants'
 
 const INVULNERABILITY_WINDOW = 3000
 const MOVE_ACTION_CYCLE_DURATION = 1000
 
-export default class Hero extends Atom {
+export default class Hero extends Entity {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'hero'
@@ -56,6 +56,10 @@ export default class Hero extends Atom {
     const animationSpriteSheet = app.assets.hero
     if (!animationSpriteSheet) return
 
+    c2d.save()
+    c2d.translate(camera.x, camera.y)
+    c2d.scale(camera.zoom, camera.zoom)
+
     const SPRITE_SIZE = 48
     let SPRITE_OFFSET_X = 0
     let SPRITE_OFFSET_Y = -16
@@ -74,8 +78,8 @@ export default class Hero extends Atom {
       const dashTailX = this.x - dashLength * Math.cos(this.rotation)
       const dashTailY = this.y - dashLength * Math.sin(this.rotation)
       c2d.beginPath()
-      c2d.moveTo(this.x + camera.x, this.y + camera.y)
-      c2d.lineTo(dashTailX + camera.x, dashTailY + camera.y)
+      c2d.moveTo(this.x, this.y)
+      c2d.lineTo(dashTailX, dashTailY)
       c2d.strokeStyle = 'rgba(255, 255, 0, 0.5)'
       c2d.lineWidth = dashWidth
       c2d.stroke()
@@ -85,11 +89,13 @@ export default class Hero extends Atom {
     if (layer === LAYERS.ATOMS_LOWER) {
       const srcX = this.getAnimationSpriteColumn() * SPRITE_SIZE
       const srcY = this.getAnimationSpriteRow() * SPRITE_SIZE
-      const tgtX = Math.floor(this.x + camera.x) - srcSizeX / 2 + SPRITE_OFFSET_X - (tgtSizeX - srcSizeX) / 2
-      const tgtY = Math.floor(this.y + camera.y) - srcSizeY / 2 + SPRITE_OFFSET_Y - (tgtSizeY - srcSizeY) / 2
+      const tgtX = this.x - srcSizeX / 2 + SPRITE_OFFSET_X - (tgtSizeX - srcSizeX) / 2
+      const tgtY = this.y - srcSizeY / 2 + SPRITE_OFFSET_Y - (tgtSizeY - srcSizeY) / 2
 
       c2d.drawImage(animationSpriteSheet.img, srcX, srcY, srcSizeX, srcSizeY, tgtX, tgtY, tgtSizeX, tgtSizeY)
     }
+
+    c2d.restore()
   }
 
   /*
@@ -223,7 +229,7 @@ export default class Hero extends Atom {
    */
 
   /*
-  Triggers when this atom hits/touches/intersects with another.
+  Triggers when this entity hits/touches/intersects with another.
    */
   onCollision (target, collisionCorrection) {
     super.onCollision(target, collisionCorrection)

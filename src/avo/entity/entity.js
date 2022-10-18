@@ -8,16 +8,18 @@ const MOVE_ACCELERATION_MODIFIER = 1 / EXPECTED_TIMESTEP
 const MOVE_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 const PUSH_DECELERATION_MODIFIER = 0.2 / EXPECTED_TIMESTEP
 
-export default class Atom {
+const MASS_TO_LINEWIDTH_RATIO = 5
+
+export default class Entity {
   constructor (app) {
     this._app = app
-    this._type = 'atom'
+    this._type = 'entity'
     this.name = ''  // Optional identifier
 
-    // General atom attributes
+    // General entity attributes
     this.colour = '#ccc'
 
-    // Expired atoms are removed at the end of the cycle.
+    // Expired entities are removed at the end of the cycle.
     this._expired = false
 
     // Positional data
@@ -37,7 +39,7 @@ export default class Atom {
     // Additional physics
     this._solid = true
     this._movable = true
-    this._mass = 2  // Only matters if solid && movable
+    this._mass = 10  // Only matters if solid && movable
     this._moveAcceleration = this.size * MOVE_ACCELERATION_MODIFIER
     this._moveDeceleration = this.size * MOVE_DECELERATION_MODIFIER
     this._moveMaxSpeed = this.size * MOVE_MAX_SPEED_MODIFIER
@@ -56,7 +58,7 @@ export default class Atom {
 
     // Update position
     const timeCorrection = 1
-    // const timeCorrection = (timeStep / EXPECTED_TIMESTEP)  // Edit: time correction may not be needed since Atoms fix their own moveXY/pushXY values
+    // const timeCorrection = (timeStep / EXPECTED_TIMESTEP)  // Edit: time correction may not be needed since Entities fix their own moveXY/pushXY values
     this.x += (this.moveX + this.pushX) * timeCorrection
     this.y += (this.moveY + this.pushY) * timeCorrection
 
@@ -66,29 +68,32 @@ export default class Atom {
   }
 
   /*
-  Paint atom's hitbox.
+  Paint entity's hitbox.
    */
   paint (layer = 0) {
     const c2d = this._app.canvas2d
     const camera = this._app.camera
+    c2d.save()
+    c2d.translate(camera.x, camera.y)
+    c2d.scale(camera.zoom, camera.zoom)
 
     if (layer === LAYERS.ATOMS_LOWER) {
       c2d.fillStyle = this.colour
       c2d.strokeStyle = '#444'
-      c2d.lineWidth = this.mass
+      c2d.lineWidth = this.mass / MASS_TO_LINEWIDTH_RATIO
 
       // Draw shape outline
       switch (this.shape) {
       case SHAPES.CIRCLE:
         c2d.beginPath()
-        c2d.arc(this.x + camera.x, this.y + camera.y, this.size / 2, 0, 2 * Math.PI)
+        c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
         c2d.closePath()
         c2d.fill()
         this.solid && c2d.stroke()
         break
       case SHAPES.SQUARE:
         c2d.beginPath()
-        c2d.rect(this.x + camera.x - this.size / 2, this.y + camera.y - this.size / 2, this.size, this.size)
+        c2d.rect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size)
         c2d.closePath()
         c2d.fill()
         this.solid && c2d.stroke()
@@ -96,9 +101,9 @@ export default class Atom {
       case SHAPES.POLYGON:
         c2d.beginPath()
         let coords = this.vertices
-        if (coords.length >= 1) c2d.moveTo(coords[coords.length-1].x + camera.x, coords[coords.length-1].y + camera.y)
+        if (coords.length >= 1) c2d.moveTo(coords[coords.length-1].x, coords[coords.length-1].y)
         for (let i = 0 ; i < coords.length ; i++) {
-          c2d.lineTo(coords[i].x + camera.x, coords[i].y + camera.y)
+          c2d.lineTo(coords[i].x, coords[i].y)
         }
         c2d.closePath()
         c2d.fill()
@@ -109,20 +114,22 @@ export default class Atom {
       // Draw anchor point, mostly for debugging
       c2d.strokeStyle = 'rgba(255, 255, 255, 0.5)'
       c2d.beginPath()
-      c2d.arc(this.x + camera.x, this.y + camera.y, 2, 0, 2 * Math.PI)  // Anchor point
+      c2d.arc(this.x, this.y, 2, 0, 2 * Math.PI)  // Anchor point
       if (this.shape === SHAPES.CIRCLE) {  // Direction line
         c2d.moveTo(
-          this.x + this.size * 0.1 * Math.cos(this.rotation) + camera.x,
-          this.y + this.size * 0.1 * Math.sin(this.rotation) + camera.y
+          this.x + this.size * 0.1 * Math.cos(this.rotation),
+          this.y + this.size * 0.1 * Math.sin(this.rotation)
         )
         c2d.lineTo(
-          this.x + this.size * 0.5 * Math.cos(this.rotation) + camera.x,
-          this.y + this.size * 0.5 * Math.sin(this.rotation) + camera.y
+          this.x + this.size * 0.5 * Math.cos(this.rotation),
+          this.y + this.size * 0.5 * Math.sin(this.rotation)
         )
       }
       c2d.stroke()
       c2d.closePath()
     }
+
+    c2d.restore()
   }
 
   /*
@@ -131,7 +138,7 @@ export default class Atom {
    */
 
   /*
-  Applies an effect to this atom. Usually called by another antity.
+  Applies an effect to this entity. Usually called by another antity.
   e.g. a fireball hits this character and applies an "ON FIRE" effect.
    */
   applyEffect (effect, source) {}
@@ -142,7 +149,7 @@ export default class Atom {
    */
 
   /*
-  Triggers when this atom hits/touches/intersects with another.
+  Triggers when this entity hits/touches/intersects with another.
    */
   onCollision (target, collisionCorrection) {
     this.doBounce(target, collisionCorrection)
@@ -156,9 +163,9 @@ export default class Atom {
    */
 
   /*
-  By default, every moving atom decelerates (because we don't exist in a
+  By default, every moving entity decelerates (because we don't exist in a
   perfect vacuum and the game doesn't take place on a slippery ice).
-  Atoms can intentionally override this logic,
+  Entities can intentionally override this logic,
   e.g. "if a hero is walking, ignore deceleration."
    */
   doMoveDeceleration (timeStep) {
@@ -178,7 +185,7 @@ export default class Atom {
   }
 
   /*
-  Every atom has a maximum speed limit. Intentional movement speed and
+  Every entity has a maximum speed limit. Intentional movement speed and
   external force movement speed are treated separately.
    */
   doMaxSpeedLimit (timeStep) {
@@ -200,7 +207,7 @@ export default class Atom {
   }
 
   /*
-  When a solid pushed atom hits another solid atom, momentum is transferred.
+  When a solid pushed entity hits another solid entity, momentum is transferred.
   Usually, this leads to elastic collisions, because that chaos is fun!
    */
   doBounce (target, collisionCorrection) {
@@ -276,6 +283,11 @@ export default class Atom {
 
   set radius (val) { this.size = val * 2 }
 
+  /*
+  Rotation tracks the precise angle the entity is facing, in radians, clockwise
+  positive. 0° (0 rad) is east/right-facing, 90° (+pi/4 rad) is
+  south/down-facing.
+   */
   get rotation () { return this._rotation }
 
   set rotation (val) {
@@ -284,7 +296,11 @@ export default class Atom {
     while (this._rotation <= -Math.PI) { this._rotation += Math.PI * 2 }
   }
 
-  get direction () {  //Get cardinal direction
+  /*
+  Direction tracks the cardinal direction the entity is facing. This is mostly
+  used to match the entity with a up/down/left/right-facing sprite.
+   */
+  get direction () {
     //Favour East and West when rotation is exactly SW, NW, SE or NE.
     if (this._rotation <= Math.PI * 0.25 && this._rotation >= Math.PI * -0.25) { return DIRECTIONS.EAST }
     else if (this._rotation > Math.PI * 0.25 && this._rotation < Math.PI * 0.75) { return DIRECTIONS.SOUTH }
@@ -295,16 +311,16 @@ export default class Atom {
   set direction (val) {
     switch (val) {
       case DIRECTIONS.EAST:
-        this._rotation = ROTATIONS.EAST
+        this.rotation = ROTATIONS.EAST
         break
       case DIRECTIONS.SOUTH:
-        this._rotation = ROTATIONS.SOUTH
+        this.rotation = ROTATIONS.SOUTH
         break
       case DIRECTIONS.WEST:
-        this._rotation = ROTATIONS.WEST
+        this.rotation = ROTATIONS.WEST
         break
       case DIRECTIONS.NORTH:
-        this._rotation = ROTATIONS.NORTH
+        this.rotation = ROTATIONS.NORTH
         break
     }
   }
@@ -329,7 +345,7 @@ export default class Atom {
     return v
   }
 
-  set vertices (val) { console.error('ERROR: Atom.vertices is read only') }
+  set vertices (val) { console.error('ERROR: Entity.vertices is read only') }
 
   get solid () { return this._solid }
   get movable () { return this._movable }
@@ -354,10 +370,10 @@ export default class Atom {
   get pushSpeed () { return Math.sqrt(this.pushX * this.pushX + this.pushY * this.pushY) }
   get pushAngle () { return Math.atan2(this.pushY, this.pushX) }
 
-  set moveSpeed (val) { console.error('ERROR: Atom.moveSpeed is read only') }
-  set moveAngle (val) { console.error('ERROR: Atom.moveAngle is read only') }
-  set pushSpeed (val) { console.error('ERROR: Atom.pushSpeed is read only') }
-  set pushAngle (val) { console.error('ERROR: Atom.pushAngle is read only') }
+  set moveSpeed (val) { console.error('ERROR: Entity.moveSpeed is read only') }
+  set moveAngle (val) { console.error('ERROR: Entity.moveAngle is read only') }
+  set pushSpeed (val) { console.error('ERROR: Entity.pushSpeed is read only') }
+  set pushAngle (val) { console.error('ERROR: Entity.pushAngle is read only') }
 }
 
 const CIRCLE_TO_POLYGON_APPROXIMATOR =
