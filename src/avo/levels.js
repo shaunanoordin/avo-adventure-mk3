@@ -22,7 +22,7 @@ export default class Levels {
     app.camera.target = null
     app.camera.x = 0
     app.camera.y = 0
-    app.camera.zoom = 1.5
+    app.camera.zoom = 1
     app.playerAction = PLAYER_ACTIONS.IDLE
     app.setInteractionMenu(false)
   }

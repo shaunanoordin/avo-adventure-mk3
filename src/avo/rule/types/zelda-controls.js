@@ -98,9 +98,12 @@ export default class ZeldaControls extends Rule {
     const c2d = this._app.canvas2d
     const camera = this._app.camera
     const entities = this._app.entities
-
     const MAX_LINE_OF_SIGHT_DISTANCE = TILE_SIZE * 5
 
+    c2d.save()
+    c2d.translate(camera.x, camera.y)
+    c2d.scale(camera.zoom, camera.zoom)
+    
     // Intended line of sight, i.e. a ray starting from the hero/source Entity.
     const lineOfSight = {
       start: {
@@ -157,8 +160,8 @@ export default class ZeldaControls extends Rule {
 
     // Expected line of sight
     c2d.beginPath()
-    c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
-    c2d.lineTo(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y)
+    c2d.moveTo(lineOfSight.start.x, lineOfSight.start.y)
+    c2d.lineTo(lineOfSight.end.x, lineOfSight.end.y)
     c2d.closePath()
     c2d.strokeStyle = '#c88'
     c2d.lineWidth = 3
@@ -168,8 +171,8 @@ export default class ZeldaControls extends Rule {
 
     // Actual line of sight
     c2d.beginPath()
-    c2d.moveTo(lineOfSight.start.x + camera.x, lineOfSight.start.y + camera.y)
-    c2d.lineTo(actualLineOfSightEndPoint.x + camera.x, actualLineOfSightEndPoint.y + camera.y)
+    c2d.moveTo(lineOfSight.start.x, lineOfSight.start.y)
+    c2d.lineTo(actualLineOfSightEndPoint.x, actualLineOfSightEndPoint.y)
     c2d.closePath()
     c2d.strokeStyle = '#39f'
     c2d.lineWidth = 3
@@ -177,16 +180,18 @@ export default class ZeldaControls extends Rule {
 
     // Expected end of line of sight
     c2d.beginPath()
-    c2d.arc(lineOfSight.end.x + camera.x, lineOfSight.end.y + camera.y, 4, 0, 2 * Math.PI)
+    c2d.arc(lineOfSight.end.x, lineOfSight.end.y, 4, 0, 2 * Math.PI)
     c2d.closePath()
     c2d.fillStyle = '#c88'
     c2d.fill()
 
     // Actual end of line of sight
     c2d.beginPath()
-    c2d.arc(actualLineOfSightEndPoint.x + camera.x, actualLineOfSightEndPoint.y + camera.y, 8, 0, 2 * Math.PI)
+    c2d.arc(actualLineOfSightEndPoint.x, actualLineOfSightEndPoint.y, 8, 0, 2 * Math.PI)
     c2d.closePath()
     c2d.fillStyle = '#39f'
     c2d.fill()
+
+    c2d.restore()
   }
 }
