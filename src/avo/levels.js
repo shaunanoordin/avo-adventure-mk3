@@ -19,9 +19,10 @@ export default class Levels {
     app.hero = undefined
     app.entities = []
     app.clearRules()
-    app.camera = {
-      target: null, x: 0, y: 0,
-    }
+    app.camera.target = null
+    app.camera.x = 0
+    app.camera.y = 0
+    app.camera.zoom = 1.5
     app.playerAction = PLAYER_ACTIONS.IDLE
     app.setInteractionMenu(false)
   }

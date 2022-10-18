@@ -46,6 +46,7 @@ export default class AvO {
       target: null,  // Target entity to follow. If null, camera is static.
       x: 0,
       y: 0,
+      zoom: 1,
     }
 
     this.setupUI()
@@ -188,11 +189,12 @@ export default class AvO {
     // Camera Controls: focus the camera on the target entity, if any.
     // ----------------
     if (camera.target) {
-      camera.x = this.canvasWidth / 2 - camera.target.x
-      camera.y = this.canvasHeight / 2 - camera.target.y
+      camera.x = this.canvasWidth / 2 - camera.target.x * camera.zoom
+      camera.y = this.canvasHeight / 2 - camera.target.y * camera.zoom
     }
 
     c2d.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
+    c2d.resetTransform()
 
     c2d.strokeStyle = 'rgba(128, 128, 128, 0.05)'
     c2d.lineWidth = 2
