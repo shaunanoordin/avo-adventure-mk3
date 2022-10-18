@@ -87,13 +87,13 @@ export default class Hero extends Entity {
       const sizeX = SPRITE_SIZE
       const sizeY = SPRITE_SIZE
 
-      // 1. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
+      c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
+      c2d.scale(SPRITE_SCALE, SPRITE_SCALE)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
+      // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
+
+      // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
       const tgtX = -sizeX / 2  // Align centre of sprite to origin
       const tgtY = -sizeY * 0.75  // Align bottom(-ish) of sprite to origin
-
-      c2d.translate(this.x, this.y)  // 2. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
-      c2d.scale(SPRITE_SCALE, SPRITE_SCALE)  // 3. This ensures the sprite scales with the 'drawing origin' as the anchor point.
-      // c2d.rotate(this.rotation)  // 4. If we wanted to, we could rotate the scprite around the 'drawing origin'.
 
       c2d.drawImage(animationSpriteSheet.img,
         srcX, srcY, sizeX, sizeY,
