@@ -56,9 +56,7 @@ export default class Hero extends Entity {
     const animationSpriteSheet = app.assets.hero
     if (!animationSpriteSheet) return
 
-    c2d.save()
-    c2d.translate(camera.x, camera.y)
-    c2d.scale(camera.zoom, camera.zoom)
+    this._app.applyCameraTransforms()
 
     const SPRITE_SIZE = 48
     const SPRITE_SCALE = 2 *
@@ -101,7 +99,7 @@ export default class Hero extends Entity {
       )
     }
 
-    c2d.restore()
+    this._app.undoCameraTransforms()
   }
 
   /*

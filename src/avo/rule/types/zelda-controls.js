@@ -99,9 +99,7 @@ export default class ZeldaControls extends Rule {
     const entities = this._app.entities
     const MAX_LINE_OF_SIGHT_DISTANCE = TILE_SIZE * 5
 
-    c2d.save()
-    c2d.translate(camera.x, camera.y)
-    c2d.scale(camera.zoom, camera.zoom)
+    this._app.applyCameraTransforms()
 
     // Intended line of sight, i.e. a ray starting from the hero/source Entity.
     const lineOfSight = {
@@ -191,6 +189,6 @@ export default class ZeldaControls extends Rule {
     c2d.fillStyle = '#39f'
     c2d.fill()
 
-    c2d.restore()
+    this._app.undoCameraTransforms()
   }
 }
