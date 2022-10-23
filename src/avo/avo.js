@@ -446,6 +446,23 @@ export default class AvO {
   ----------------------------------------------------------------------------
    */
 
+  addEntity (entity) {
+    if (!entity) return null
+    if (!this.entities.includes(entity)) this.entities.push(entity)
+    return entity
+  }
+
+  removeEntity (entityOrMatchingFn) {
+    if (!entityOrMatchingFn) return
+    if (typeof entityOrMatchingFn === 'function') {
+      this.entities.filter(entityOrMatchingFn).forEach(entity => {
+        entity._expired = true
+      })
+    } else if (this.entities.includes(entityOrMatchingFn)) {
+      entityOrMatchingFn._expired = true
+    }
+  }
+
   addRule (rule) {
     if (!rule) return
     const id = rule._type

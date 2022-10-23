@@ -35,7 +35,7 @@ export default class Enemy extends Entity {
 
       if (!action.acknowledged && progress > 0.5) {
         action.acknowledged = true
-        app.entities.push(new Shot(app, this.x, this.y, this.rotation, this))
+        app.addEntity(new Shot(app, this.x, this.y, this.rotation, this))
       }
 
       action.counter += timeStep
