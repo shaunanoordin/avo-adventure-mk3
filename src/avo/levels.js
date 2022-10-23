@@ -45,23 +45,21 @@ export default class Levels {
   generate_zelda_default () {
     const app = this._app
 
-    app.hero = new Hero(app, 11, 1)
-    app.entities.push(app.hero)
+    app.hero = app.addEntity(new Hero(app, 11, 1))
     app.camera.target = app.hero
 
     app.addRule(new ZeldaControls(app))
 
-    app.entities.push(new Wall(app, 0, 0, 1, 23))  // West Wall
-    app.entities.push(new Wall(app, 22, 0, 1, 23))  // East Wall
-    app.entities.push(new Wall(app, 1, 0, 21, 1))  // North Wall
-    app.entities.push(new Wall(app, 1, 22, 21, 1))  // South Wall
-    app.entities.push(new Wall(app, 3, 2, 3, 1))
-    app.entities.push(new Wall(app, 3, 4, 3, 1))
+    app.addEntity(new Wall(app, 0, 0, 1, 23))  // West Wall
+    app.addEntity(new Wall(app, 22, 0, 1, 23))  // East Wall
+    app.addEntity(new Wall(app, 1, 0, 21, 1))  // North Wall
+    app.addEntity(new Wall(app, 1, 22, 21, 1))  // South Wall
+    app.addEntity(new Wall(app, 3, 2, 3, 1))
+    app.addEntity(new Wall(app, 3, 4, 3, 1))
 
-    app.entities.push(new Ball(app, 8, 6))
+    app.addEntity(new Ball(app, 8, 6))
 
-    const enemy = new Enemy(app, 4, 8)
+    const enemy = app.addEntity(new Enemy(app, 4, 8))
     enemy.rotation = -45 / 180 * Math.PI
-    app.entities.push(enemy)
   }
 }

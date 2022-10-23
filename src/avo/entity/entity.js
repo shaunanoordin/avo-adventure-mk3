@@ -73,9 +73,7 @@ export default class Entity {
   paint (layer = 0) {
     const c2d = this._app.canvas2d
     const camera = this._app.camera
-    c2d.save()
-    c2d.translate(camera.x, camera.y)
-    c2d.scale(camera.zoom, camera.zoom)
+    this._app.applyCameraTransforms()
 
     if (layer === LAYERS.ATOMS_LOWER) {
       c2d.fillStyle = this.colour
@@ -129,7 +127,7 @@ export default class Entity {
       c2d.closePath()
     }
 
-    c2d.restore()
+    this._app.undoCameraTransforms()
   }
 
   /*

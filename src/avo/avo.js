@@ -41,6 +41,7 @@ export default class AvO {
     this.canvas2d = this.html.canvas.getContext('2d')
     this.canvasWidth = width
     this.canvasHeight = height
+    this._canvasHasCameraTransforms = false  // Safety check
 
     this.camera = {
       target: null,  // Target entity to follow. If null, camera is static.
@@ -55,7 +56,7 @@ export default class AvO {
     this.assets = {
       "hero": new ImageAsset('assets/avo-sprites-2022-05-samiel.png'),
       "exampleImage": new ImageAsset('assets/simple-bg.png'),
-      "exampleJson": new JsonAsset('assets/example.json'),
+      // "exampleJson": new JsonAsset('assets/example.json'),
     }
     this.secretAssets = {
       // "secretImage": new ImageAsset('secrets/simple-bg.png'),
@@ -446,6 +447,23 @@ export default class AvO {
   ----------------------------------------------------------------------------
    */
 
+  addEntity (entity) {
+    if (!entity) return null
+    if (!this.entities.includes(entity)) this.entities.push(entity)
+    return entity
+  }
+
+  removeEntity (entityOrMatchingFn) {
+    if (!entityOrMatchingFn) return
+    if (typeof entityOrMatchingFn === 'function') {
+      this.entities.filter(entityOrMatchingFn).forEach(entity => {
+        entity._expired = true
+      })
+    } else if (this.entities.includes(entityOrMatchingFn)) {
+      entityOrMatchingFn._expired = true
+    }
+  }
+
   addRule (rule) {
     if (!rule) return
     const id = rule._type
@@ -454,6 +472,35 @@ export default class AvO {
 
   clearRules () {
     for (const id in this.rules) { delete this.rules[id] }
+  }
+
+  /*
+  Section: Painting
+  ----------------------------------------------------------------------------
+   */
+
+  /*
+  Applies camera transforms to the canvas.
+  Should be run right before drawing an Entity (or etc) so the object is drawn
+  relative to the camera's view.
+   */
+  applyCameraTransforms () {
+    if (this._canvasHasCameraTransforms) throw new Error('Canvas already has camera transforms.')
+    this._canvasHasCameraTransforms = true
+    const c2d = this.canvas2d
+    const camera = this.camera
+    c2d.save()
+    c2d.translate(camera.x, camera.y)
+    c2d.scale(camera.zoom, camera.zoom)
+  }
+
+  /*
+  Removes camera transforms from the canvas.
+   */
+  undoCameraTransforms () {
+    if (!this._canvasHasCameraTransforms) throw new Error('Canvas doesn\'t have camera transforms.')
+    this._canvasHasCameraTransforms = false
+    this.canvas2d.restore()
   }
 
   /*
