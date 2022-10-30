@@ -45,6 +45,10 @@ export default class Entity {
     this._moveMaxSpeed = this.size * MOVE_MAX_SPEED_MODIFIER
     this._pushDeceleration = this.size * PUSH_DECELERATION_MODIFIER
     this._pushMaxSpeed = this.size * PUSH_MAX_SPEED_MODIFIER
+
+    // Additional animation
+    this._spriteDirectionEW = DIRECTIONS.EAST  // Only used for 2-directional toon-style sprites
+    this._spriteDirectionNS = DIRECTIONS.SOUTH
   }
 
   /*
@@ -263,6 +267,45 @@ export default class Entity {
   }
 
   /*
+  Section: Animation
+  ----------------------------------------------------------------------------
+   */
+
+  /*
+  NOTE: An Entity can support two styles of sprite sheets:
+  1. 4-directional (Zelda-style) sprite sheets, which have sprites facing N, S,
+     E, and W for each "action"/"state".
+  2. 2-directional (Toon-style) sprite sheets, which have sprites facing SE and
+     NE for each "action"/"state", which are then mirrored if the entity is
+     facing W.
+   */
+
+  /*
+  Get the directional orientation of the sprite, for a 4-directional
+  (Zelda-style) sprite sheet.
+   */
+  getSpriteDirection () {
+    //Favour East and West when rotation is exactly SW, NW, SE or NE.
+    if (this._rotation <= Math.PI * 0.25 && this._rotation >= Math.PI * -0.25) { return DIRECTIONS.EAST }
+    else if (this._rotation > Math.PI * 0.25 && this._rotation < Math.PI * 0.75) { return DIRECTIONS.SOUTH }
+    else if (this._rotation < Math.PI * -0.25 && this._rotation > Math.PI * -0.75) { return DIRECTIONS.NORTH }
+    else { return DIRECTIONS.WEST }
+  }
+
+  /*
+  Get the directional orientation of the sprite, for a 2-directional
+  (Toon-style) sprite sheet.
+   */
+  getSpriteDirectionEW () { return this._spriteDirectionEW }
+  getSpriteDirectionNS () { return this._spriteDirectionNS }
+
+  /*
+  Get the column/row of the current sprite on the sprite sheet.
+   */
+  getSpriteCol () { return 0 }
+  getSpriteRow () { return 0 }
+
+  /*
   Section: Getters and Setters
   ----------------------------------------------------------------------------
    */
@@ -292,34 +335,18 @@ export default class Entity {
     this._rotation = val
     while (this._rotation > Math.PI) { this._rotation -= Math.PI * 2 }
     while (this._rotation <= -Math.PI) { this._rotation += Math.PI * 2 }
-  }
 
-  /*
-  Direction tracks the cardinal direction the entity is facing. This is mostly
-  used to match the entity with a up/down/left/right-facing sprite.
-   */
-  get direction () {
-    //Favour East and West when rotation is exactly SW, NW, SE or NE.
-    if (this._rotation <= Math.PI * 0.25 && this._rotation >= Math.PI * -0.25) { return DIRECTIONS.EAST }
-    else if (this._rotation > Math.PI * 0.25 && this._rotation < Math.PI * 0.75) { return DIRECTIONS.SOUTH }
-    else if (this._rotation < Math.PI * -0.25 && this._rotation > Math.PI * -0.75) { return DIRECTIONS.NORTH }
-    else { return DIRECTIONS.WEST }
-  }
-
-  set direction (val) {
-    switch (val) {
-      case DIRECTIONS.EAST:
-        this.rotation = ROTATIONS.EAST
-        break
-      case DIRECTIONS.SOUTH:
-        this.rotation = ROTATIONS.SOUTH
-        break
-      case DIRECTIONS.WEST:
-        this.rotation = ROTATIONS.WEST
-        break
-      case DIRECTIONS.NORTH:
-        this.rotation = ROTATIONS.NORTH
-        break
+    // Keep track of sprite direction for 2-directional toon-type sprites
+    if (this._rotation < 0) {
+      this._spriteDirectionNS = DIRECTIONS.NORTH
+    } else if (this._rotation >= 0) {  // Favour south-facing
+      this._spriteDirectionNS = DIRECTIONS.SOUTH
+    }
+    const absRotation = Math.abs(this._rotation)
+    if (this._rotation < Math.PI * 0.5) {
+      this._spriteDirectionEW = DIRECTIONS.EAST
+    } else if (this._rotation > Math.PI * 0.5) {
+      this._spriteDirectionEW = DIRECTIONS.WEST
     }
   }
 

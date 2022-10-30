@@ -80,8 +80,8 @@ export default class Hero extends Entity {
 
     // Draw the sprite
     if (layer === LAYERS.ATOMS_LOWER) {
-      const srcX = this.getAnimationSpriteColumn() * SPRITE_SIZE
-      const srcY = this.getAnimationSpriteRow() * SPRITE_SIZE
+      const srcX = this.getSpriteCol() * SPRITE_SIZE
+      const srcY = this.getSpriteRow() * SPRITE_SIZE
       const sizeX = SPRITE_SIZE
       const sizeY = SPRITE_SIZE
 
@@ -259,8 +259,8 @@ export default class Hero extends Entity {
   Section: Animation
   ----------------------------------------------------------------------------
    */
-  getAnimationSpriteColumn () {
-    switch (this.direction) {
+  getSpriteCol () {
+    switch (this.getSpriteDirection()) {
       case DIRECTIONS.NORTH: return 1
       case DIRECTIONS.EAST: return 2
       case DIRECTIONS.SOUTH: return 0
@@ -269,7 +269,7 @@ export default class Hero extends Entity {
     return 0
   }
 
-  getAnimationSpriteRow () {
+  getSpriteRow () {
     const action = this.action
     if (!action) return 0
 
