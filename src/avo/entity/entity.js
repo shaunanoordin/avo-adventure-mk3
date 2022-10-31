@@ -343,9 +343,9 @@ export default class Entity {
       this._spriteDirectionNS = DIRECTIONS.SOUTH
     }
     const absRotation = Math.abs(this._rotation)
-    if (this._rotation < Math.PI * 0.5) {
+    if (absRotation < Math.PI * 0.5) {
       this._spriteDirectionEW = DIRECTIONS.EAST
-    } else if (this._rotation > Math.PI * 0.5) {
+    } else if (absRotation > Math.PI * 0.5) {
       this._spriteDirectionEW = DIRECTIONS.WEST
     }
   }
