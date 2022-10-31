@@ -2,7 +2,7 @@ import Entity from '@avo/entity'
 import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants'
 
 const INVULNERABILITY_WINDOW = 3000
-const MOVE_ACTION_CYCLE_DURATION = 1000
+const MOVE_ACTION_CYCLE_DURATION = 500
 
 export default class Hero extends Entity {
   constructor (app, col = 0, row = 0) {
@@ -18,6 +18,8 @@ export default class Hero extends Entity {
 
     this.health = 3
     this.invulnerability = 0  // Invulnerability time
+
+    this.spriteStyle = (Math.random() < 0.5) ? 'zelda' : 'toon'
   }
 
   /*
@@ -53,12 +55,15 @@ export default class Hero extends Entity {
 
     const c2d = app.canvas2d
     const camera = app.camera
-    const animationSpriteSheet = app.assets.hero
+    const animationSpriteSheet = (this.spriteStyle === 'zelda')
+      ? app.assets['hero-4dir']
+      : app.assets['hero-2dir']
     if (!animationSpriteSheet) return
 
     this._app.applyCameraTransforms()
 
-    const SPRITE_SIZE = 48
+    const SPRITE_SIZE = (this.spriteStyle === 'zelda') ? 48 : 32
+    const FLIP_SPRITE = (this.spriteStyle === 'toon' && this.getSpriteDirectionEW() === DIRECTIONS.WEST) ? -1 : 1
     const SPRITE_SCALE = 2 *
       (Math.min((this.health / 3), 1) * 0.5 + 0.5)  // Shrink after taking damage
 
@@ -86,12 +91,14 @@ export default class Hero extends Entity {
       const sizeY = SPRITE_SIZE
 
       c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
-      c2d.scale(SPRITE_SCALE, SPRITE_SCALE)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
+      c2d.scale(SPRITE_SCALE * FLIP_SPRITE, SPRITE_SCALE)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
       // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
 
       // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
       const tgtX = -sizeX / 2  // Align centre of sprite to origin
-      const tgtY = -sizeY * 0.75  // Align bottom(-ish) of sprite to origin
+      const tgtY = (this.spriteStyle === 'zelda')
+        ? -sizeY * 0.75  // Align bottom(-ish) of sprite to origin
+        : -sizeY * 7/8
 
       c2d.drawImage(animationSpriteSheet.img,
         srcX, srcY, sizeX, sizeY,
@@ -260,11 +267,15 @@ export default class Hero extends Entity {
   ----------------------------------------------------------------------------
    */
   getSpriteCol () {
-    switch (this.getSpriteDirection()) {
-      case DIRECTIONS.NORTH: return 1
-      case DIRECTIONS.EAST: return 2
-      case DIRECTIONS.SOUTH: return 0
-      case DIRECTIONS.WEST: return 3
+    if (this.spriteStyle === 'zelda') {
+      switch (this.getSpriteDirection()) {
+        case DIRECTIONS.NORTH: return 1
+        case DIRECTIONS.EAST: return 2
+        case DIRECTIONS.SOUTH: return 0
+        case DIRECTIONS.WEST: return 3
+      }
+    } else if (this.spriteStyle === 'toon') {
+      return (this.getSpriteDirectionNS() === DIRECTIONS.NORTH) ? 1 : 0
     }
     return 0
   }
@@ -273,18 +284,24 @@ export default class Hero extends Entity {
     const action = this.action
     if (!action) return 0
 
-    if (action.name === 'move') {
-      const progress = action.counter / MOVE_ACTION_CYCLE_DURATION
-      if (progress < 0.3) return 2
-      else if (progress < 0.5) return 1
-      else if (progress < 0.8) return 3
-      else if (progress < 1) return 1
-
-    } else if (action.name === 'dash') {
-      if (action.state === 'windup') return 4
-      else if (action.state === 'execution') return 1
-      else if (action.state === 'winddown') return 1
-
+    if (this.spriteStyle === 'zelda') {
+      if (action.name === 'move') {
+        const progress = action.counter / MOVE_ACTION_CYCLE_DURATION
+        if (progress < 0.3) return 2
+        else if (progress < 0.5) return 1
+        else if (progress < 0.8) return 3
+        else if (progress < 1) return 1
+      } else if (action.name === 'dash') {
+        if (action.state === 'windup') return 4
+        else if (action.state === 'execution') return 1
+        else if (action.state === 'winddown') return 1
+      }
+    } else if (this.spriteStyle === 'toon') {
+      if (action.name === 'move') {
+        const progress = action.counter / (MOVE_ACTION_CYCLE_DURATION)
+        if (progress < 0.5) return 2
+        else return 1
+      }
     }
 
     return 0
