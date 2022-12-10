@@ -8,7 +8,13 @@ export default class Interaction {
   load (div) {
     const menu = document.createElement('div')
     menu.innerHTML = `
-      <p>Hello, this is an example of an interaction menu!</p>
+      <h3>Example Interaction Menu</h3>
+      <p>Debug Controls:</p>
+      <ul>
+        <li><b>[Z]</b> Open example interaction menu</li>
+        <li><b>[X]</b> Dash</li>
+        <li><b>[C]</b> Switch sprite style</li>
+      </ul>
     `
 
     const closeButton = document.createElement('button')
