@@ -438,14 +438,21 @@ export default class AvO {
     const isFullscreen = document.fullscreenElement
     if (!isFullscreen) {
       if (this.html.main.requestFullscreen) {
-        this.html.main.className = 'fullscreen'
-        this.html.main.requestFullscreen()
+        this.html.main.requestFullscreen().then(() => {
+          this.html.main.className = 'fullscreen'
+          this.updateUI()
+        }).catch(err => {
+          console.error('requestFullscreen() error: ', err)
+        })
       }
     } else {
-      document.exitFullscreen?.()
-      this.html.main.className = ''
+      document.exitFullscreen?.().then(() => {
+        this.html.main.className = ''
+        this.updateUI()
+      }).catch(err => {
+        console.error('exitFullscreen() error: ', err)
+      })
     }
-    this.updateUI()
   }
 
   buttonReload_onClick () {
