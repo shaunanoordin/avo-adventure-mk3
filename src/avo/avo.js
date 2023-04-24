@@ -441,12 +441,16 @@ export default class AvO {
         this.html.main.requestFullscreen().then(() => {
           this.html.main.className = 'fullscreen'
           this.updateUI()
+        }).catch(err => {
+          console.error('requestFullscreen() error: ', err)
         })
       }
     } else {
       document.exitFullscreen?.().then(() => {
         this.html.main.className = ''
         this.updateUI()
+      }).catch(err => {
+        console.error('exitFullscreen() error: ', err)
       })
     }
   }
