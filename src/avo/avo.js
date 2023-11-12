@@ -2,6 +2,7 @@ import {
   TILE_SIZE,
   PLAYER_ACTIONS,
   MIN_LAYER, MAX_LAYER,
+  EXPECTED_TIMESTEP,
 } from '@avo/constants'
 import Physics from '@avo/physics'
 import Levels from '@avo/levels'
