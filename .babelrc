@@ -1,4 +1,4 @@
 {
-  "plugins": ["@babel/plugin-proposal-optional-chaining"],
+  "plugins": ["@babel/plugin-transform-optional-chaining"],
   "presets": ["@babel/preset-env"]
 }
