@@ -1,5 +1,7 @@
 import { PLAYER_ACTIONS } from '@avo/constants'
 
+import ImageAsset from '@avo/image-asset'
+
 import Hero from '@avo/entity/types/hero'
 import Wall from '@avo/entity/types/wall'
 import Ball from '@avo/entity/types/ball'
@@ -10,6 +12,18 @@ import ZeldaControls from '@avo/rule/types/zelda-controls'
 export default class Story {
   constructor (app) {
     this._app = app
+  }
+
+  get assets () {
+    return {
+      "hero-4dir": new ImageAsset('assets/avo-sprites-2022-05-samiel.png'),
+      "hero-2dir": new ImageAsset('assets/avo-sprites-2022-10-samiel-2dir.png'),
+    }
+  }
+
+  start () {
+    this.reset()
+    this.generate_zelda_default()
   }
 
   reset () {
@@ -23,11 +37,6 @@ export default class Story {
     app.camera.zoom = 1
     app.playerAction = PLAYER_ACTIONS.IDLE
     app.setInteractionMenu(false)
-  }
-
-  start () {
-    this.reset()
-    this.generate_zelda_default()
   }
 
   reload () {

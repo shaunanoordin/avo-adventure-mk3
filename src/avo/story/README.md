@@ -9,3 +9,5 @@ the game, and generate a dungeon for the players to explore.
 - `Story.js` provides the base code for all Story types.
 - `.start()` runs when all assets have loaded and the AvO engine is ready to
   start the game.
+- `.assets` (read-only) defines all the assets that need to be loaded before the
+  game can start.
