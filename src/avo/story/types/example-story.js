@@ -1,4 +1,7 @@
-import { PLAYER_ACTIONS, DIRECTIONS } from '@avo/constants'
+import { PLAYER_ACTIONS } from '@avo/constants'
+
+import Story from '../story'
+import ImageAsset from '@avo/image-asset'
 
 import Hero from '@avo/entity/types/hero'
 import Wall from '@avo/entity/types/wall'
@@ -6,37 +9,22 @@ import Ball from '@avo/entity/types/ball'
 import Enemy from '@avo/entity/types/enemy'
 
 import ZeldaControls from '@avo/rule/types/zelda-controls'
-import CNY2022Controls from '@avo/rule/types/cny2022-controls'
 
-export default class Levels {
+export default class ExampleStory extends Story {
   constructor (app) {
-    this._app = app
-    this.current = 0
+    super(app)
   }
 
-  reset () {
-    const app = this._app
-    app.hero = undefined
-    app.entities = []
-    app.clearRules()
-    app.camera.target = null
-    app.camera.x = 0
-    app.camera.y = 0
-    app.camera.zoom = 1
-    app.playerAction = PLAYER_ACTIONS.IDLE
-    app.setInteractionMenu(false)
+  get assets () {
+    return {
+      "hero-4dir": new ImageAsset('assets/avo-sprites-2022-05-samiel.png'),
+      "hero-2dir": new ImageAsset('assets/avo-sprites-2022-10-samiel-2dir.png'),
+    }
   }
 
-  load (level = 0) {
-    const app = this._app
-    this.current = level
-
-    this.reset()
+  start () {
+    super.start()
     this.generate_zelda_default()
-  }
-
-  reload () {
-    this.load(this.current)
   }
 
   /*

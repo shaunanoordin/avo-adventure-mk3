@@ -5,20 +5,16 @@ import {
   EXPECTED_TIMESTEP,
 } from '@avo/constants'
 import Physics from '@avo/physics'
-import Levels from '@avo/levels'
-import ImageAsset from '@avo/image-asset'
-import JsonAsset from '@avo/json-asset'
+import ExampleStory from '@avo/story/types/example-story'
 import Interaction from '@avo/interaction'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false
-const STARTING_LEVEL = (Number.isInteger(parseInt(searchParams.get('level'))))
-  ? parseInt(searchParams.get('level')) - 1
-  : 0
 
 export default class AvO {
   constructor (args = {}) {
     const {
+      story = ExampleStory,
       width = 24 * TILE_SIZE,  // Canvas width
       height = 16 * TILE_SIZE,  // Canvas height
     } = args
@@ -54,21 +50,14 @@ export default class AvO {
     this.setupUI()
 
     this.initialised = false
-    this.assets = {
-      "hero-4dir": new ImageAsset('assets/avo-sprites-2022-05-samiel.png'),
-      "hero-2dir": new ImageAsset('assets/avo-sprites-2022-10-samiel-2dir.png'),
-      "exampleImage": new ImageAsset('assets/simple-bg.png'),
-      // "exampleJson": new JsonAsset('assets/example.json'),
-    }
-    this.secretAssets = {
-      // "secretImage": new ImageAsset('secrets/simple-bg.png'),
-      // "secretJson": new JsonAsset('secrets/example.json'),
-    }
 
     this.hero = null
     this.entities = []
     this.rules = {}
-    this.levels = new Levels(this)
+    
+    this.story = new story(this)
+    this.assets = this.story.assets || {}
+    this.secretAssets = {}
 
     this.playerAction = PLAYER_ACTIONS.IDLE
     this.playerInput = {
@@ -123,7 +112,7 @@ export default class AvO {
       // Let's go!
       this.initialised = true
       this.showUI()
-      this.levels.load(STARTING_LEVEL)
+      this.story.start()
     }
   }
 
@@ -464,7 +453,7 @@ export default class AvO {
   }
 
   buttonReload_onClick () {
-    this.levels.reload()
+    this.story.reload()
   }
 
   /*
