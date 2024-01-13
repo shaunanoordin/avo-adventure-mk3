@@ -5,7 +5,7 @@ import {
   EXPECTED_TIMESTEP,
 } from '@avo/constants'
 import Physics from '@avo/physics'
-import Story from '@avo/story'
+import ExampleStory from '@avo/story/types/example-story'
 import Interaction from '@avo/interaction'
 
 const searchParams = new URLSearchParams(window.location.search)
@@ -14,7 +14,7 @@ const DEBUG = searchParams.get('debug') || false
 export default class AvO {
   constructor (args = {}) {
     const {
-      story = Story,
+      story = ExampleStory,
       width = 24 * TILE_SIZE,  // Canvas width
       height = 16 * TILE_SIZE,  // Canvas height
     } = args
