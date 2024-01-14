@@ -1,4 +1,4 @@
-import { PLAYER_ACTIONS } from '@avo/constants'
+import { POINTER_STATES } from '@avo/constants'
 
 export default class Story {
   constructor (app) {
@@ -22,7 +22,7 @@ export default class Story {
     app.camera.x = 0
     app.camera.y = 0
     app.camera.zoom = 1
-    app.playerAction = PLAYER_ACTIONS.IDLE
+    app.resetPlayerInput()
     app.setInteractionMenu(false)
   }
 

@@ -1,6 +1,6 @@
 import {
   TILE_SIZE,
-  PLAYER_ACTIONS,
+  POINTER_STATES,
   MIN_LAYER, MAX_LAYER,
   EXPECTED_TIMESTEP,
 } from '@avo/constants'
@@ -59,18 +59,9 @@ export default class AvO {
     this.assets = this.story.assets || {}
     this.secretAssets = {}
 
-    this.playerAction = PLAYER_ACTIONS.IDLE
-    this.playerInput = {
-      // Mouse/touchscreen input
-      pointerStart: undefined,
-      pointerCurrent: undefined,
-      pointerEnd: undefined,
-
-      // Keys that are currently being pressed.
-      // keysPressed = { key: { duration, acknowledged } }
-      keysPressed: {},
-    }
-
+    this.playerInput = {}
+    this.resetPlayerInput()
+    
     this.timeAccumulator = 0
     this.prevTime = null
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
@@ -236,8 +227,8 @@ export default class AvO {
     // Draw player input
     // ----------------
     if (
-      this.playerAction === PLAYER_ACTIONS.POINTER_DOWN
-      && this.hero
+      this.hero
+      && this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN
       && this.playerInput.pointerCurrent
     ) {
 
@@ -351,7 +342,7 @@ export default class AvO {
   onPointerDown (e) {
     const coords = getEventCoords(e, this.html.canvas)
 
-    this.playerAction = PLAYER_ACTIONS.POINTER_DOWN
+    this.playerInput.pointerState = POINTER_STATES.POINTER_DOWN
     this.playerInput.pointerStart = coords
     this.playerInput.pointerCurrent = coords
     this.playerInput.pointerEnd = undefined
@@ -371,9 +362,9 @@ export default class AvO {
   onPointerUp (e) {
     const coords = getEventCoords(e, this.html.canvas)
 
-    if (this.playerAction === PLAYER_ACTIONS.POINTER_DOWN) {
+    if (this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN) {
       this.playerInput.pointerEnd = coords
-      this.playerAction = PLAYER_ACTIONS.IDLE
+      this.playerInput.pointerState = POINTER_STATES.IDLE
     }
 
     return stopEvent(e)
@@ -454,6 +445,20 @@ export default class AvO {
 
   buttonReload_onClick () {
     this.story.reload()
+  }
+
+  resetPlayerInput () {
+    this.playerInput = {
+      // Mouse/touchscreen input
+      pointerState: POINTER_STATES.IDLE,
+      pointerStart: undefined,
+      pointerCurrent: undefined,
+      pointerEnd: undefined,
+
+      // Keys that are currently being pressed.
+      // keysPressed = { key: { duration, acknowledged } }
+      keysPressed: {},
+    }
   }
 
   /*

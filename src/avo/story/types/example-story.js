@@ -1,4 +1,4 @@
-import { PLAYER_ACTIONS } from '@avo/constants'
+import { POINTER_STATES } from '@avo/constants'
 
 import Story from '../story'
 import ImageAsset from '@avo/image-asset'

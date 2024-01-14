@@ -33,7 +33,7 @@ export const DIRECTIONS = {
   NORTH: 3,
 }
 
-export const PLAYER_ACTIONS = {
+export const POINTER_STATES = {
   IDLE: 'idle',  // Player isn't doing anything
   POINTER_DOWN: 'pointer down',  // Player is actively interacting with the canvas.
 }
