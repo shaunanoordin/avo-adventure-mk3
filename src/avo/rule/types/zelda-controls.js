@@ -1,6 +1,6 @@
 import Rule from '@avo/rule'
 import Physics from '@avo/physics'
-import { EXPECTED_TIMESTEP, LAYERS, TILE_SIZE } from '@avo/constants'
+import { LAYERS, POINTER_DEADZONE_RADIUS, POINTER_STATES, TILE_SIZE } from '@avo/constants'
 
 /*
 Standard player controls for top-down adventure games.
@@ -17,16 +17,38 @@ export default class ZeldaControls extends Rule {
     super.play(timeStep)
 
     if (hero) {
-      const keysPressed = app.playerInput.keysPressed
+      const {
+        keysPressed,
+        pointerCurrent,
+        pointerStart,
+        pointerState,
+      } = app.playerInput
       let intent = undefined
       let directionX = 0
       let directionY = 0
 
-      if (keysPressed['ArrowRight']) directionX++
-      if (keysPressed['ArrowDown']) directionY++
-      if (keysPressed['ArrowLeft']) directionX--
-      if (keysPressed['ArrowUp']) directionY--
+      if (pointerState === POINTER_STATES.POINTER_DOWN) {
+        // Get pointer input if there's any.
 
+        const distX = pointerCurrent.x - pointerStart.x
+        const distY = pointerCurrent.y - pointerStart.y
+        const pointerDistance = Math.sqrt(distX * distX + distY * distY)
+        // const movementAngle = Math.atan2(distY, distX)
+
+        if (pointerDistance > POINTER_DEADZONE_RADIUS) {
+          directionX = distX / pointerDistance
+          directionY = distY / pointerDistance
+        }
+
+      } else {
+        // Otherwise, check for keyboard input.
+
+        if (keysPressed['ArrowRight']) directionX++
+        if (keysPressed['ArrowDown']) directionY++
+        if (keysPressed['ArrowLeft']) directionX--
+        if (keysPressed['ArrowUp']) directionY--
+      }
+      
       if (
         (keysPressed['x'] && !keysPressed['x'].acknowledged)
         || (keysPressed['X'] && !keysPressed['X'].acknowledged)

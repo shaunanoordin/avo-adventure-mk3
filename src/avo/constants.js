@@ -38,8 +38,12 @@ export const POINTER_STATES = {
   POINTER_DOWN: 'pointer down',  // Player is actively interacting with the canvas.
 }
 
+// Distance from its starting position that the pointer has to move, before a
+// 'move' command is issued.
+export const POINTER_DEADZONE_RADIUS = 16
+
 /*
-The paint() step of the core engine, each Entity, and each Rule can paint
+The paint() step (of the core engine, each Entity, and each Rule) can paint
 information in different visual layers.
  */
 export const LAYERS = {
