@@ -89,14 +89,12 @@ export default class Entity {
       case SHAPES.CIRCLE:
         c2d.beginPath()
         c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
-        c2d.closePath()
         c2d.fill()
         this.solid && c2d.stroke()
         break
       case SHAPES.SQUARE:
         c2d.beginPath()
         c2d.rect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size)
-        c2d.closePath()
         c2d.fill()
         this.solid && c2d.stroke()
         break
@@ -128,7 +126,6 @@ export default class Entity {
         )
       }
       c2d.stroke()
-      c2d.closePath()
     }
 
     this._app.undoCameraTransforms()

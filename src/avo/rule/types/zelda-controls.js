@@ -221,10 +221,8 @@ export default class ZeldaControls extends Rule {
     c2d.beginPath()
     c2d.moveTo(lineOfSight.start.x, lineOfSight.start.y)
     c2d.lineTo(lineOfSight.end.x, lineOfSight.end.y)
-    c2d.closePath()
-    c2d.strokeStyle = '#c88'
+    c2d.strokeStyle = '#c08080'
     c2d.lineWidth = 3
-    c2d.setLineDash([5, 5])
     c2d.stroke()
     c2d.setLineDash([])
 
@@ -232,23 +230,20 @@ export default class ZeldaControls extends Rule {
     c2d.beginPath()
     c2d.moveTo(lineOfSight.start.x, lineOfSight.start.y)
     c2d.lineTo(actualLineOfSightEndPoint.x, actualLineOfSightEndPoint.y)
-    c2d.closePath()
-    c2d.strokeStyle = '#39f'
+    c2d.strokeStyle = '#3399ff'
     c2d.lineWidth = 3
     c2d.stroke()
 
     // Expected end of line of sight
     c2d.beginPath()
     c2d.arc(lineOfSight.end.x, lineOfSight.end.y, 4, 0, 2 * Math.PI)
-    c2d.closePath()
-    c2d.fillStyle = '#c88'
+    c2d.fillStyle = '#c08080'
     c2d.fill()
 
     // Actual end of line of sight
     c2d.beginPath()
     c2d.arc(actualLineOfSightEndPoint.x, actualLineOfSightEndPoint.y, 8, 0, 2 * Math.PI)
-    c2d.closePath()
-    c2d.fillStyle = '#39f'
+    c2d.fillStyle = '#3399ff'
     c2d.fill()
 
     this._app.undoCameraTransforms()
