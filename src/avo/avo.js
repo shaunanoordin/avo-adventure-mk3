@@ -3,6 +3,8 @@ import {
   POINTER_STATES,
   MIN_LAYER, MAX_LAYER,
   EXPECTED_TIMESTEP,
+  POINTER_DEADZONE_RADIUS,
+  POINTER_TAP_DURATION,
 } from '@avo/constants'
 import Physics from '@avo/physics'
 import ExampleStory from '@avo/story/types/example-story'
@@ -126,6 +128,7 @@ export default class AvO {
       while (this.timeAccumulator >= EXPECTED_TIMESTEP) {
         this.play(EXPECTED_TIMESTEP)
         this.timeAccumulator -= EXPECTED_TIMESTEP
+        // TODO: add safety counter to prevent excessively long while() loops.
       }
       // Paint whenever possible
       this.paint()
@@ -167,6 +170,11 @@ export default class AvO {
     Object.keys(this.playerInput.keysPressed).forEach(key => {
       if (this.playerInput.keysPressed[key]) this.playerInput.keysPressed[key].duration += timeStep
     })
+
+    // Increment the duration of the pointer being active
+    if (this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN) {
+      this.playerInput.pointerDownDuration += timeStep
+    }
   }
 
   /*
@@ -323,10 +331,14 @@ export default class AvO {
   onPointerDown (e) {
     const coords = getEventCoords(e, this.html.canvas)
 
+    // Initialise
     this.playerInput.pointerState = POINTER_STATES.POINTER_DOWN
     this.playerInput.pointerStart = coords
     this.playerInput.pointerCurrent = coords
     this.playerInput.pointerEnd = undefined
+
+    this.playerInput.pointerTapOrHold = true
+    this.playerInput.pointerDownDuration = 0
 
     this.html.main.focus()
 
@@ -335,7 +347,19 @@ export default class AvO {
 
   onPointerMove (e) {
     const coords = getEventCoords(e, this.html.canvas)
+
     this.playerInput.pointerCurrent = coords
+
+    // If the pointer never moves far from the initial position, then the
+    // pointer interaction is considered a tap or hold.
+    if (this.playerInput.pointerTapOrHold) {
+      const distX = this.playerInput.pointerCurrent.x - this.playerInput.pointerStart.x
+      const distY = this.playerInput.pointerCurrent.y - this.playerInput.pointerStart.y
+      const pointerDistance = Math.sqrt(distX * distX + distY * distY)
+      if (pointerDistance > POINTER_DEADZONE_RADIUS) {
+        this.playerInput.pointerTapOrHold = false
+      }
+    }
 
     return stopEvent(e)
   }
@@ -344,6 +368,15 @@ export default class AvO {
     const coords = getEventCoords(e, this.html.canvas)
 
     if (this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN) {
+      // Is the pointer action a tap or hold action?
+      if (this.playerInput.pointerTapOrHold) {
+        if (this.playerInput.pointerDownDuration <= POINTER_TAP_DURATION) {
+          console.log('+++ tap')
+        } else {
+          console.log(`+++ hold: ${this.playerInput.pointerDownDuration}`)
+        }
+      }
+
       this.playerInput.pointerEnd = coords
       this.playerInput.pointerState = POINTER_STATES.IDLE
     }
@@ -430,13 +463,18 @@ export default class AvO {
 
   resetPlayerInput () {
     this.playerInput = {
-      // Mouse/touchscreen input
+      // Pointer (mouse/touchscreen) input
+      // pointerStart/pointerCurrent/pointerEnd = { x, y } 
       pointerState: POINTER_STATES.IDLE,
       pointerStart: undefined,
       pointerCurrent: undefined,
       pointerEnd: undefined,
 
-      // Keys that are currently being pressed.
+      // Pointer metadata
+      pointerTapOrHold: true, // A pointer interaction is a tap or hold if the pointer never travels far from its initial position (i.e. never left the deadzone).
+      pointerDownDuration: 0,
+
+      // Keyboard input
       // keysPressed = { key: { duration, acknowledged } }
       keysPressed: {},
     }
