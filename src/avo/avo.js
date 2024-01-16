@@ -55,8 +55,8 @@ export default class AvO {
     this.entities = []
     this.rules = {}
     
-    this.story = new story(this)
-    this.assets = this.story.assets || {}
+    this.story = (story) ? new story(this) : undefined
+    this.assets = this.story?.assets || {}
     this.secretAssets = {}
 
     this.playerInput = {}
@@ -103,7 +103,7 @@ export default class AvO {
       // Let's go!
       this.initialised = true
       this.showUI()
-      this.story.start()
+      this.story?.start()
     }
   }
 
@@ -425,7 +425,7 @@ export default class AvO {
   }
 
   buttonReload_onClick () {
-    this.story.reload()
+    this.story?.reload()
   }
 
   resetPlayerInput () {
