@@ -75,38 +75,78 @@ export default class ZeldaControls extends Rule {
 
   paint (layer = 0) {
     const hero = this._app.hero
-    const c2d = this._app.canvas2d
 
     if (layer === LAYERS.HUD) {
-      // Draw UI data
-      // ----------------
-      const X_OFFSET = TILE_SIZE * 1.5
-      const Y_OFFSET = TILE_SIZE * -1.0
-      const LEFT = X_OFFSET
-      const RIGHT = this._app.canvasWidth - X_OFFSET
-      const BOTTOM = this._app.canvasHeight + Y_OFFSET
-      c2d.font = '2em Source Code Pro'
-      c2d.textBaseline = 'bottom'
-      c2d.lineWidth = 8
-
-      const health = Math.max(hero?.health, 0) || 0
-      let text = '❤️'.repeat(health)
-      c2d.textAlign = 'left'
-      c2d.strokeStyle = '#fff'
-      c2d.strokeText(text, LEFT, BOTTOM)
-      c2d.fillStyle = '#c44'
-      c2d.fillText(text, LEFT, BOTTOM)
-
-      text = hero?.action?.name + ' (' + hero?.moveSpeed.toFixed(2) + ')'
-      c2d.textAlign = 'right'
-      c2d.strokeStyle = '#fff'
-      c2d.strokeText(text, RIGHT, BOTTOM)
-      c2d.fillStyle = '#c44'
-      c2d.fillText(text, RIGHT, BOTTOM)
-      // ----------------
+      this.paintUIData()
+      this.paintPointerInput()
 
     } else if (layer === LAYERS.BACKGROUND) {
       this.paintLineOfSight(hero)
+    }
+  }
+  
+  /*
+  Draw UI data, such as Hero health.
+   */
+  paintUIData () {
+    const c2d = this._app.canvas2d
+    const hero = this._app.hero
+
+    const X_OFFSET = TILE_SIZE * 1.5
+    const Y_OFFSET = TILE_SIZE * -1.0
+    const LEFT = X_OFFSET
+    const RIGHT = this._app.canvasWidth - X_OFFSET
+    const BOTTOM = this._app.canvasHeight + Y_OFFSET
+    c2d.font = '2em Source Code Pro'
+    c2d.textBaseline = 'bottom'
+    c2d.lineWidth = 8
+
+    const health = Math.max(hero?.health, 0) || 0
+    let text = '❤️'.repeat(health)
+    c2d.textAlign = 'left'
+    c2d.strokeStyle = '#fff'
+    c2d.strokeText(text, LEFT, BOTTOM)
+    c2d.fillStyle = '#c44'
+    c2d.fillText(text, LEFT, BOTTOM)
+
+    text = hero?.action?.name + ' (' + hero?.moveSpeed.toFixed(2) + ')'
+    c2d.textAlign = 'right'
+    c2d.strokeStyle = '#fff'
+    c2d.strokeText(text, RIGHT, BOTTOM)
+    c2d.fillStyle = '#c44'
+    c2d.fillText(text, RIGHT, BOTTOM)
+  }
+
+  /*
+  Draw pointer input, if any. This helps players get visual feedback on their
+  touchscreens.
+   */
+  paintPointerInput () {
+    const c2d = this._app.canvas2d
+    const {
+      pointerCurrent,
+      pointerStart,
+      pointerState,
+    } = this._app.playerInput
+    const START_POINT_RADIUS = TILE_SIZE * 1, CURRENT_POINT_RADIUS = TILE_SIZE * 0.5
+    
+    if (pointerState === POINTER_STATES.POINTER_DOWN) {
+      c2d.lineWidth = Math.floor(Math.min(TILE_SIZE * 0.125, 2))
+      c2d.fillStyle = '#80808080'
+      c2d.strokeStyle = '#80808080'
+
+      c2d.beginPath()
+      c2d.arc(pointerStart.x, pointerStart.y, START_POINT_RADIUS, 0, 2 * Math.PI)
+      c2d.stroke()
+
+      c2d.beginPath()
+      c2d.arc(pointerCurrent.x, pointerCurrent.y, CURRENT_POINT_RADIUS, 0, 2 * Math.PI)
+      c2d.fill()
+
+      c2d.beginPath()
+      c2d.moveTo(pointerStart.x, pointerStart.y)
+      c2d.lineTo(pointerCurrent.x, pointerCurrent.y)
+      c2d.stroke()
     }
   }
 

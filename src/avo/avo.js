@@ -223,25 +223,6 @@ export default class AvO {
       for (const id in this.rules) { this.rules[id].paint(layer) }
     }
     // ----------------
-
-    // Draw player input
-    // ----------------
-    if (
-      this.hero
-      && this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN
-      && this.playerInput.pointerCurrent
-    ) {
-
-      const inputCoords = this.playerInput.pointerCurrent
-
-      c2d.strokeStyle = '#888'
-      c2d.lineWidth = TILE_SIZE / 8
-
-      c2d.beginPath()
-      c2d.arc(inputCoords.x, inputCoords.y, TILE_SIZE, 0, 2 * Math.PI)
-      c2d.stroke()
-    }
-    // ----------------
   }
 
   /*
