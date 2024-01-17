@@ -8,6 +8,8 @@ export default class Rule {
     this._expired = false
   }
 
+  deconstructor () {}
+
   /*
   Section: General Logic
   ----------------------------------------------------------------------------

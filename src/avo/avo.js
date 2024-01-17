@@ -155,10 +155,16 @@ export default class AvO {
     this.entities.forEach(entity => entity.play(timeStep))
     this.checkCollisions(timeStep)
 
-    // Cleanup
+    // Cleanup: entities
+    this.entities.filter(entity => entity._expired).forEach(entity => entity.deconstructor())
     this.entities = this.entities.filter(entity => !entity._expired)
+
+    // Cleanup: rules
     for (const id in this.rules) {
-      if (this.rules[id]._expired) delete this.rules[id]
+      if (this.rules[id]._expired) {
+        this.rules[id].deconstructor()
+        delete this.rules[id]
+      }
     }
 
     // Sort Entities along the y-axis, for paint()/rendering purposes.
@@ -512,7 +518,10 @@ export default class AvO {
   }
 
   clearRules () {
-    for (const id in this.rules) { delete this.rules[id] }
+    for (const id in this.rules) {
+      this.rules[id].deconstructor()
+      delete this.rules[id]
+    }
   }
 
   /*

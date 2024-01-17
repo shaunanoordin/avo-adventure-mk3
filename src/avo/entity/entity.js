@@ -51,6 +51,8 @@ export default class Entity {
     this._spriteDirectionNS = DIRECTIONS.SOUTH
   }
 
+  deconstructor () {}
+
   /*
   Section: General Logic
   ----------------------------------------------------------------------------
