@@ -123,6 +123,10 @@ export default class AvO {
     this.prevTime = time
     this.timeAccumulator += timeStep
 
+    // Sanity/safety check: timeStep can be huge
+    // e.g. if player pauses game by switching windows.
+    this.timeAccumulator = Math.min(this.timeAccumulator, EXPECTED_TIMESTEP * 10) 
+
     if (this.initialised) {
       // Keep a consistent "frame rate" for logic processing
       while (this.timeAccumulator >= EXPECTED_TIMESTEP) {
