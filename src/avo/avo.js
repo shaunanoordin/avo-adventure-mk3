@@ -352,7 +352,10 @@ export default class AvO {
 
     // If the pointer never moves far from the initial position, then the
     // pointer interaction is considered a tap or hold.
-    if (this.playerInput.pointerTapOrHold) {
+    if (
+      this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN
+      && this.playerInput.pointerTapOrHold
+    ) {
       const distX = this.playerInput.pointerCurrent.x - this.playerInput.pointerStart.x
       const distY = this.playerInput.pointerCurrent.y - this.playerInput.pointerStart.y
       const pointerDistance = Math.sqrt(distX * distX + distY * distY)

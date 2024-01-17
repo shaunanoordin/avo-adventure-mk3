@@ -44,7 +44,7 @@ export const POINTER_DEADZONE_RADIUS = 16
 
 // If the pointer is down and then released after a short time, it's a tap
 // action. Otherwise, it's a hold action.
-export const POINTER_TAP_DURATION = 100
+export const POINTER_TAP_DURATION = 300
 
 /*
 The paint() step (of the core engine, each Entity, and each Rule) can paint
