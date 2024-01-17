@@ -1,5 +1,3 @@
-import { POINTER_STATES } from '@avo/constants'
-
 export default class Story {
   constructor (app) {
     this._app = app
