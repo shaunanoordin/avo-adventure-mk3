@@ -384,9 +384,9 @@ export default class AvO {
       // Is the pointer action a tap or hold action?
       if (this.playerInput.pointerTapOrHold) {
         if (this.playerInput.pointerDownDuration <= POINTER_TAP_DURATION) {
-          console.log('+++ tap')
+          this.broadcastEvent('pointertap', { coords })
         } else {
-          console.log(`+++ hold: ${this.playerInput.pointerDownDuration}`)
+          this.broadcastEvent('pointerholdend', { coords, duration: this.playerInput.pointerDownDuration })
         }
       }
 
@@ -434,6 +434,7 @@ export default class AvO {
 
     // General input
     if (!this.playerInput.keysPressed[e.key]) {
+      this.broadcastEvent('keydown', { key: e.key })
       this.playerInput.keysPressed[e.key] = {
         duration: 0,
         acknowledged: false,
@@ -442,6 +443,8 @@ export default class AvO {
   }
 
   onKeyUp (e) {
+    const duration = this.playerInput.keysPressed[e.key]?.duration || 0
+    this.broadcastEvent('keyup', { key: e.key, duration })
     this.playerInput.keysPressed[e.key] = undefined
   }
 
@@ -577,6 +580,14 @@ export default class AvO {
       }
     }
   }
+
+  broadcastEvent (eventName, args) {
+    const functionName = EVENT_TO_FUNCTION_MAP[eventName]
+    if (!functionName) return
+    
+    this.story[functionName]?.(args)
+    for (const id in this.rules) { this.rules[id][functionName]?.(args) }
+  }
 }
 
 function getEventCoords (event, element) {
@@ -595,4 +606,10 @@ function stopEvent (e) {
   e.returnValue = false
   e.cancelBubble = true
   return false
+}
+
+const EVENT_TO_FUNCTION_MAP = {
+  'keydown': 'onKeyDown',
+  'keyup': 'onKeyUp',
+  'pointertap': 'onPointerTap',
 }

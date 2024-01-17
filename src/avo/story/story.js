@@ -7,6 +7,11 @@ export default class Story {
     return {}
   }
 
+  /*
+  Section: Main Scripts
+  ----------------------------------------------------------------------------
+   */
+
   start () {
     this.reset()
   }
@@ -27,4 +32,15 @@ export default class Story {
   reload () {
     this.start()
   }
+
+  /*
+  Section: Event Handling
+  ----------------------------------------------------------------------------
+   */
+
+  onKeyDown () {}
+
+  onKeyUp () {}
+
+  onPointerTap () {}
 }
