@@ -14,6 +14,7 @@ export default class Enemy extends Entity {
     this.action = {
       name: 'shoot',
       counter: 0,
+      acknowledged: false,
     }
   }
 
@@ -43,6 +44,7 @@ export default class Enemy extends Entity {
         this.action = {
           name: 'shoot',
           counter: 0,
+          acknowledged: false,
         }
       }
     }

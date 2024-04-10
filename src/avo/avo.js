@@ -1,8 +1,10 @@
 import {
   TILE_SIZE,
-  PLAYER_ACTIONS,
+  POINTER_STATES,
   MIN_LAYER, MAX_LAYER,
   EXPECTED_TIMESTEP,
+  POINTER_DEADZONE_RADIUS,
+  POINTER_TAP_DURATION,
 } from '@avo/constants'
 import Physics from '@avo/physics'
 import ExampleStory from '@avo/story/types/example-story'
@@ -55,22 +57,13 @@ export default class AvO {
     this.entities = []
     this.rules = {}
     
-    this.story = new story(this)
-    this.assets = this.story.assets || {}
+    this.story = (story) ? new story(this) : undefined
+    this.assets = this.story?.assets || {}
     this.secretAssets = {}
 
-    this.playerAction = PLAYER_ACTIONS.IDLE
-    this.playerInput = {
-      // Mouse/touchscreen input
-      pointerStart: undefined,
-      pointerCurrent: undefined,
-      pointerEnd: undefined,
-
-      // Keys that are currently being pressed.
-      // keysPressed = { key: { duration, acknowledged } }
-      keysPressed: {},
-    }
-
+    this.playerInput = {}
+    this.resetPlayerInput()
+    
     this.timeAccumulator = 0
     this.prevTime = null
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
@@ -112,7 +105,7 @@ export default class AvO {
       // Let's go!
       this.initialised = true
       this.showUI()
-      this.story.start()
+      this.story?.start()
     }
   }
 
@@ -130,11 +123,16 @@ export default class AvO {
     this.prevTime = time
     this.timeAccumulator += timeStep
 
+    // Sanity/safety check: timeStep can be huge
+    // e.g. if player pauses game by switching windows.
+    this.timeAccumulator = Math.min(this.timeAccumulator, EXPECTED_TIMESTEP * 10) 
+
     if (this.initialised) {
       // Keep a consistent "frame rate" for logic processing
       while (this.timeAccumulator >= EXPECTED_TIMESTEP) {
         this.play(EXPECTED_TIMESTEP)
         this.timeAccumulator -= EXPECTED_TIMESTEP
+        // TODO: add safety counter to prevent excessively long while() loops.
       }
       // Paint whenever possible
       this.paint()
@@ -161,10 +159,16 @@ export default class AvO {
     this.entities.forEach(entity => entity.play(timeStep))
     this.checkCollisions(timeStep)
 
-    // Cleanup
+    // Cleanup: entities
+    this.entities.filter(entity => entity._expired).forEach(entity => entity.deconstructor())
     this.entities = this.entities.filter(entity => !entity._expired)
+
+    // Cleanup: rules
     for (const id in this.rules) {
-      if (this.rules[id]._expired) delete this.rules[id]
+      if (this.rules[id]._expired) {
+        this.rules[id].deconstructor()
+        delete this.rules[id]
+      }
     }
 
     // Sort Entities along the y-axis, for paint()/rendering purposes.
@@ -176,6 +180,11 @@ export default class AvO {
     Object.keys(this.playerInput.keysPressed).forEach(key => {
       if (this.playerInput.keysPressed[key]) this.playerInput.keysPressed[key].duration += timeStep
     })
+
+    // Increment the duration of the pointer being active
+    if (this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN) {
+      this.playerInput.pointerDownDuration += timeStep
+    }
   }
 
   /*
@@ -230,25 +239,6 @@ export default class AvO {
     for (let layer = MIN_LAYER ; layer <= MAX_LAYER ; layer++) {
       this.entities.forEach(entity => entity.paint(layer))
       for (const id in this.rules) { this.rules[id].paint(layer) }
-    }
-    // ----------------
-
-    // Draw player input
-    // ----------------
-    if (
-      this.playerAction === PLAYER_ACTIONS.POINTER_DOWN
-      && this.hero
-      && this.playerInput.pointerCurrent
-    ) {
-
-      const inputCoords = this.playerInput.pointerCurrent
-
-      c2d.strokeStyle = '#888'
-      c2d.lineWidth = TILE_SIZE / 8
-
-      c2d.beginPath()
-      c2d.arc(inputCoords.x, inputCoords.y, TILE_SIZE, 0, 2 * Math.PI)
-      c2d.stroke()
     }
     // ----------------
   }
@@ -351,10 +341,14 @@ export default class AvO {
   onPointerDown (e) {
     const coords = getEventCoords(e, this.html.canvas)
 
-    this.playerAction = PLAYER_ACTIONS.POINTER_DOWN
+    // Initialise
+    this.playerInput.pointerState = POINTER_STATES.POINTER_DOWN
     this.playerInput.pointerStart = coords
     this.playerInput.pointerCurrent = coords
     this.playerInput.pointerEnd = undefined
+
+    this.playerInput.pointerTapOrHold = true
+    this.playerInput.pointerDownDuration = 0
 
     this.html.main.focus()
 
@@ -363,7 +357,22 @@ export default class AvO {
 
   onPointerMove (e) {
     const coords = getEventCoords(e, this.html.canvas)
+
     this.playerInput.pointerCurrent = coords
+
+    // If the pointer never moves far from the initial position, then the
+    // pointer interaction is considered a tap or hold.
+    if (
+      this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN
+      && this.playerInput.pointerTapOrHold
+    ) {
+      const distX = this.playerInput.pointerCurrent.x - this.playerInput.pointerStart.x
+      const distY = this.playerInput.pointerCurrent.y - this.playerInput.pointerStart.y
+      const pointerDistance = Math.sqrt(distX * distX + distY * distY)
+      if (pointerDistance > POINTER_DEADZONE_RADIUS) {
+        this.playerInput.pointerTapOrHold = false
+      }
+    }
 
     return stopEvent(e)
   }
@@ -371,9 +380,18 @@ export default class AvO {
   onPointerUp (e) {
     const coords = getEventCoords(e, this.html.canvas)
 
-    if (this.playerAction === PLAYER_ACTIONS.POINTER_DOWN) {
+    if (this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN) {
+      // Is the pointer action a tap or hold action?
+      if (this.playerInput.pointerTapOrHold) {
+        if (this.playerInput.pointerDownDuration <= POINTER_TAP_DURATION) {
+          this.broadcastEvent('pointertap', { coords })
+        } else {
+          this.broadcastEvent('pointerholdend', { coords, duration: this.playerInput.pointerDownDuration })
+        }
+      }
+
       this.playerInput.pointerEnd = coords
-      this.playerAction = PLAYER_ACTIONS.IDLE
+      this.playerInput.pointerState = POINTER_STATES.IDLE
     }
 
     return stopEvent(e)
@@ -416,6 +434,7 @@ export default class AvO {
 
     // General input
     if (!this.playerInput.keysPressed[e.key]) {
+      this.broadcastEvent('keydown', { key: e.key })
       this.playerInput.keysPressed[e.key] = {
         duration: 0,
         acknowledged: false,
@@ -424,6 +443,8 @@ export default class AvO {
   }
 
   onKeyUp (e) {
+    const duration = this.playerInput.keysPressed[e.key]?.duration || 0
+    this.broadcastEvent('keyup', { key: e.key, duration })
     this.playerInput.keysPressed[e.key] = undefined
   }
 
@@ -453,7 +474,26 @@ export default class AvO {
   }
 
   buttonReload_onClick () {
-    this.story.reload()
+    this.story?.reload()
+  }
+
+  resetPlayerInput () {
+    this.playerInput = {
+      // Pointer (mouse/touchscreen) input
+      // pointerStart/pointerCurrent/pointerEnd = { x, y } 
+      pointerState: POINTER_STATES.IDLE,
+      pointerStart: undefined,
+      pointerCurrent: undefined,
+      pointerEnd: undefined,
+
+      // Pointer metadata
+      pointerTapOrHold: true, // A pointer interaction is a tap or hold if the pointer never travels far from its initial position (i.e. never left the deadzone).
+      pointerDownDuration: 0,
+
+      // Keyboard input
+      // keysPressed = { key: { duration, acknowledged } }
+      keysPressed: {},
+    }
   }
 
   /*
@@ -485,7 +525,10 @@ export default class AvO {
   }
 
   clearRules () {
-    for (const id in this.rules) { delete this.rules[id] }
+    for (const id in this.rules) {
+      this.rules[id].deconstructor()
+      delete this.rules[id]
+    }
   }
 
   /*
@@ -537,6 +580,16 @@ export default class AvO {
       }
     }
   }
+
+  broadcastEvent (eventName, args) {
+    // TODO: replace this with a proper listener system
+
+    const functionName = EVENT_TO_FUNCTION_MAP[eventName]
+    if (!functionName) return
+    
+    this.story[functionName]?.(args)
+    for (const id in this.rules) { this.rules[id][functionName]?.(args) }
+  }
 }
 
 function getEventCoords (event, element) {
@@ -555,4 +608,11 @@ function stopEvent (e) {
   e.returnValue = false
   e.cancelBubble = true
   return false
+}
+
+const EVENT_TO_FUNCTION_MAP = {
+  'keydown': 'onKeyDown',
+  'keyup': 'onKeyUp',
+  'pointerholdend': 'onPointerHoldEnd',
+  'pointertap': 'onPointerTap',
 }

@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import { PLAYER_ACTIONS, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants'
+import { POINTER_STATES, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants'
 
 const INVULNERABILITY_WINDOW = 3000
 const MOVE_ACTION_CYCLE_DURATION = 500
@@ -48,7 +48,7 @@ export default class Hero extends Entity {
       if (flash === 1) return
     }
 
-    this.colour = (app.playerAction === PLAYER_ACTIONS.POINTER_DOWN)
+    this.colour = (app.playerInput.pointerState === POINTER_STATES.POINTER_DOWN)
       ? '#e42'
       : '#c44'
     super.paint(layer)

@@ -33,13 +33,21 @@ export const DIRECTIONS = {
   NORTH: 3,
 }
 
-export const PLAYER_ACTIONS = {
+export const POINTER_STATES = {
   IDLE: 'idle',  // Player isn't doing anything
   POINTER_DOWN: 'pointer down',  // Player is actively interacting with the canvas.
 }
 
+// Distance from its starting position that the pointer has to move, before a
+// 'move' command is issued.
+export const POINTER_DEADZONE_RADIUS = 16
+
+// If the pointer is down and then released after a short time, it's a tap
+// action. Otherwise, it's a hold action.
+export const POINTER_TAP_DURATION = 300
+
 /*
-The paint() step of the core engine, each Entity, and each Rule can paint
+The paint() step (of the core engine, each Entity, and each Rule) can paint
 information in different visual layers.
  */
 export const LAYERS = {

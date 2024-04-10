@@ -1,5 +1,3 @@
-import { PLAYER_ACTIONS } from '@avo/constants'
-
 export default class Story {
   constructor (app) {
     this._app = app
@@ -8,6 +6,11 @@ export default class Story {
   get assets () {
     return {}
   }
+
+  /*
+  Section: Main Scripts
+  ----------------------------------------------------------------------------
+   */
 
   start () {
     this.reset()
@@ -22,11 +25,22 @@ export default class Story {
     app.camera.x = 0
     app.camera.y = 0
     app.camera.zoom = 1
-    app.playerAction = PLAYER_ACTIONS.IDLE
+    app.resetPlayerInput()
     app.setInteractionMenu(false)
   }
 
   reload () {
     this.start()
   }
+
+  /*
+  Section: Event Handling
+  ----------------------------------------------------------------------------
+   */
+
+  onKeyDown () {}
+
+  onKeyUp () {}
+
+  onPointerTap () {}
 }
