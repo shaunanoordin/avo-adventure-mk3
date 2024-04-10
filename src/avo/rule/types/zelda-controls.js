@@ -9,6 +9,7 @@ export default class ZeldaControls extends Rule {
   constructor (app) {
     super(app)
     this._type = 'zelda-controls'
+    this.inputTap = false
   }
 
   play (timeStep) {
@@ -52,6 +53,7 @@ export default class ZeldaControls extends Rule {
       if (
         (keysPressed['x'] && !keysPressed['x'].acknowledged)
         || (keysPressed['X'] && !keysPressed['X'].acknowledged)
+        || this.inputTap
       ) {
         intent = {
           name: 'dash',
@@ -60,6 +62,7 @@ export default class ZeldaControls extends Rule {
         }
         if (keysPressed['x']) keysPressed['x'].acknowledged = true
         if (keysPressed['X']) keysPressed['X'].acknowledged = true
+        this.inputTap = false
 
       } else if (directionX || directionY) {
         intent = {
@@ -247,5 +250,9 @@ export default class ZeldaControls extends Rule {
     c2d.fill()
 
     this._app.undoCameraTransforms()
+  }
+
+  onPointerTap () {
+    this.inputTap = true
   }
 }

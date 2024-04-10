@@ -582,6 +582,8 @@ export default class AvO {
   }
 
   broadcastEvent (eventName, args) {
+    // TODO: replace this with a proper listener system
+
     const functionName = EVENT_TO_FUNCTION_MAP[eventName]
     if (!functionName) return
     
@@ -611,5 +613,6 @@ function stopEvent (e) {
 const EVENT_TO_FUNCTION_MAP = {
   'keydown': 'onKeyDown',
   'keyup': 'onKeyUp',
+  'pointerholdend': 'onPointerHoldEnd',
   'pointertap': 'onPointerTap',
 }
