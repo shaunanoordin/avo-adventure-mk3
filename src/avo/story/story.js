@@ -32,15 +32,4 @@ export default class Story {
   reload () {
     this.start()
   }
-
-  /*
-  Section: Event Handling
-  ----------------------------------------------------------------------------
-   */
-
-  onKeyDown () {}
-
-  onKeyUp () {}
-
-  onPointerTap () {}
 }

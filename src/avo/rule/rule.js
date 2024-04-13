@@ -18,15 +18,4 @@ export default class Rule {
   play (timeStep) {}
 
   paint (layer = 0) {}
-
-  /*
-  Section: Event Handling
-  ----------------------------------------------------------------------------
-   */
-
-  onKeyDown () {}
-
-  onKeyUp () {}
-
-  onPointerTap ({ coords }) {}
 }

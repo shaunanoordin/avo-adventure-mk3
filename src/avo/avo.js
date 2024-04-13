@@ -244,7 +244,7 @@ export default class AvO {
   }
 
   /*
-  Section: UI and Event Handling
+  Section: UI
   ----------------------------------------------------------------------------
    */
 
@@ -336,6 +336,29 @@ export default class AvO {
       div.style.visibility = 'hidden'
       this.html.main.focus()
     }
+  }
+
+  /*
+  Section: Event Handling
+  ----------------------------------------------------------------------------
+   */
+
+  addEventListener (eventName, listener) {
+
+  }
+
+  removeEventListener (eventName, listener) {
+
+  }
+
+  broadcastEvent (eventName, args) {
+    // TODO: replace this with a proper listener system
+
+    const functionName = EVENT_TO_FUNCTION_MAP[eventName]
+    if (!functionName) return
+    
+    this.story[functionName]?.(args)
+    for (const id in this.rules) { this.rules[id][functionName]?.(args) }
   }
 
   onPointerDown (e) {
@@ -477,25 +500,6 @@ export default class AvO {
     this.story?.reload()
   }
 
-  resetPlayerInput () {
-    this.playerInput = {
-      // Pointer (mouse/touchscreen) input
-      // pointerStart/pointerCurrent/pointerEnd = { x, y } 
-      pointerState: POINTER_STATES.IDLE,
-      pointerStart: undefined,
-      pointerCurrent: undefined,
-      pointerEnd: undefined,
-
-      // Pointer metadata
-      pointerTapOrHold: true, // A pointer interaction is a tap or hold if the pointer never travels far from its initial position (i.e. never left the deadzone).
-      pointerDownDuration: 0,
-
-      // Keyboard input
-      // keysPressed = { key: { duration, acknowledged } }
-      keysPressed: {},
-    }
-  }
-
   /*
   Section: Gameplay
   ----------------------------------------------------------------------------
@@ -581,14 +585,23 @@ export default class AvO {
     }
   }
 
-  broadcastEvent (eventName, args) {
-    // TODO: replace this with a proper listener system
+  resetPlayerInput () {
+    this.playerInput = {
+      // Pointer (mouse/touchscreen) input
+      // pointerStart/pointerCurrent/pointerEnd = { x, y } 
+      pointerState: POINTER_STATES.IDLE,
+      pointerStart: undefined,
+      pointerCurrent: undefined,
+      pointerEnd: undefined,
 
-    const functionName = EVENT_TO_FUNCTION_MAP[eventName]
-    if (!functionName) return
-    
-    this.story[functionName]?.(args)
-    for (const id in this.rules) { this.rules[id][functionName]?.(args) }
+      // Pointer metadata
+      pointerTapOrHold: true, // A pointer interaction is a tap or hold if the pointer never travels far from its initial position (i.e. never left the deadzone).
+      pointerDownDuration: 0,
+
+      // Keyboard input
+      // keysPressed = { key: { duration, acknowledged } }
+      keysPressed: {},
+    }
   }
 }
 
