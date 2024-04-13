@@ -350,11 +350,12 @@ export default class AvO {
    */
 
   addEventListener (eventName, listener) {
-    this.eventListeners?.[eventName].push(listener);
+    this.eventListeners?.[eventName].push(listener)
   }
 
   removeEventListener (eventName, listener) {
-
+    if (!this.eventListeners?.[eventName]) return
+    this.eventListeners[eventName] = this.eventListeners?.[eventName].filter(l => l !== listener)
   }
 
   broadcastEvent (eventName, args) {
@@ -406,6 +407,9 @@ export default class AvO {
     const coords = getEventCoords(e, this.html.canvas)
 
     if (this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN) {
+      this.playerInput.pointerEnd = coords
+      this.playerInput.pointerState = POINTER_STATES.IDLE
+
       // Is the pointer action a tap or hold action?
       if (this.playerInput.pointerTapOrHold) {
         if (this.playerInput.pointerDownDuration <= POINTER_TAP_DURATION) {
@@ -414,9 +418,6 @@ export default class AvO {
           this.broadcastEvent('pointerholdend', { coords, duration: this.playerInput.pointerDownDuration })
         }
       }
-
-      this.playerInput.pointerEnd = coords
-      this.playerInput.pointerState = POINTER_STATES.IDLE
     }
 
     return stopEvent(e)
