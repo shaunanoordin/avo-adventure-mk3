@@ -56,10 +56,16 @@ export default class AvO {
     this.hero = null
     this.entities = []
     this.rules = {}
-    
     this.story = (story) ? new story(this) : undefined
     this.assets = this.story?.assets || {}
     this.secretAssets = {}
+
+    this.eventListeners = {
+      'keydown': [],
+      'keyup': [],
+      'pointertap': [],
+      'pointerholdend': [],
+    }
 
     this.playerInput = {}
     this.resetPlayerInput()
@@ -344,7 +350,7 @@ export default class AvO {
    */
 
   addEventListener (eventName, listener) {
-
+    this.eventListeners?.[eventName].push(listener);
   }
 
   removeEventListener (eventName, listener) {
@@ -352,13 +358,9 @@ export default class AvO {
   }
 
   broadcastEvent (eventName, args) {
-    // TODO: replace this with a proper listener system
-
-    const functionName = EVENT_TO_FUNCTION_MAP[eventName]
-    if (!functionName) return
-    
-    this.story[functionName]?.(args)
-    for (const id in this.rules) { this.rules[id][functionName]?.(args) }
+    this.eventListeners?.[eventName].forEach(eventHandler => {
+      eventHandler(args)
+    })
   }
 
   onPointerDown (e) {

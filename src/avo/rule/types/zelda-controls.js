@@ -10,6 +10,8 @@ export default class ZeldaControls extends Rule {
     super(app)
     this._type = 'zelda-controls'
     this.inputTap = false
+
+    app.addEventListener('pointertap', this.onPointerTap.bind(this))
   }
 
   play (timeStep) {
