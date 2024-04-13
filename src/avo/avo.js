@@ -63,6 +63,9 @@ export default class AvO {
     this.eventListeners = {
       'keydown': [],
       'keyup': [],
+      'pointerdown': [],
+      'pointermove': [],
+      'pointerup': [],
       'pointertap': [],
       'pointerholdend': [],
     }
@@ -350,7 +353,7 @@ export default class AvO {
    */
 
   addEventListener (eventName, listener) {
-    this.eventListeners?.[eventName].push(listener)
+    this.eventListeners?.[eventName]?.push(listener)
   }
 
   removeEventListener (eventName, listener) {
@@ -359,7 +362,7 @@ export default class AvO {
   }
 
   broadcastEvent (eventName, args) {
-    this.eventListeners?.[eventName].forEach(eventHandler => {
+    this.eventListeners?.[eventName]?.forEach(eventHandler => {
       eventHandler(args)
     })
   }
@@ -378,6 +381,7 @@ export default class AvO {
 
     this.html.main.focus()
 
+    this.broadcastEvent('pointerdown', { coords })
     return stopEvent(e)
   }
 
@@ -400,6 +404,7 @@ export default class AvO {
       }
     }
 
+    this.broadcastEvent('pointermove', { coords })
     return stopEvent(e)
   }
 
@@ -420,6 +425,7 @@ export default class AvO {
       }
     }
 
+    this.broadcastEvent('pointerup', { coords })
     return stopEvent(e)
   }
 
@@ -460,18 +466,18 @@ export default class AvO {
 
     // General input
     if (!this.playerInput.keysPressed[e.key]) {
-      this.broadcastEvent('keydown', { key: e.key })
       this.playerInput.keysPressed[e.key] = {
         duration: 0,
         acknowledged: false,
       }
     }
+    this.broadcastEvent('keydown', { key: e.key })
   }
 
   onKeyUp (e) {
     const duration = this.playerInput.keysPressed[e.key]?.duration || 0
-    this.broadcastEvent('keyup', { key: e.key, duration })
     this.playerInput.keysPressed[e.key] = undefined
+    this.broadcastEvent('keyup', { key: e.key, duration })
   }
 
   buttonHome_onClick () {
