@@ -56,10 +56,19 @@ export default class AvO {
     this.hero = null
     this.entities = []
     this.rules = {}
-    
     this.story = (story) ? new story(this) : undefined
     this.assets = this.story?.assets || {}
     this.secretAssets = {}
+
+    this.eventListeners = {
+      'keydown': [],
+      'keyup': [],
+      'pointerdown': [],
+      'pointermove': [],
+      'pointerup': [],
+      'pointertap': [],
+      'pointerholdend': [],
+    }
 
     this.playerInput = {}
     this.resetPlayerInput()
@@ -244,7 +253,7 @@ export default class AvO {
   }
 
   /*
-  Section: UI and Event Handling
+  Section: UI
   ----------------------------------------------------------------------------
    */
 
@@ -338,6 +347,26 @@ export default class AvO {
     }
   }
 
+  /*
+  Section: Event Handling
+  ----------------------------------------------------------------------------
+   */
+
+  addEventListener (eventName, listener) {
+    this.eventListeners?.[eventName]?.push(listener)
+  }
+
+  removeEventListener (eventName, listener) {
+    if (!this.eventListeners?.[eventName]) return
+    this.eventListeners[eventName] = this.eventListeners?.[eventName].filter(l => l !== listener)
+  }
+
+  broadcastEvent (eventName, args) {
+    this.eventListeners?.[eventName]?.forEach(eventHandler => {
+      eventHandler(args)
+    })
+  }
+
   onPointerDown (e) {
     const coords = getEventCoords(e, this.html.canvas)
 
@@ -352,6 +381,7 @@ export default class AvO {
 
     this.html.main.focus()
 
+    this.broadcastEvent('pointerdown', { coords })
     return stopEvent(e)
   }
 
@@ -374,6 +404,7 @@ export default class AvO {
       }
     }
 
+    this.broadcastEvent('pointermove', { coords })
     return stopEvent(e)
   }
 
@@ -381,6 +412,9 @@ export default class AvO {
     const coords = getEventCoords(e, this.html.canvas)
 
     if (this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN) {
+      this.playerInput.pointerEnd = coords
+      this.playerInput.pointerState = POINTER_STATES.IDLE
+
       // Is the pointer action a tap or hold action?
       if (this.playerInput.pointerTapOrHold) {
         if (this.playerInput.pointerDownDuration <= POINTER_TAP_DURATION) {
@@ -389,11 +423,9 @@ export default class AvO {
           this.broadcastEvent('pointerholdend', { coords, duration: this.playerInput.pointerDownDuration })
         }
       }
-
-      this.playerInput.pointerEnd = coords
-      this.playerInput.pointerState = POINTER_STATES.IDLE
     }
 
+    this.broadcastEvent('pointerup', { coords })
     return stopEvent(e)
   }
 
@@ -434,18 +466,18 @@ export default class AvO {
 
     // General input
     if (!this.playerInput.keysPressed[e.key]) {
-      this.broadcastEvent('keydown', { key: e.key })
       this.playerInput.keysPressed[e.key] = {
         duration: 0,
         acknowledged: false,
       }
     }
+    this.broadcastEvent('keydown', { key: e.key })
   }
 
   onKeyUp (e) {
     const duration = this.playerInput.keysPressed[e.key]?.duration || 0
-    this.broadcastEvent('keyup', { key: e.key, duration })
     this.playerInput.keysPressed[e.key] = undefined
+    this.broadcastEvent('keyup', { key: e.key, duration })
   }
 
   buttonHome_onClick () {
@@ -475,25 +507,6 @@ export default class AvO {
 
   buttonReload_onClick () {
     this.story?.reload()
-  }
-
-  resetPlayerInput () {
-    this.playerInput = {
-      // Pointer (mouse/touchscreen) input
-      // pointerStart/pointerCurrent/pointerEnd = { x, y } 
-      pointerState: POINTER_STATES.IDLE,
-      pointerStart: undefined,
-      pointerCurrent: undefined,
-      pointerEnd: undefined,
-
-      // Pointer metadata
-      pointerTapOrHold: true, // A pointer interaction is a tap or hold if the pointer never travels far from its initial position (i.e. never left the deadzone).
-      pointerDownDuration: 0,
-
-      // Keyboard input
-      // keysPressed = { key: { duration, acknowledged } }
-      keysPressed: {},
-    }
   }
 
   /*
@@ -581,14 +594,23 @@ export default class AvO {
     }
   }
 
-  broadcastEvent (eventName, args) {
-    // TODO: replace this with a proper listener system
+  resetPlayerInput () {
+    this.playerInput = {
+      // Pointer (mouse/touchscreen) input
+      // pointerStart/pointerCurrent/pointerEnd = { x, y } 
+      pointerState: POINTER_STATES.IDLE,
+      pointerStart: undefined,
+      pointerCurrent: undefined,
+      pointerEnd: undefined,
 
-    const functionName = EVENT_TO_FUNCTION_MAP[eventName]
-    if (!functionName) return
-    
-    this.story[functionName]?.(args)
-    for (const id in this.rules) { this.rules[id][functionName]?.(args) }
+      // Pointer metadata
+      pointerTapOrHold: true, // A pointer interaction is a tap or hold if the pointer never travels far from its initial position (i.e. never left the deadzone).
+      pointerDownDuration: 0,
+
+      // Keyboard input
+      // keysPressed = { key: { duration, acknowledged } }
+      keysPressed: {},
+    }
   }
 }
 
