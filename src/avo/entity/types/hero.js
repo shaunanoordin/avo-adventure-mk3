@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import { POINTER_STATES, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants'
+import { POINTER_STATES, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants.js'
 
 const INVULNERABILITY_WINDOW = 3000
 const MOVE_ACTION_CYCLE_DURATION = 500

@@ -1,5 +1,4 @@
 import Rule from '@avo/rule'
-import { EXPECTED_TIMESTEP } from '@avo/constants'
 
 export default class CNY2022Controls extends Rule {
   constructor (app) {

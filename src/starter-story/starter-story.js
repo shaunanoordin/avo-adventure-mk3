@@ -1,13 +1,13 @@
 import Story from '@avo/story'
-import ImageAsset from '@avo/image-asset'
-import { ROTATIONS } from '@avo/constants'
+import ImageAsset from '@avo/image-asset.js'
+import { ROTATIONS } from '@avo/constants.js'
 
-import Hero from './entities/hero'
-import Wizard from './entities/wizard'
-import Tile from '@avo/tile'
-import WallTile from '@avo/tile/types/wall-tile'
+import Hero from './entities/hero.js'
+import Wizard from './entities/wizard.js'
+import Tile from '@avo/tile.js'
+import WallTile from '@avo/tile/types/wall-tile.js'
 
-import PlayerControls from './rules/player-controls'
+import PlayerControls from './rules/player-controls.js'
 
 export default class StarterStory extends Story {
   constructor (app) {

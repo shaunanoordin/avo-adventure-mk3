@@ -5,10 +5,9 @@ import {
   EXPECTED_TIMESTEP,
   POINTER_DEADZONE_RADIUS,
   POINTER_TAP_DURATION,
-} from '@avo/constants'
-import Physics from '@avo/physics'
-import ExampleStory from '@avo/story/types/example-story'
-import Interaction from '@avo/interaction'
+} from '@avo/constants.js'
+import Physics from '@avo/physics.js'
+import ExampleStory from '@avo/story/types/example-story.js'  // TODO: remove, or replace with a simpler version
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false

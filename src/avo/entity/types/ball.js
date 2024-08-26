@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import { TILE_SIZE } from '@avo/constants'
+import { TILE_SIZE } from '@avo/constants.js'
 
 export default class Ball extends Entity {
   constructor (app, col = 0, row = 0) {

@@ -1,14 +1,12 @@
-import { POINTER_STATES } from '@avo/constants'
-
 import Story from '../story'
-import ImageAsset from '@avo/image-asset'
+import ImageAsset from '@avo/image-asset.js'
 
-import Hero from '@avo/entity/types/hero'
-import Wall from '@avo/entity/types/wall'
-import Ball from '@avo/entity/types/ball'
-import Enemy from '@avo/entity/types/enemy'
+import Hero from '@avo/entity/types/hero.js'
+import Wall from '@avo/entity/types/wall.js'
+import Ball from '@avo/entity/types/ball.js'
+import Enemy from '@avo/entity/types/enemy.js'
 
-import ZeldaControls from '@avo/rule/types/zelda-controls'
+import ZeldaControls from '@avo/rule/types/zelda-controls.js'
 
 export default class ExampleStory extends Story {
   constructor (app) {

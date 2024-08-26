@@ -1,3 +1,3 @@
-import StarterStory from './starter-story'
+import StarterStory from './starter-story.js'
 
 export default StarterStory

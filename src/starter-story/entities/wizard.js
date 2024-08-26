@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import { TILE_SIZE } from '@avo/constants'
+import { TILE_SIZE } from '@avo/constants.js'
 
 export default class Hero extends Entity {
   constructor (app, col = 0, row = 0) {

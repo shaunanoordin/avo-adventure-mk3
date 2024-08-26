@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import { TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants'
+import { TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants.js'
 
 export default class Shot extends Entity {
   constructor (app, x = 0, y = 0, rotation = 0, source = undefined) {

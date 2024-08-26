@@ -1,6 +1,6 @@
 import Entity from '@avo/entity'
-import Shot from '@avo/entity/types/shot'
-import { TILE_SIZE } from '@avo/constants'
+import Shot from '@avo/entity/types/shot.js'
+import { TILE_SIZE } from '@avo/constants.js'
 
 export default class Enemy extends Entity {
   constructor (app, col = 0, row = 0) {

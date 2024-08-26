@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import { SHAPES, TILE_SIZE } from '@avo/constants'
+import { SHAPES, TILE_SIZE } from '@avo/constants.js'
 
 export default class Wall extends Entity {
   constructor (app, col = 0, row = 0, width = 1, height = 1, cutCorner = false) {

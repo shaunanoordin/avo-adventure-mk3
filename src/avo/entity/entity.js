@@ -1,6 +1,6 @@
 import {
   TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, EXPECTED_TIMESTEP, LAYERS,
-} from '@avo/constants'
+} from '@avo/constants.js'
 
 const MOVE_MAX_SPEED_MODIFIER = 4
 const PUSH_MAX_SPEED_MODIFIER = 32
