@@ -1,5 +1,5 @@
 import {
-  TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, EXPECTED_TIMESTEP, LAYERS,
+  TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, LAYERS,
 } from '@avo/constants.js'
 
 const MOVE_MAX_SPEED_MODIFIER = 4
@@ -58,15 +58,14 @@ export default class Entity {
   ----------------------------------------------------------------------------
    */
 
-  play (timeStep) {
+  play () {
     // Update position
-    const timeCorrection = (timeStep / EXPECTED_TIMESTEP)
-    this.x += (this.moveX + this.pushX) * timeCorrection
-    this.y += (this.moveY + this.pushY) * timeCorrection
+    this.x += (this.moveX + this.pushX)
+    this.y += (this.moveY + this.pushY)
 
     // Upkeep: deceleration
-    this.doMoveDeceleration(timeStep)
-    this.doPushDeceleration(timeStep)
+    this.doMoveDeceleration()
+    this.doPushDeceleration()
 
     // Upkeep: limit speed
     this.doMaxSpeedLimit()
@@ -167,18 +166,16 @@ export default class Entity {
   Entities can intentionally override this logic,
   e.g. "if a hero is walking, ignore deceleration."
    */
-  doMoveDeceleration (timeStep) {
-    const timeCorrection = (timeStep / EXPECTED_TIMESTEP)
-    const moveDeceleration = this.moveDeceleration * timeCorrection || 0
+  doMoveDeceleration () {
+    const moveDeceleration = this.moveDeceleration || 0
     const curRotation = Math.atan2(this.moveY, this.moveX)
     const newMoveSpeed = Math.max(0, this.moveSpeed - moveDeceleration)
     this.moveX = newMoveSpeed * Math.cos(curRotation)
     this.moveY = newMoveSpeed * Math.sin(curRotation)
   }
 
-  doPushDeceleration (timeStep) {
-    const timeCorrection = (timeStep / EXPECTED_TIMESTEP)
-    const pushDeceleration = this.pushDeceleration * timeCorrection || 0
+  doPushDeceleration () {
+    const pushDeceleration = this.pushDeceleration || 0
     const curRotation = Math.atan2(this.pushY, this.pushX)
     const newPushSpeed = Math.max(0, this.pushSpeed - pushDeceleration)
     this.pushX = newPushSpeed * Math.cos(curRotation)

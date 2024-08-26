@@ -17,11 +17,11 @@ export default class Hero extends Entity {
   ----------------------------------------------------------------------------
    */
 
-  play (timeStep) {
-    super.play(timeStep)
+  play () {
+    super.play()
 
     this.processIntent()
-    this.processAction(timeStep)
+    this.processAction()
     this.doMaxSpeedLimit()
   }
 
@@ -56,7 +56,7 @@ export default class Hero extends Entity {
   /*
   Perform the action.
    */
-  processAction (timeStep) {}
+  processAction () {}
 
   goIdle () {
     this.action = {

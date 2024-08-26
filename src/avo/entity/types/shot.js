@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import { TILE_SIZE, EXPECTED_TIMESTEP } from '@avo/constants.js'
+import { TILE_SIZE } from '@avo/constants.js'
 
 export default class Shot extends Entity {
   constructor (app, x = 0, y = 0, rotation = 0, source = undefined) {
@@ -33,11 +33,10 @@ export default class Shot extends Entity {
     }
   }
 
-  play (timeStep) {
-    super.play(timeStep)
-    const app = this._app
+  play () {
+    super.play()
 
-    const moveAcceleration = this.moveAcceleration * timeStep / EXPECTED_TIMESTEP || 0
+    const moveAcceleration = this.moveAcceleration || 0
     this.moveX += moveAcceleration * Math.cos(this.rotation)
     this.moveY += moveAcceleration * Math.sin(this.rotation)
 

@@ -1,6 +1,6 @@
 import Entity from '@avo/entity'
 import Shot from '@avo/entity/types/shot.js'
-import { TILE_SIZE } from '@avo/constants.js'
+import { TILE_SIZE, FRAME_DURATION } from '@avo/constants.js'
 
 export default class Enemy extends Entity {
   constructor (app, col = 0, row = 0) {
@@ -18,14 +18,12 @@ export default class Enemy extends Entity {
     }
   }
 
-  play (timeStep) {
-    const app = this._app
-    super.play(timeStep)
-
-    this.processAction(timeStep)
+  play () {
+    super.play()
+    this.processAction()
   }
 
-  processAction (timeStep) {
+  processAction () {
     if (!this.action) return
     const action = this.action
     const app = this._app
@@ -39,7 +37,7 @@ export default class Enemy extends Entity {
         app.addEntity(new Shot(app, this.x, this.y, this.rotation, this))
       }
 
-      action.counter += timeStep
+      action.counter += FRAME_DURATION
       if (action.counter >= DURATION) {
         this.action = {
           name: 'shoot',

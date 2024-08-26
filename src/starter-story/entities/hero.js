@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import { POINTER_STATES, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants.js'
+import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
 
 const INVULNERABILITY_WINDOW = 3000
 const MOVE_ACTION_CYCLE_DURATION = 500
@@ -26,16 +26,16 @@ export default class Hero extends Entity {
   ----------------------------------------------------------------------------
    */
 
-  play (timeStep) {
-    super.play(timeStep)
+  play () {
+    super.play()
 
     this.processIntent()
-    this.processAction(timeStep)
+    this.processAction()
     this.doMaxSpeedLimit()
 
     // Count down invulnerability time
     if (this.invulnerability > 0) {
-      this.invulnerability = Math.max(this.invulnerability - timeStep, 0)
+      this.invulnerability = Math.max(this.invulnerability - FRAME_DURATION, 0)
     }
   }
 
@@ -176,8 +176,7 @@ export default class Hero extends Entity {
   /*
   Perform the action.
    */
-  processAction (timeStep) {
-    const tmod = timeStep / EXPECTED_TIMESTEP
+  processAction () {
     if (!this.action) return
 
     const action = this.action
@@ -191,24 +190,24 @@ export default class Hero extends Entity {
       const directionY = action.directionY || 0
       if (!directionX && !directionY) return
 
-      const moveAcceleration = this.moveAcceleration * tmod || 0
+      const moveAcceleration = this.moveAcceleration || 0
       const actionRotation = Math.atan2(directionY, directionX)
 
       this.moveX += moveAcceleration * Math.cos(actionRotation)
       this.moveY += moveAcceleration * Math.sin(actionRotation)
       this.rotation = actionRotation
 
-      action.counter = (action.counter + timeStep) % MOVE_ACTION_CYCLE_DURATION
+      action.counter = (action.counter + FRAME_DURATION) % MOVE_ACTION_CYCLE_DURATION
     
     } else if (action.name === 'charging') {
 
-      action.counter = Math.min((action.counter + timeStep), MAX_CHARGING_POWER)
+      action.counter = Math.min((action.counter + FRAME_DURATION), MAX_CHARGING_POWER)
 
     } else if (action.name === 'skill') {
 
-      const WINDUP_DURATION = EXPECTED_TIMESTEP * 5
-      const EXECUTION_DURATION = EXPECTED_TIMESTEP * 2
-      const WINDDOWN_DURATION = EXPECTED_TIMESTEP * 10
+      const WINDUP_DURATION = FRAME_DURATION * 5
+      const EXECUTION_DURATION = FRAME_DURATION * 2
+      const WINDDOWN_DURATION = FRAME_DURATION * 10
       const PUSH_POWER = this.size * 0.5 * ((action.power || 0) / MAX_CHARGING_POWER)
       
       if (!action.state) {  // Trigger only once, at the start of the action
@@ -225,24 +224,22 @@ export default class Hero extends Entity {
       }
 
       if (action.state === 'windup') {
-        action.counter += timeStep
+        action.counter += FRAME_DURATION
         if (action.counter >= WINDUP_DURATION) {
           action.state = 'execution'
           action.counter = 0
         }
       } else if (action.state === 'execution') {
-        const modifiedTimeStep = Math.min(timeStep, EXECUTION_DURATION - action.counter)
-        const pushPower = PUSH_POWER * modifiedTimeStep / EXPECTED_TIMESTEP
-        this.pushX += pushPower * Math.cos(action.rotation)
-        this.pushY += pushPower * Math.sin(action.rotation)
+        this.pushX += PUSH_POWER * Math.cos(action.rotation)
+        this.pushY += PUSH_POWER * Math.sin(action.rotation)
 
-        action.counter += modifiedTimeStep
+        action.counter += FRAME_DURATION
         if (action.counter >= EXECUTION_DURATION) {
           action.state = 'winddown'
           action.counter = 0
         }
       } else if (action.state === 'winddown') {
-        action.counter += timeStep
+        action.counter += FRAME_DURATION
         if (action.counter >= WINDDOWN_DURATION) {
           this.goIdle()
         }

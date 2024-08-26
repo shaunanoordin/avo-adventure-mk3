@@ -6,9 +6,9 @@ export default class CNY2022Controls extends Rule {
     this._type = 'cny2022-controls'
   }
 
-  play (timeStep) {
+  play () {
     const app = this._app
-    super.play(timeStep)
+    super.play()
 
     const pointer = app.playerInput.pointerCurrent
     const hero = app.hero
