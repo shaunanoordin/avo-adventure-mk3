@@ -59,8 +59,8 @@ export default class ZeldaControls extends Rule {
       }
       
       if (
-        (keysPressed['x'] && !keysPressed['x'].acknowledged)
-        || (keysPressed['X'] && !keysPressed['X'].acknowledged)
+        (keysPressed['z'] && !keysPressed['z'].acknowledged)
+        || (keysPressed['Z'] && !keysPressed['Z'].acknowledged)
         || this.inputTap
       ) {
         intent = {
@@ -68,8 +68,8 @@ export default class ZeldaControls extends Rule {
           directionX,
           directionY,
         }
-        if (keysPressed['x']) keysPressed['x'].acknowledged = true
-        if (keysPressed['X']) keysPressed['X'].acknowledged = true
+        if (keysPressed['z']) keysPressed['z'].acknowledged = true
+        if (keysPressed['Z']) keysPressed['Z'].acknowledged = true
         this.inputTap = false
 
       } else if (directionX || directionY) {

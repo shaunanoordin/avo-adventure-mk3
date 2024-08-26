@@ -8,6 +8,7 @@ import {
 } from '@avo/constants.js'
 import Physics from '@avo/physics.js'
 import ExampleStory from '@avo/story/types/example-story.js'  // TODO: remove, or replace with a simpler version
+import Interaction from '@avo/interaction'
 
 const searchParams = new URLSearchParams(window.location.search)
 const DEBUG = searchParams.get('debug') || false
@@ -445,14 +446,15 @@ export default class AvO {
         this.setHomeMenu(!this.homeMenu)
         break
 
-      /*
       // DEBUG
-      case 'z':
+      case 'x':
+      case 'X':
         if (!this.interactionMenu) {
           this.setInteractionMenu(new Interaction(this))
         }
         break
 
+      /*
       // DEBUG
       case 'c':
         if (this.hero?.spriteStyle === 'toon') {
