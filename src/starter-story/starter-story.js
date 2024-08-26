@@ -4,13 +4,12 @@ import { ROTATIONS } from '@avo/constants'
 
 import Hero from './entities/hero'
 import Wizard from './entities/wizard'
-import Wall from '@avo/entity/types/wall'
 import Tile from '@avo/tile'
 import WallTile from '@avo/tile/types/wall-tile'
 
 import PlayerControls from './rules/player-controls'
 
-export default class LD55Story extends Story {
+export default class StarterStory extends Story {
   constructor (app) {
     super(app)
   }
