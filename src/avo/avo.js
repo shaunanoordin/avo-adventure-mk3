@@ -245,12 +245,14 @@ export default class AvO {
 
     // Draw entities and other elements
     // ----------------
+    // TEMPORARY
+    // TODO: make maps
     const MAP_WIDTH = 24
     const MAP_HEIGHT = 24
     for (let layer = MIN_LAYER ; layer <= MAX_LAYER ; layer++) {
       for (let row = 0 ; row < MAP_HEIGHT ; row++) {
         for (let col = 0 ; col < MAP_WIDTH ; col++) {
-          this.tiles[row][col].paint(layer)
+          this.tiles?.[row]?.[col]?.paint(layer)
         }
       }
 

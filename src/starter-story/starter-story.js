@@ -4,7 +4,7 @@ import { ROTATIONS } from '@avo/constants.js'
 
 import Hero from './entities/hero.js'
 import Wizard from './entities/wizard.js'
-import Tile from '@avo/tile.js'
+import Tile from '@avo/tile'
 import WallTile from '@avo/tile/types/wall-tile.js'
 
 import PlayerControls from './rules/player-controls.js'
