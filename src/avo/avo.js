@@ -55,7 +55,8 @@ export default class AvO {
 
     this.hero = null
     this.entities = []
-    this.rules = {}
+    this.tiles = []
+    this.rules = new Map()
     this.story = (story) ? new story(this) : undefined
     this.assets = this.story?.assets || {}
     this.secretAssets = {}
@@ -163,7 +164,7 @@ export default class AvO {
 
     // Run the action gameplay
     // ----------------
-    for (const id in this.rules) { this.rules[id].play(timeStep) }
+    this.rules.forEach(rule => rule.play(timeStep))
 
     this.entities.forEach(entity => entity.play(timeStep))
     this.checkCollisions(timeStep)
@@ -173,12 +174,12 @@ export default class AvO {
     this.entities = this.entities.filter(entity => !entity._expired)
 
     // Cleanup: rules
-    for (const id in this.rules) {
-      if (this.rules[id]._expired) {
-        this.rules[id].deconstructor()
-        delete this.rules[id]
+    this.rules.forEach((rule, id) => {
+      if (rule.expired) {
+        rule.deconstructor()
+        this.rules.delete(id)
       }
-    }
+    })
 
     // Sort Entities along the y-axis, for paint()/rendering purposes.
     // WARNING: inefficient
@@ -245,9 +246,17 @@ export default class AvO {
 
     // Draw entities and other elements
     // ----------------
+    const MAP_WIDTH = 24
+    const MAP_HEIGHT = 24
     for (let layer = MIN_LAYER ; layer <= MAX_LAYER ; layer++) {
+      for (let row = 0 ; row < MAP_HEIGHT ; row++) {
+        for (let col = 0 ; col < MAP_WIDTH ; col++) {
+          this.tiles[row][col].paint(layer)
+        }
+      }
+
       this.entities.forEach(entity => entity.paint(layer))
-      for (const id in this.rules) { this.rules[id].paint(layer) }
+      this.rules.forEach(rule => rule.paint(layer))
     }
     // ----------------
   }
@@ -437,6 +446,7 @@ export default class AvO {
         this.setHomeMenu(!this.homeMenu)
         break
 
+      /*
       // DEBUG
       case 'z':
         if (!this.interactionMenu) {
@@ -452,6 +462,7 @@ export default class AvO {
           this.hero.spriteStyle = 'toon'
         }
         break
+      */
 
       case '-':
       case '_':
@@ -534,14 +545,14 @@ export default class AvO {
   addRule (rule) {
     if (!rule) return
     const id = rule._type
-    this.rules[id] = rule
+    this.rules.set(id, rule)
   }
 
   clearRules () {
-    for (const id in this.rules) {
-      this.rules[id].deconstructor()
-      delete this.rules[id]
-    }
+    this.rules.forEach((rule, id) => {
+      rule.deconstructor()
+      this.rules.delete(id)
+    })
   }
 
   /*
@@ -591,6 +602,19 @@ export default class AvO {
           entityB.onCollision(entityA, collisionCorrection.b)
         }
       }
+
+      const range = Math.ceil(entityA.size / TILE_SIZE)
+      for (let row = entityA.row - range ; row <= entityA.row + range ; row++) {
+        for (let col = entityA.col - range ; col <= entityA.col + range ; col++) {
+          const tile = this.tiles?.[row]?.[col]
+          let collisionCorrection = Physics.checkCollision(entityA, tile)
+
+          if (collisionCorrection) {
+            entityA.onCollision(tile, collisionCorrection.a)
+            tile.onCollision(entityA, collisionCorrection.b)
+          }
+        }
+      }
     }
   }
 
@@ -630,11 +654,4 @@ function stopEvent (e) {
   e.returnValue = false
   e.cancelBubble = true
   return false
-}
-
-const EVENT_TO_FUNCTION_MAP = {
-  'keydown': 'onKeyDown',
-  'keyup': 'onKeyUp',
-  'pointerholdend': 'onPointerHoldEnd',
-  'pointertap': 'onPointerTap',
 }

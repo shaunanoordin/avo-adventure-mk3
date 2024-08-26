@@ -1,6 +1,6 @@
-import AvO from './avo'
+import AvO from '@avo'
+import StarterStory from './starter-story/starter-story'
 
-var avo
 window.onload = function() {
-  window.avo = new AvO()
+  window.avo = new AvO({ story: StarterStory })
 }
