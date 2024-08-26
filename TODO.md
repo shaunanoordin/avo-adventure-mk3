@@ -1,5 +1,9 @@
 # TODO
 
+SASS/CSS
+- remove SASS, use standard CSS
+- update colours to use 6-digit hex, instead of 3-digit hex
+
 AvO Startup
 - Remove ExampleStory as the defeault story, OR simplify the ExampleStory.
 
