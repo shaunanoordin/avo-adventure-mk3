@@ -16,7 +16,7 @@ export default class StarterStory extends Story {
 
   get assets () {
     return {
-      "hero": new ImageAsset('assets/avo-sprites-2022-05-samiel.png'),
+      "hero": new ImageAsset('assets/avo-sprites-2024-08-samiel.png'),
     }
   }
 
