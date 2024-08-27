@@ -1,7 +1,17 @@
 # TODO
 
-AvO Experiment
-- Math.floor() on App.camera transform, and on Entity.paint()
+SASS/CSS
+- remove SASS, use standard CSS
+- update colours to use 6-digit hex, instead of 3-digit hex
+
+AvO Startup
+- Remove ExampleStory as the defeault story, OR simplify the ExampleStory.
+
+AvO Tiles & Maps
+- Formalise Map data structure.
+
+AvO Rendering
+- (experimental) Math.floor() on App.camera transform, and on Entity.paint()
 
 AvO Cleanup
-- Import full file names
+- Import full file names?

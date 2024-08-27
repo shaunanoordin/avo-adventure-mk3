@@ -1,13 +1,13 @@
 import Story from '@avo/story'
-import ImageAsset from '@avo/image-asset'
-import { ROTATIONS } from '@avo/constants'
+import ImageAsset from '@avo/image-asset.js'
+import { ROTATIONS } from '@avo/constants.js'
 
-import Hero from './entities/hero'
-import Wizard from './entities/wizard'
+import Hero from './entities/hero.js'
+import Wizard from './entities/wizard.js'
 import Tile from '@avo/tile'
-import WallTile from '@avo/tile/types/wall-tile'
+import WallTile from '@avo/tile/types/wall-tile.js'
 
-import PlayerControls from './rules/player-controls'
+import PlayerControls from './rules/player-controls.js'
 
 export default class StarterStory extends Story {
   constructor (app) {
@@ -16,7 +16,7 @@ export default class StarterStory extends Story {
 
   get assets () {
     return {
-      "hero": new ImageAsset('assets/avo-sprites-2022-05-samiel.png'),
+      "hero": new ImageAsset('assets/avo-sprites-2024-08-samiel.png'),
     }
   }
 

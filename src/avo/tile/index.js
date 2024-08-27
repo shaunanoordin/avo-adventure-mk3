@@ -1,3 +1,3 @@
-import Tile from './tile'
+import Tile from './tile.js'
 
 export default Tile

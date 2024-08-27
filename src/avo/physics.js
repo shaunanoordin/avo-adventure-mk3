@@ -1,5 +1,5 @@
-import { SHAPES } from '@avo/constants'
-import { isZero } from '@avo/misc'
+import { SHAPES } from '@avo/constants.js'
+import { isZero } from '@avo/misc.js'
 
 const USE_CIRCLE_APPROXIMATION = false
 

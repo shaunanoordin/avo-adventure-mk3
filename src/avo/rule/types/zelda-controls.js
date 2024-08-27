@@ -1,6 +1,6 @@
 import Rule from '@avo/rule'
-import Physics from '@avo/physics'
-import { LAYERS, POINTER_DEADZONE_RADIUS, POINTER_STATES, TILE_SIZE } from '@avo/constants'
+import Physics from '@avo/physics.js'
+import { LAYERS, POINTER_DEADZONE_RADIUS, POINTER_STATES, TILE_SIZE } from '@avo/constants.js'
 
 /*
 Standard player controls for top-down adventure games.
@@ -20,10 +20,10 @@ export default class ZeldaControls extends Rule {
     app.removeEventListener('pointertap', this.onPointerTap)
   }
 
-  play (timeStep) {
+  play () {
     const app = this._app
     const hero = app.hero
-    super.play(timeStep)
+    super.play()
 
     if (hero) {
       const {
@@ -59,8 +59,8 @@ export default class ZeldaControls extends Rule {
       }
       
       if (
-        (keysPressed['x'] && !keysPressed['x'].acknowledged)
-        || (keysPressed['X'] && !keysPressed['X'].acknowledged)
+        (keysPressed['z'] && !keysPressed['z'].acknowledged)
+        || (keysPressed['Z'] && !keysPressed['Z'].acknowledged)
         || this.inputTap
       ) {
         intent = {
@@ -68,8 +68,8 @@ export default class ZeldaControls extends Rule {
           directionX,
           directionY,
         }
-        if (keysPressed['x']) keysPressed['x'].acknowledged = true
-        if (keysPressed['X']) keysPressed['X'].acknowledged = true
+        if (keysPressed['z']) keysPressed['z'].acknowledged = true
+        if (keysPressed['Z']) keysPressed['Z'].acknowledged = true
         this.inputTap = false
 
       } else if (directionX || directionY) {

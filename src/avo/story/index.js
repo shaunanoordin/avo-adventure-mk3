@@ -1,3 +1,3 @@
-import Story from './story'
+import Story from './story.js'
 
 export default Story

@@ -11,9 +11,8 @@ export default class Interaction {
       <h3>Example Interaction Menu</h3>
       <p>Debug Controls:</p>
       <ul>
-        <li><b>[Z]</b> Open example interaction menu</li>
-        <li><b>[X]</b> Dash</li>
-        <li><b>[C]</b> Switch sprite style</li>
+        <li><b>[X]</b> Open example interaction menu</li>
+        <li><b>[Z]</b> Dash</li>
       </ul>
     `
 

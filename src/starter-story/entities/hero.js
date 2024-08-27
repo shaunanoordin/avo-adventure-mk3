@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import { POINTER_STATES, TILE_SIZE, EXPECTED_TIMESTEP, LAYERS, DIRECTIONS } from '@avo/constants'
+import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
 
 const INVULNERABILITY_WINDOW = 3000
 const MOVE_ACTION_CYCLE_DURATION = 500
@@ -26,16 +26,16 @@ export default class Hero extends Entity {
   ----------------------------------------------------------------------------
    */
 
-  play (timeStep) {
-    super.play(timeStep)
+  play () {
+    super.play()
 
     this.processIntent()
-    this.processAction(timeStep)
+    this.processAction()
     this.doMaxSpeedLimit()
 
     // Count down invulnerability time
     if (this.invulnerability > 0) {
-      this.invulnerability = Math.max(this.invulnerability - timeStep, 0)
+      this.invulnerability = Math.max(this.invulnerability - FRAME_DURATION, 0)
     }
   }
 
@@ -49,7 +49,7 @@ export default class Hero extends Entity {
 
     this.colour = (app.playerInput.pointerState === POINTER_STATES.POINTER_DOWN)
       ? '#ff3333'
-      : '#c04040'
+      : '#c0a0a0'
     super.paint(layer)
 
     const c2d = app.canvas2d
@@ -58,7 +58,7 @@ export default class Hero extends Entity {
 
     this._app.applyCameraTransforms()
 
-    const SPRITE_SIZE = 48
+    const SPRITE_SIZE = 24
     const SPRITE_SCALE = 2
 
     // Draw the VFX
@@ -88,14 +88,15 @@ export default class Hero extends Entity {
       const srcY = this.getSpriteRow() * SPRITE_SIZE
       const sizeX = SPRITE_SIZE
       const sizeY = SPRITE_SIZE
+      const flipX = (this.getSpriteDirection() !== DIRECTIONS.WEST) ? 1 : -1
 
       c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
-      c2d.scale(SPRITE_SCALE, SPRITE_SCALE)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
+      c2d.scale(flipX * SPRITE_SCALE, SPRITE_SCALE)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
       // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
 
       // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
       const tgtX = -sizeX / 2  // Align centre of sprite to origin
-      const tgtY = -sizeY * 0.625  // Align bottom(-ish) of sprite to origin
+      const tgtY = -sizeY * 0.75  // Align bottom(-ish) of sprite to origin
 
       c2d.drawImage(animationSpriteSheet.img,
         srcX, srcY, sizeX, sizeY,
@@ -176,8 +177,7 @@ export default class Hero extends Entity {
   /*
   Perform the action.
    */
-  processAction (timeStep) {
-    const tmod = timeStep / EXPECTED_TIMESTEP
+  processAction () {
     if (!this.action) return
 
     const action = this.action
@@ -191,24 +191,24 @@ export default class Hero extends Entity {
       const directionY = action.directionY || 0
       if (!directionX && !directionY) return
 
-      const moveAcceleration = this.moveAcceleration * tmod || 0
+      const moveAcceleration = this.moveAcceleration || 0
       const actionRotation = Math.atan2(directionY, directionX)
 
       this.moveX += moveAcceleration * Math.cos(actionRotation)
       this.moveY += moveAcceleration * Math.sin(actionRotation)
       this.rotation = actionRotation
 
-      action.counter = (action.counter + timeStep) % MOVE_ACTION_CYCLE_DURATION
+      action.counter = (action.counter + FRAME_DURATION) % MOVE_ACTION_CYCLE_DURATION
     
     } else if (action.name === 'charging') {
 
-      action.counter = Math.min((action.counter + timeStep), MAX_CHARGING_POWER)
+      action.counter = Math.min((action.counter + FRAME_DURATION), MAX_CHARGING_POWER)
 
     } else if (action.name === 'skill') {
 
-      const WINDUP_DURATION = EXPECTED_TIMESTEP * 5
-      const EXECUTION_DURATION = EXPECTED_TIMESTEP * 2
-      const WINDDOWN_DURATION = EXPECTED_TIMESTEP * 10
+      const WINDUP_DURATION = FRAME_DURATION * 5
+      const EXECUTION_DURATION = FRAME_DURATION * 2
+      const WINDDOWN_DURATION = FRAME_DURATION * 10
       const PUSH_POWER = this.size * 0.5 * ((action.power || 0) / MAX_CHARGING_POWER)
       
       if (!action.state) {  // Trigger only once, at the start of the action
@@ -225,24 +225,22 @@ export default class Hero extends Entity {
       }
 
       if (action.state === 'windup') {
-        action.counter += timeStep
+        action.counter += FRAME_DURATION
         if (action.counter >= WINDUP_DURATION) {
           action.state = 'execution'
           action.counter = 0
         }
       } else if (action.state === 'execution') {
-        const modifiedTimeStep = Math.min(timeStep, EXECUTION_DURATION - action.counter)
-        const pushPower = PUSH_POWER * modifiedTimeStep / EXPECTED_TIMESTEP
-        this.pushX += pushPower * Math.cos(action.rotation)
-        this.pushY += pushPower * Math.sin(action.rotation)
+        this.pushX += PUSH_POWER * Math.cos(action.rotation)
+        this.pushY += PUSH_POWER * Math.sin(action.rotation)
 
-        action.counter += modifiedTimeStep
+        action.counter += FRAME_DURATION
         if (action.counter >= EXECUTION_DURATION) {
           action.state = 'winddown'
           action.counter = 0
         }
       } else if (action.state === 'winddown') {
-        action.counter += timeStep
+        action.counter += FRAME_DURATION
         if (action.counter >= WINDDOWN_DURATION) {
           this.goIdle()
         }
@@ -295,10 +293,10 @@ export default class Hero extends Entity {
    */
   getSpriteCol () {
     switch (this.getSpriteDirection()) {
-      case DIRECTIONS.NORTH: return 1
-      case DIRECTIONS.EAST: return 2
+      case DIRECTIONS.NORTH: return 2
+      case DIRECTIONS.EAST: return 1
       case DIRECTIONS.SOUTH: return 0
-      case DIRECTIONS.WEST: return 3
+      case DIRECTIONS.WEST: return 1
     }
     return 0
   }
@@ -309,14 +307,16 @@ export default class Hero extends Entity {
 
     if (action.name === 'move') {
       const progress = action.counter / MOVE_ACTION_CYCLE_DURATION
-      if (progress < 0.3) return 2
-      else if (progress < 0.5) return 1
-      else if (progress < 0.8) return 3
-      else if (progress < 1) return 1
+      if (progress < 0.3) return 1
+      else if (progress < 0.5) return 0
+      else if (progress < 0.8) return 2
+      else if (progress < 1) return 0
+    } else if (action.name === 'charging') {
+      return 1
     } else if (action.name === 'skill') {
-      if (action.state === 'windup') return 4
-      else if (action.state === 'execution') return 1
-      else if (action.state === 'winddown') return 1
+      if (action.state === 'windup') return 1
+      else if (action.state === 'execution') return 2
+      else if (action.state === 'winddown') return 2
     }
 
     return 0

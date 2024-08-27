@@ -1,3 +1,3 @@
-import Rule from './rule'
+import Rule from './rule.js'
 
 export default Rule

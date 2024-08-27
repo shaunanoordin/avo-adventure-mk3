@@ -15,7 +15,7 @@ export default class Rule {
   ----------------------------------------------------------------------------
    */
 
-  play (timeStep) {}
+  play () {}
 
   paint (layer = 0) {}
 }

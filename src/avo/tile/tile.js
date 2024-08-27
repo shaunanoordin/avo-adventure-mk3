@@ -1,4 +1,4 @@
-import { TILE_SIZE, SHAPES, LAYERS } from '@avo/constants'
+import { TILE_SIZE, SHAPES, LAYERS } from '@avo/constants.js'
 
 export default class Tile {
   constructor (app, col = 0, row = 0) {

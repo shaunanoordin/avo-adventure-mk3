@@ -1,6 +1,6 @@
 import Rule from '@avo/rule'
-import Physics from '@avo/physics'
-import { LAYERS, POINTER_DEADZONE_RADIUS, POINTER_STATES, TILE_SIZE } from '@avo/constants'
+import Physics from '@avo/physics.js'
+import { LAYERS, POINTER_DEADZONE_RADIUS, POINTER_STATES, TILE_SIZE } from '@avo/constants.js'
 
 /*
 Standard player controls for top-down adventure games.
@@ -26,10 +26,10 @@ export default class PlayerControls extends Rule {
     app.removeEventListener('pointertap', this.onPointerTap)
   }
 
-  play (timeStep) {
+  play () {
     const app = this._app
     const hero = app.hero
-    super.play(timeStep)
+    super.play()
 
     if (hero) {
       const {

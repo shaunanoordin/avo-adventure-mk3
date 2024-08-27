@@ -2,12 +2,12 @@ import {
   TILE_SIZE,
   POINTER_STATES,
   MIN_LAYER, MAX_LAYER,
-  EXPECTED_TIMESTEP,
+  FRAME_DURATION,
   POINTER_DEADZONE_RADIUS,
   POINTER_TAP_DURATION,
-} from '@avo/constants'
-import Physics from '@avo/physics'
-import ExampleStory from '@avo/story/types/example-story'
+} from '@avo/constants.js'
+import Physics from '@avo/physics.js'
+import ExampleStory from '@avo/story/types/example-story.js'  // TODO: remove, or replace with a simpler version
 import Interaction from '@avo/interaction'
 
 const searchParams = new URLSearchParams(window.location.search)
@@ -135,13 +135,13 @@ export default class AvO {
 
     // Sanity/safety check: timeStep can be huge
     // e.g. if player pauses game by switching windows.
-    this.timeAccumulator = Math.min(this.timeAccumulator, EXPECTED_TIMESTEP * 10) 
+    this.timeAccumulator = Math.min(this.timeAccumulator, FRAME_DURATION * 10) 
 
     if (this.initialised) {
       // Keep a consistent "frame rate" for logic processing
-      while (this.timeAccumulator >= EXPECTED_TIMESTEP) {
-        this.play(EXPECTED_TIMESTEP)
-        this.timeAccumulator -= EXPECTED_TIMESTEP
+      while (this.timeAccumulator >= FRAME_DURATION) {
+        this.play()
+        this.timeAccumulator -= FRAME_DURATION
         // TODO: add safety counter to prevent excessively long while() loops.
       }
       // Paint whenever possible
@@ -155,19 +155,17 @@ export default class AvO {
 
   /*
   Run the gameplay/physics logic for a single frame.
-  - timeStep: the time (milliseconds) since the last frame.
-    We expect 60 frames per second.
    */
-  play (timeStep) {
+  play () {
     // If a menu is open, pause all action gameplay
     if (this.homeMenu || this.interactionMenu) return
 
     // Run the action gameplay
     // ----------------
-    this.rules.forEach(rule => rule.play(timeStep))
+    this.rules.forEach(rule => rule.play())
 
-    this.entities.forEach(entity => entity.play(timeStep))
-    this.checkCollisions(timeStep)
+    this.entities.forEach(entity => entity.play())
+    this.checkCollisions()
 
     // Cleanup: entities
     this.entities.filter(entity => entity._expired).forEach(entity => entity.deconstructor())
@@ -188,12 +186,12 @@ export default class AvO {
 
     // Increment the duration of each currently pressed key
     Object.keys(this.playerInput.keysPressed).forEach(key => {
-      if (this.playerInput.keysPressed[key]) this.playerInput.keysPressed[key].duration += timeStep
+      if (this.playerInput.keysPressed[key]) this.playerInput.keysPressed[key].duration += FRAME_DURATION
     })
 
     // Increment the duration of the pointer being active
     if (this.playerInput.pointerState === POINTER_STATES.POINTER_DOWN) {
-      this.playerInput.pointerDownDuration += timeStep
+      this.playerInput.pointerDownDuration += FRAME_DURATION
     }
   }
 
@@ -246,12 +244,14 @@ export default class AvO {
 
     // Draw entities and other elements
     // ----------------
+    // TEMPORARY
+    // TODO: make maps
     const MAP_WIDTH = 24
     const MAP_HEIGHT = 24
     for (let layer = MIN_LAYER ; layer <= MAX_LAYER ; layer++) {
       for (let row = 0 ; row < MAP_HEIGHT ; row++) {
         for (let col = 0 ; col < MAP_WIDTH ; col++) {
-          this.tiles[row][col].paint(layer)
+          this.tiles?.[row]?.[col]?.paint(layer)
         }
       }
 
@@ -446,14 +446,15 @@ export default class AvO {
         this.setHomeMenu(!this.homeMenu)
         break
 
-      /*
       // DEBUG
-      case 'z':
+      case 'x':
+      case 'X':
         if (!this.interactionMenu) {
           this.setInteractionMenu(new Interaction(this))
         }
         break
 
+      /*
       // DEBUG
       case 'c':
         if (this.hero?.spriteStyle === 'toon') {
@@ -589,7 +590,7 @@ export default class AvO {
   ----------------------------------------------------------------------------
    */
 
-  checkCollisions (timeStep) {
+  checkCollisions () {
     for (let a = 0 ; a < this.entities.length ; a++) {
       let entityA = this.entities[a]
 
