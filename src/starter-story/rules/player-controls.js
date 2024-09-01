@@ -190,11 +190,11 @@ export default class PlayerControls extends Rule {
   Draw a line of sight (cast a ray) starting from a specified Entity (usually the
   hero), in the direction they're facing.
    */
-  paintLineOfSight (srcEntity) {
+  paintLineOfSight (srcEntity, losMaxDistance = TILE_SIZE * 4) {
     if (!srcEntity) return
     const c2d = this._app.canvas2d
     const entities = this._app.entities
-    const MAX_LINE_OF_SIGHT_DISTANCE = TILE_SIZE * 5
+    const tiles = this._app.tiles
 
     this._app.applyCameraTransforms()
 
@@ -205,10 +205,11 @@ export default class PlayerControls extends Rule {
         y: srcEntity.y,
       },
       end: {
-        x: srcEntity.x + MAX_LINE_OF_SIGHT_DISTANCE * Math.cos(srcEntity.rotation),
-        y: srcEntity.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(srcEntity.rotation),
+        x: srcEntity.x + losMaxDistance * Math.cos(srcEntity.rotation),
+        y: srcEntity.y + losMaxDistance * Math.sin(srcEntity.rotation),
       }
     }
+    const lineOfSightAngle = srcEntity.rotation
 
     let actualLineOfSightEndPoint = undefined
 
@@ -218,37 +219,49 @@ export default class PlayerControls extends Rule {
 
       // TODO: check for opaqueness and/or if the entity is visible.
 
-      const vertices = entity.vertices
-      if (vertices.length < 2) return
+      // We want to cehck if the line intersects with any segment of the
+      // entity's polygonal shape (or polygon-approximated shape).
+      const segments = entity.segments
 
-      // Every entity has a "shape" that can be represented by a polygon.
-      // (Yes, even circles.) Check each segment (aka edge aka side) of the
-      // polygon.
-      for (let i = 0 ; i < vertices.length ; i++) {
-        const segment = {
-          start: {
-            x: vertices[i].x,
-            y: vertices[i].y,
-          },
-          end: {
-            x: vertices[(i + 1) % vertices.length].x,
-            y: vertices[(i + 1) % vertices.length].y,
-          },
-        }
-
+      segments.forEach(segment => {
         // Find the intersection. We want to find the intersection point
         // closest to the source Entity (the LOS ray's starting point).
         const intersection = Physics.getLineIntersection(lineOfSight, segment)
         if (!actualLineOfSightEndPoint || (intersection && intersection.distanceFactor < actualLineOfSightEndPoint.distanceFactor)) {
           actualLineOfSightEndPoint = intersection
         }
-      }
+      })
     })
+
+    // Check if the Entity's LOS intersects with any "wall" tiles
+    const losMaxDistanceInTiles = Math.ceil(losMaxDistance / TILE_SIZE)
+    for (let i = 0 ; i <= losMaxDistanceInTiles ; i++) {
+      // Starting from tile the Entity's standing on, draw a line following the LOS.
+      // Check each tile that line intersects with.
+      const x = srcEntity.x + i * Math.cos(lineOfSightAngle) * TILE_SIZE
+      const y = srcEntity.y + i * Math.sin(lineOfSightAngle) * TILE_SIZE
+      const col =  Math.floor(x / TILE_SIZE)
+      const row =  Math.floor(y / TILE_SIZE)
+      
+      const tile = tiles?.[row]?.[col]
+      if (!tile || !tile.solid) continue  // Skip if there's no tile, or if the tile isn't a blocking tile (i.e. not a wall) 
+
+      // Perform the same segment check as entities
+      const segments = tile.segments
+      segments.forEach(segment => {
+        // Find the intersection. We want to find the intersection point
+        // closest to the source Entity (the LOS ray's starting point).
+        const intersection = Physics.getLineIntersection(lineOfSight, segment)
+        if (!actualLineOfSightEndPoint || (intersection && intersection.distanceFactor < actualLineOfSightEndPoint.distanceFactor)) {
+          actualLineOfSightEndPoint = intersection
+        }
+      })
+    }
 
     if (!actualLineOfSightEndPoint) {
       actualLineOfSightEndPoint = {
-        x: srcEntity.x + MAX_LINE_OF_SIGHT_DISTANCE* Math.cos(srcEntity.rotation),
-        y: srcEntity.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(srcEntity.rotation),
+        x: srcEntity.x + losMaxDistance * Math.cos(srcEntity.rotation),
+        y: srcEntity.y + losMaxDistance * Math.sin(srcEntity.rotation),
       }
     }
 
