@@ -51,13 +51,16 @@ export default class AvO {
 
     this.setupUI()
 
-    this.initialised = false
+    this.entities = []  // Game objects
+    this.hero = null  // Main player-controlled entity
+    this.map = {  // Game map and environment
+      tiles: [],  // 2D array of map tiles
+      width: 0,
+      height: 0,
+    }
+    this.rules = new Map()  // Game rules, including win/loss conditions and player controls
 
-    this.hero = null
-    this.entities = []
-    this.tiles = []
-    this.rules = new Map()
-    this.story = (story) ? new story(this) : undefined
+    this.story = (story) ? new story(this) : undefined  // Game story, i.e. the "container" that describes an adventure or experience, which contains game objects and game rules and etc
     this.assets = this.story?.assets || {}
     this.secretAssets = {}
 
@@ -70,10 +73,10 @@ export default class AvO {
       'pointertap': [],
       'pointerholdend': [],
     }
-
     this.playerInput = {}
     this.resetPlayerInput()
     
+    this.initialised = false
     this.timeAccumulator = 0
     this.prevTime = null
     this.nextFrame = window.requestAnimationFrame(this.main.bind(this))
@@ -244,14 +247,10 @@ export default class AvO {
 
     // Draw entities and other elements
     // ----------------
-    // TEMPORARY
-    // TODO: make maps
-    const MAP_WIDTH = 24
-    const MAP_HEIGHT = 24
     for (let layer = MIN_LAYER ; layer <= MAX_LAYER ; layer++) {
-      for (let row = 0 ; row < MAP_HEIGHT ; row++) {
-        for (let col = 0 ; col < MAP_WIDTH ; col++) {
-          this.tiles?.[row]?.[col]?.paint(layer)
+      for (let row = 0 ; row < this.map.height ; row++) {
+        for (let col = 0 ; col < this.map.width ; col++) {
+          this.map.tiles?.[row]?.[col]?.paint(layer)
         }
       }
 
@@ -543,6 +542,20 @@ export default class AvO {
     }
   }
 
+  clearEntities () {
+    this.entities.forEach(entity => entity.deconstructor())
+    this.entities = []
+  }
+
+  resetMap () {
+    // TODO: do tiles need to be deconstructed?
+    this.map = {  // Game map and environment
+      tiles: [],  // 2D array of map tiles
+      width: 0,
+      height: 0,
+    }
+  }
+
   addRule (rule) {
     if (!rule) return
     const id = rule._type
@@ -554,6 +567,15 @@ export default class AvO {
       rule.deconstructor()
       this.rules.delete(id)
     })
+  }
+
+  resetCamera () {
+    this.camera = {
+      target: null,
+      x: 0,
+      y: 0,
+      zoom: 1,
+    }
   }
 
   /*
@@ -607,7 +629,7 @@ export default class AvO {
       const range = Math.ceil(entityA.size / TILE_SIZE)
       for (let row = entityA.row - range ; row <= entityA.row + range ; row++) {
         for (let col = entityA.col - range ; col <= entityA.col + range ; col++) {
-          const tile = this.tiles?.[row]?.[col]
+          const tile = this.map.tiles?.[row]?.[col]
           let collisionCorrection = Physics.checkCollision(entityA, tile)
 
           if (collisionCorrection) {
