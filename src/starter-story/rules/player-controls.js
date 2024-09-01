@@ -190,12 +190,11 @@ export default class PlayerControls extends Rule {
   Draw a line of sight (cast a ray) starting from a specified Entity (usually the
   hero), in the direction they're facing.
    */
-  paintLineOfSight (srcEntity) {
+  paintLineOfSight (srcEntity, losMaxDistance = TILE_SIZE * 4) {
     if (!srcEntity) return
     const c2d = this._app.canvas2d
     const entities = this._app.entities
     const tiles = this._app.tiles
-    const MAX_LINE_OF_SIGHT_DISTANCE = TILE_SIZE * 5
 
     this._app.applyCameraTransforms()
 
@@ -206,8 +205,8 @@ export default class PlayerControls extends Rule {
         y: srcEntity.y,
       },
       end: {
-        x: srcEntity.x + MAX_LINE_OF_SIGHT_DISTANCE * Math.cos(srcEntity.rotation),
-        y: srcEntity.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(srcEntity.rotation),
+        x: srcEntity.x + losMaxDistance * Math.cos(srcEntity.rotation),
+        y: srcEntity.y + losMaxDistance * Math.sin(srcEntity.rotation),
       }
     }
     const lineOfSightAngle = srcEntity.rotation
@@ -248,8 +247,8 @@ export default class PlayerControls extends Rule {
     })
 
     // Check if the Entity's LOS intersects with any "wall" tiles
-    const MAX_LINE_OF_SIGHT_DISTANCE_IN_TILES = Math.ceil(MAX_LINE_OF_SIGHT_DISTANCE / TILE_SIZE)
-    for (let i = 0 ; i <= MAX_LINE_OF_SIGHT_DISTANCE_IN_TILES ; i++) {
+    const losMaxDistanceInTiles = Math.ceil(losMaxDistance / TILE_SIZE)
+    for (let i = 0 ; i <= losMaxDistanceInTiles ; i++) {
       // Starting from tile the Entity's standing on, draw a line following the LOS.
       // Check each tile that line intersects with.
       const x = srcEntity.x + i * Math.cos(lineOfSightAngle) * TILE_SIZE
@@ -285,8 +284,8 @@ export default class PlayerControls extends Rule {
 
     if (!actualLineOfSightEndPoint) {
       actualLineOfSightEndPoint = {
-        x: srcEntity.x + MAX_LINE_OF_SIGHT_DISTANCE* Math.cos(srcEntity.rotation),
-        y: srcEntity.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(srcEntity.rotation),
+        x: srcEntity.x + losMaxDistance * Math.cos(srcEntity.rotation),
+        y: srcEntity.y + losMaxDistance * Math.sin(srcEntity.rotation),
       }
     }
 
