@@ -352,6 +352,11 @@ export default class Entity {
     }
   }
 
+  /*
+  Every entity has a shape that can be represented by a polygon. (Yes, even
+  circles.) Each vertex is a point in the polygon where two segments/lines/edges
+  intersect.
+   */
   get vertices () {
     const v = []
     if (this.shape === SHAPES.SQUARE) {
@@ -373,6 +378,30 @@ export default class Entity {
   }
 
   set vertices (val) { console.error('ERROR: Entity.vertices is read only') }
+
+  /*
+  Each segment is a line in the polygonal shape (or polygon-approximated shape)
+  of the entity.
+   */
+  get segments () {
+    const vertices = this.vertices
+    if (vertices.length < 2) return []
+    return vertices.map((vertex1, i) => {
+      const vertex2 = vertices[(i + 1) % vertices.length]
+      return {
+        start: {
+          x: vertex1.x,
+          y: vertex1.y,
+        },
+        end: {
+          x: vertex2.x,
+          y: vertex2.y,
+        },
+      }
+    })
+  }
+
+  set segments (val) { console.error('ERROR: Entity.segments is read only') }
 
   get solid () { return this._solid }
   get movable () { return this._movable }
