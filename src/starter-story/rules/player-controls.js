@@ -194,6 +194,7 @@ export default class PlayerControls extends Rule {
     if (!srcEntity) return
     const c2d = this._app.canvas2d
     const entities = this._app.entities
+    const tiles = this._app.tiles
     const MAX_LINE_OF_SIGHT_DISTANCE = TILE_SIZE * 5
 
     this._app.applyCameraTransforms()
@@ -209,6 +210,7 @@ export default class PlayerControls extends Rule {
         y: srcEntity.y + MAX_LINE_OF_SIGHT_DISTANCE * Math.sin(srcEntity.rotation),
       }
     }
+    const lineOfSightAngle = srcEntity.rotation
 
     let actualLineOfSightEndPoint = undefined
 
@@ -244,6 +246,42 @@ export default class PlayerControls extends Rule {
         }
       }
     })
+
+    // Check if the Entity's LOS intersects with any "wall" tiles
+    const MAX_LINE_OF_SIGHT_DISTANCE_IN_TILES = Math.ceil(MAX_LINE_OF_SIGHT_DISTANCE / TILE_SIZE)
+    for (let i = 0 ; i <= MAX_LINE_OF_SIGHT_DISTANCE_IN_TILES ; i++) {
+      // Starting from tile the Entity's standing on, draw a line following the LOS.
+      // Check each tile that line intersects with.
+      const x = srcEntity.x + i * Math.cos(lineOfSightAngle) * TILE_SIZE
+      const y = srcEntity.y + i * Math.sin(lineOfSightAngle) * TILE_SIZE
+      const col =  Math.floor(x / TILE_SIZE)
+      const row =  Math.floor(y / TILE_SIZE)
+      
+      const tile = tiles?.[row]?.[col]
+      if (!tile || !tile.solid) continue  // Skip if there's no tile, or if the tile isn't a blocking tile (i.e. not a wall) 
+
+      // Perform the same segment check as entities
+      const vertices = tile.vertices
+      for (let i = 0 ; i < vertices.length ; i++) {
+        const segment = {
+          start: {
+            x: vertices[i].x,
+            y: vertices[i].y,
+          },
+          end: {
+            x: vertices[(i + 1) % vertices.length].x,
+            y: vertices[(i + 1) % vertices.length].y,
+          },
+        }
+
+        // Find the intersection. We want to find the intersection point
+        // closest to the source Entity (the LOS ray's starting point).
+        const intersection = Physics.getLineIntersection(lineOfSight, segment)
+        if (!actualLineOfSightEndPoint || (intersection && intersection.distanceFactor < actualLineOfSightEndPoint.distanceFactor)) {
+          actualLineOfSightEndPoint = intersection
+        }
+      }
+    }
 
     if (!actualLineOfSightEndPoint) {
       actualLineOfSightEndPoint = {
