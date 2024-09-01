@@ -63,4 +63,24 @@ export default class Tile {
   }
 
   set vertices (val) { console.error('ERROR: Tile.vertices is read only') }
+
+  get segments () {
+    const vertices = this.vertices
+    if (vertices.length < 2) return []
+    return vertices.map((vertex1, i) => {
+      const vertex2 = vertices[(i + 1) % vertices.length]
+      return {
+        start: {
+          x: vertex1.x,
+          y: vertex1.y,
+        },
+        end: {
+          x: vertex2.x,
+          y: vertex2.y,
+        },
+      }
+    })
+  }
+
+  set segments (val) { console.error('ERROR: Tile.segments is read only') }
 }

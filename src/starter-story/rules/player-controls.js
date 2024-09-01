@@ -247,26 +247,15 @@ export default class PlayerControls extends Rule {
       if (!tile || !tile.solid) continue  // Skip if there's no tile, or if the tile isn't a blocking tile (i.e. not a wall) 
 
       // Perform the same segment check as entities
-      const vertices = tile.vertices
-      for (let i = 0 ; i < vertices.length ; i++) {
-        const segment = {
-          start: {
-            x: vertices[i].x,
-            y: vertices[i].y,
-          },
-          end: {
-            x: vertices[(i + 1) % vertices.length].x,
-            y: vertices[(i + 1) % vertices.length].y,
-          },
-        }
-
+      const segments = tile.segments
+      segments.forEach(segment => {
         // Find the intersection. We want to find the intersection point
         // closest to the source Entity (the LOS ray's starting point).
         const intersection = Physics.getLineIntersection(lineOfSight, segment)
         if (!actualLineOfSightEndPoint || (intersection && intersection.distanceFactor < actualLineOfSightEndPoint.distanceFactor)) {
           actualLineOfSightEndPoint = intersection
         }
-      }
+      })
     }
 
     if (!actualLineOfSightEndPoint) {
