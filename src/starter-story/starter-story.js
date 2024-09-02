@@ -43,7 +43,9 @@ export default class StarterStory extends Story {
 
     app.addEntity(new Wizard(app, 11, 4))
 
-    app.tiles = []
+    app.map.tiles = []
+    app.map.width = 24
+    app.map.height = 24
 
     const MAP_STRING = `
       ########################
@@ -72,18 +74,16 @@ export default class StarterStory extends Story {
       ########################
     `.replace(/\s/g, '')
 
-    const MAP_WIDTH = 24
-    const MAP_HEIGHT = 24
-    for (let row = 0 ; row < MAP_HEIGHT ; row++) {
-      app.tiles.push([])
-      for (let col = 0 ; col < MAP_WIDTH ; col++) {
-        const tileType = MAP_STRING[col * MAP_WIDTH + row]
+    for (let row = 0 ; row < app.map.height ; row++) {
+      app.map.tiles.push([])
+      for (let col = 0 ; col < app.map.width ; col++) {
+        const tileType = MAP_STRING[col * app.map.width + row]
         if (tileType === '#') {
           const tile = new WallTile(app, col, row)
-          app.tiles[row].push(tile)
+          app.map.tiles[row].push(tile)
         } else {
           const tile = new Tile(app, col, row)
-          app.tiles[row].push(tile)
+          app.map.tiles[row].push(tile)
         }
       }
     }

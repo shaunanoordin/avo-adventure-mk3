@@ -19,12 +19,10 @@ export default class Story {
   reset () {
     const app = this._app
     app.hero = undefined
-    app.entities = []
+    app.clearEntities()
+    app.resetMap()
     app.clearRules()
-    app.camera.target = null
-    app.camera.x = 0
-    app.camera.y = 0
-    app.camera.zoom = 1
+    app.resetCamera()
     app.resetPlayerInput()
     app.setInteractionMenu(false)
   }
