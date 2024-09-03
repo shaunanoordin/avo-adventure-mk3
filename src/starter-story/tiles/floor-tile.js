@@ -28,8 +28,8 @@ export default class FloorTile extends Tile {
       c2d.translate(this.x, this.y)
       c2d.scale(this.spriteScale, this.spriteScale)
 
-      const tgtX = Math.floor(-sizeX * this.spriteOffsetX)
-      const tgtY = Math.floor(-sizeY * this.spriteOffsetY)
+      const tgtX = this.spriteOffsetX
+      const tgtY = this.spriteOffsetY
 
       c2d.drawImage(this.spriteSheet.img,
         srcX, srcY, sizeX, sizeY,

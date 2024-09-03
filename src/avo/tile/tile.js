@@ -22,8 +22,8 @@ export default class Tile {
     this.spriteSizeX = 16  // Size of each sprite on the sprite sheet
     this.spriteSizeY = 16
     this.spriteScale = 2  // Scale of the sprite when paint()ed
-    this.spriteOffsetX = 0.5  // Offset of the sprite when paint()ed. 0.5 means "centre-aligned"
-    this.spriteOffsetY = 0.5
+    this.spriteOffsetX = -8  // Offset of the sprite when paint()ed
+    this.spriteOffsetY = -8
   }
 
   paint (layer) {

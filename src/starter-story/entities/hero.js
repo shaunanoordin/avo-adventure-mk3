@@ -21,8 +21,8 @@ export default class Hero extends Entity {
     this.spriteSizeX = 24
     this.spriteSizeY = 24
     this.spriteScale = 2
-    this.spriteOffsetX = 0.5 
-    this.spriteOffsetY = 0.75
+    this.spriteOffsetX = -12
+    this.spriteOffsetY = -18
 
     this.health = 3
     this.invulnerability = 0  // Invulnerability time
@@ -97,8 +97,8 @@ export default class Hero extends Entity {
       // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
 
       // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
-      const tgtX = -sizeX * this.spriteOffsetX  // Align centre of sprite to origin
-      const tgtY = -sizeY * this.spriteOffsetY  // Align bottom(-ish) of sprite to origin
+      const tgtX = this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align
+      const tgtY = this.spriteOffsetY  // Usually this is sizeY * -0.75 to nudge a sprite upwards 
 
       c2d.drawImage(this.spriteSheet.img,
         srcX, srcY, sizeX, sizeY,
