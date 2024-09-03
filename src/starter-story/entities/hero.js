@@ -61,10 +61,7 @@ export default class Hero extends Entity {
       : '#c0a0a0'
     super.paint(layer)
 
-    this._app.applyCameraTransforms()
-
-    const SPRITE_SIZE = 24
-    const SPRITE_SCALE = 2
+    app.applyCameraTransforms()
 
     // Draw the VFX
     if (layer === LAYERS.ENTITIES_LOWER && this.action?.name === 'charging') {
@@ -109,7 +106,7 @@ export default class Hero extends Entity {
       )
     }
 
-    this._app.undoCameraTransforms()
+    app.undoCameraTransforms()
   }
 
   /*

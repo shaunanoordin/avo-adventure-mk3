@@ -10,10 +10,20 @@ export default class Tile {
     this.movable = false
     this.mass = 100
 
+    this.x = 0  // This will be set by col
+    this.y = 0  // This will be set by row
     this.col = col
     this.row = row
     this.size = TILE_SIZE
     this.shape = SHAPES.SQUARE
+
+    // Animation
+    this.spriteSheet = undefined  // Image asset (see app.asset)
+    this.spriteSizeX = 16  // Size of each sprite on the sprite sheet
+    this.spriteSizeY = 16
+    this.spriteScale = 2  // Scale of the sprite when paint()ed
+    this.spriteOffsetX = 0.5  // Offset of the sprite when paint()ed. 0.5 means "centre-aligned"
+    this.spriteOffsetY = 0.5
   }
 
   paint (layer) {

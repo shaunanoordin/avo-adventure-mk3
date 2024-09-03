@@ -4,7 +4,7 @@ import { ROTATIONS } from '@avo/constants.js'
 
 import Hero from './entities/hero.js'
 import Wizard from './entities/wizard.js'
-import Tile from '@avo/tile'
+import FloorTile from './tiles/floor-tile'
 import WallTile from '@avo/tile/types/wall-tile.js'
 
 import PlayerControls from './rules/player-controls.js'
@@ -17,6 +17,7 @@ export default class StarterStory extends Story {
   get assets () {
     return {
       "hero": new ImageAsset('assets/avo-sprites-2024-08-samiel.png'),
+      "map": new ImageAsset('assets/avo-sprites-2024-09-simple-map-tiles.png'),
     }
   }
 
@@ -82,7 +83,7 @@ export default class StarterStory extends Story {
           const tile = new WallTile(app, col, row)
           app.map.tiles[row].push(tile)
         } else {
-          const tile = new Tile(app, col, row)
+          const tile = new FloorTile(app, col, row)
           app.map.tiles[row].push(tile)
         }
       }
