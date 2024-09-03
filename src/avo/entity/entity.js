@@ -46,6 +46,14 @@ export default class Entity {
     this._pushDeceleration = PUSH_DECELERATION_MODIFIER
     this._pushMaxSpeed = PUSH_MAX_SPEED_MODIFIER
 
+    // Animation
+    this.spriteSheet = undefined  // Image asset (see app.asset)
+    this.spriteSizeX = 16  // Size of each sprite on the sprite sheet
+    this.spriteSizeY = 16
+    this.spriteScale = 2  // Scale of the sprite when paint()ed
+    this.spriteOffsetX = -8  // Offset of the sprite when paint()ed
+    this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align
+
     // Additional animation
     this._spriteDirectionEW = DIRECTIONS.EAST  // Only used for 2-directional toon-style sprites
     this._spriteDirectionNS = DIRECTIONS.SOUTH

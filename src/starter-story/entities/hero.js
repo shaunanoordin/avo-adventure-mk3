@@ -17,6 +17,13 @@ export default class Hero extends Entity {
     this.intent = undefined
     this.action = undefined
 
+    this.spriteSheet = app.assets['hero']
+    this.spriteSizeX = 24
+    this.spriteSizeY = 24
+    this.spriteScale = 2
+    this.spriteOffsetX = -12
+    this.spriteOffsetY = -18
+
     this.health = 3
     this.invulnerability = 0  // Invulnerability time
   }
@@ -41,6 +48,8 @@ export default class Hero extends Entity {
 
   paint (layer = 0) {
     const app = this._app
+    const c2d = app.canvas2d
+    if (!this.spriteSheet) return
 
     if (this.invulnerability > 0) {  // If invulnerable, flash!
       const flash = Math.floor(this.invulnerability / 300) % 2
@@ -52,14 +61,7 @@ export default class Hero extends Entity {
       : '#c0a0a0'
     super.paint(layer)
 
-    const c2d = app.canvas2d
-    const animationSpriteSheet = app.assets['hero']
-    if (!animationSpriteSheet) return
-
-    this._app.applyCameraTransforms()
-
-    const SPRITE_SIZE = 24
-    const SPRITE_SCALE = 2
+    app.applyCameraTransforms()
 
     // Draw the VFX
     if (layer === LAYERS.ENTITIES_LOWER && this.action?.name === 'charging') {
@@ -84,27 +86,27 @@ export default class Hero extends Entity {
 
     // Draw the sprite
     if (layer === LAYERS.ENTITIES_LOWER) {
-      const srcX = this.getSpriteCol() * SPRITE_SIZE
-      const srcY = this.getSpriteRow() * SPRITE_SIZE
-      const sizeX = SPRITE_SIZE
-      const sizeY = SPRITE_SIZE
+      const srcX = this.getSpriteCol() * this.spriteSizeX
+      const srcY = this.getSpriteRow() * this.spriteSizeY
+      const sizeX = this.spriteSizeX
+      const sizeY = this.spriteSizeY
       const flipX = (this.getSpriteDirection() !== DIRECTIONS.WEST) ? 1 : -1
 
       c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
-      c2d.scale(flipX * SPRITE_SCALE, SPRITE_SCALE)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
+      c2d.scale(flipX * this.spriteScale, this.spriteScale)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
       // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
 
       // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
-      const tgtX = -sizeX / 2  // Align centre of sprite to origin
-      const tgtY = -sizeY * 0.75  // Align bottom(-ish) of sprite to origin
+      const tgtX = this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align
+      const tgtY = this.spriteOffsetY  // Usually this is sizeY * -0.75 to nudge a sprite upwards 
 
-      c2d.drawImage(animationSpriteSheet.img,
+      c2d.drawImage(this.spriteSheet.img,
         srcX, srcY, sizeX, sizeY,
         tgtX, tgtY, sizeX, sizeY
       )
     }
 
-    this._app.undoCameraTransforms()
+    app.undoCameraTransforms()
   }
 
   /*
