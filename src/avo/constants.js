@@ -54,10 +54,11 @@ export const LAYERS = {
   BACKGROUND: 0,  // Background layer, mostly for floors.
   ENTITIES_LOWER: 1,  // Main object layer.
   ENTITIES_UPPER: 2,  // Additional object layer (e.g. flying objects)
-  HUD: 3,
+  CEILING: 3,
+  HUD: 4,
 }
 export const MIN_LAYER = 0
-export const MAX_LAYER = 3
+export const MAX_LAYER = 4
 
 /*
 While the engine is technically able to support any given framerate (determined
