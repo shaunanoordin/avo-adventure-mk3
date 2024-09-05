@@ -135,6 +135,47 @@ export default class Entity {
   }
 
   /*
+  Paint the entity's sprite, at the entity's position.
+  Note: only specify values for args if you want to override the automatic
+  calculations.
+   */
+  paintSprite (args = {
+    spriteCol: undefined,
+    spriteRow: undefined,
+    spriteOffsetX: undefined,
+    spriteOffsetY: undefined,
+    spriteScale: undefined,
+  }) {
+    const app = this._app
+    const c2d = app.canvas2d
+    if (!this.spriteSheet) return
+
+    app.applyCameraTransforms()
+
+    const srcX = (args?.spriteCol ?? this.getSpriteCol()) * this.spriteSizeX
+    const srcY = (args?.spriteRow ?? this.getSpriteRow()) * this.spriteSizeY
+    const sizeX = this.spriteSizeX
+    const sizeY = this.spriteSizeY
+    const scale = args?.spriteScale ?? this.spriteScale
+    const flipX = (this.getSpriteDirection() !== DIRECTIONS.WEST) ? 1 : -1
+
+    c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
+    c2d.scale(flipX * scale, scale)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
+    // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
+
+    // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
+    const tgtX = args?.spriteOffsetX ?? this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align
+    const tgtY = args?.spriteOffsetY ?? this.spriteOffsetY  // Usually this is sizeY * -0.75 to nudge a sprite upwards 
+
+    c2d.drawImage(this.spriteSheet.img,
+      srcX, srcY, sizeX, sizeY,
+      tgtX, tgtY, sizeX, sizeY
+    )
+
+    app.undoCameraTransforms()
+  }
+
+  /*
   Section: Game Logic
   ----------------------------------------------------------------------------
    */
