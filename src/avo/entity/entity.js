@@ -62,6 +62,11 @@ export default class Entity {
   ----------------------------------------------------------------------------
    */
 
+  /*
+  Run a single frame of game logic for the entity.
+  By default, this just handles physics (positioning and movement). Child
+  entities should generally call super.play() to ensure proper physics & etc.
+   */
   play () {
     // Update position
     this.x += (this.moveX + this.pushX)
@@ -76,7 +81,9 @@ export default class Entity {
   }
 
   /*
-  Paint entity's hitbox.
+  Paint (render) the entity.
+  By default, this just paints the shape (hitbox). Child entities should do
+  something more interesting, such as calling this.paintSprite().
    */
   paint (layer = 0) {
     const c2d = this._app.canvas2d
