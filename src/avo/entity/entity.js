@@ -276,12 +276,15 @@ export default class Entity {
    */
 
   /*
-  NOTE: An Entity can support two styles of sprite sheets:
-  1. 4-directional (Zelda-style) sprite sheets, which have sprites facing N, S,
-     E, and W for each "action"/"state".
-  2. 2-directional (Toon-style) sprite sheets, which have sprites facing SE and
-     NE for each "action"/"state", which are then mirrored if the entity is
-     facing W.
+  NOTE: an Entity usually has one of two styles of sprite sheets:
+  1. 4-directional (Zelda-style) sprite sheets, used for characters/actors.
+  2. Static sprite sheets, used for environmental objects and etc.
+
+  For 4-directional sprite sheets, each sprite has a variation that faces a
+  different cardinal direction. The sprite sheet is usually divided so that each
+  row represents a state/action (e.g. idle0, move1, move2) and each column
+  represents a direction (South, East, North, West - though the West column can
+  be omitted if we just flip the East-facing sprite in-game).
    */
 
   /*
