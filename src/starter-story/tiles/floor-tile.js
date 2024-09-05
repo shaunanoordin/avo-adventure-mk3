@@ -14,9 +14,9 @@ export default class FloorTile extends Tile {
 
   paint (layer = 0) {
     if (layer === LAYERS.BACKGROUND) {
-      this.paintSprite()
+      this.paintSprite({
+        spriteRow: 2,
+      })
     }
   }
-
-  getSpriteRow () { return 2 }
 }
