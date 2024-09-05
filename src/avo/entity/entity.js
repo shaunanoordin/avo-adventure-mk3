@@ -53,10 +53,6 @@ export default class Entity {
     this.spriteScale = 2  // Scale of the sprite when paint()ed
     this.spriteOffsetX = -8  // Offset of the sprite when paint()ed
     this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align
-
-    // Additional animation
-    this._spriteDirectionEW = DIRECTIONS.EAST  // Only used for 2-directional toon-style sprites
-    this._spriteDirectionNS = DIRECTIONS.SOUTH
   }
 
   deconstructor () {}
@@ -300,13 +296,6 @@ export default class Entity {
   }
 
   /*
-  Get the directional orientation of the sprite, for a 2-directional
-  (Toon-style) sprite sheet.
-   */
-  getSpriteDirectionEW () { return this._spriteDirectionEW }
-  getSpriteDirectionNS () { return this._spriteDirectionNS }
-
-  /*
   Get the column/row of the current sprite on the sprite sheet.
    */
   getSpriteCol () { return 0 }
@@ -348,19 +337,6 @@ export default class Entity {
     this._rotation = val
     while (this._rotation > Math.PI) { this._rotation -= Math.PI * 2 }
     while (this._rotation <= -Math.PI) { this._rotation += Math.PI * 2 }
-
-    // Keep track of sprite direction for 2-directional toon-type sprites
-    if (this._rotation < 0) {
-      this._spriteDirectionNS = DIRECTIONS.NORTH
-    } else if (this._rotation >= 0) {  // Favour south-facing
-      this._spriteDirectionNS = DIRECTIONS.SOUTH
-    }
-    const absRotation = Math.abs(this._rotation)
-    if (absRotation < Math.PI * 0.5) {
-      this._spriteDirectionEW = DIRECTIONS.EAST
-    } else if (absRotation > Math.PI * 0.5) {
-      this._spriteDirectionEW = DIRECTIONS.WEST
-    }
   }
 
   /*
