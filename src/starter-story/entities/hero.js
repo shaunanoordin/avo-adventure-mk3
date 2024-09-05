@@ -23,6 +23,7 @@ export default class Hero extends Entity {
     this.spriteScale = 2
     this.spriteOffsetX = -12
     this.spriteOffsetY = -18
+    this.spriteFlipEastToWest = true
 
     this.health = 3
     this.invulnerability = 0  // Invulnerability time

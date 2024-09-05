@@ -53,6 +53,7 @@ export default class Entity {
     this.spriteScale = 2  // Scale of the sprite when paint()ed
     this.spriteOffsetX = -8  // Offset of the sprite when paint()ed
     this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align
+    this.spriteFlipEastToWest = false  // For 4-directional sprite sheets, we can automatically flip East-facing sprites into West-facing sprites during paintSprite().
   }
 
   deconstructor () {}
@@ -164,7 +165,7 @@ export default class Entity {
     const sizeX = this.spriteSizeX
     const sizeY = this.spriteSizeY
     const scale = args?.spriteScale ?? this.spriteScale
-    const flipX = (this.getSpriteDirection() !== DIRECTIONS.WEST) ? 1 : -1
+    const flipX = (this.spriteFlipEastToWest && this.getSpriteDirection() === DIRECTIONS.WEST) ? -1 : 1
 
     c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
     c2d.scale(flipX * scale, scale)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
