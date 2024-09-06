@@ -26,11 +26,15 @@ export default class Tile {
     this.spriteOffsetY = -8
   }
 
+  play () {
+    console.error('Tile.play() should never be called.')
+  }
+
   paint (layer) {
     const c2d = this._app.canvas2d
     this._app.applyCameraTransforms()
 
-    if (layer === LAYERS.BACKGROUND) {
+    if (layer === LAYERS.BOTTOM) {
       c2d.fillStyle = this.colour
       c2d.beginPath()
       c2d.rect(Math.floor(this.x - this.size / 2), Math.floor(this.y - this.size / 2), this.size, this.size)
@@ -40,7 +44,58 @@ export default class Tile {
     this._app.undoCameraTransforms()
   }
 
+  /*
+  Paint the tiles's sprite, at the tile's position.
+  Note: only specify values for args if you want to override the automatic
+  calculations.
+   */
+  paintSprite (args = {
+    spriteCol: undefined,
+    spriteRow: undefined,
+    spriteOffsetX: undefined,
+    spriteOffsetY: undefined,
+    spriteScale: undefined,
+  }) {
+    const app = this._app
+    const c2d = app.canvas2d
+    if (!this.spriteSheet) return
+
+    app.applyCameraTransforms()
+
+    const srcX = (args?.spriteCol ?? this.getSpriteCol()) * this.spriteSizeX
+    const srcY = (args?.spriteRow ?? this.getSpriteRow()) * this.spriteSizeY
+    const sizeX = this.spriteSizeX
+    const sizeY = this.spriteSizeY
+    const scale = args?.spriteScale ?? this.spriteScale
+
+    c2d.translate(this.x, this.y)
+    c2d.scale(scale, scale)
+
+    const tgtX = args?.spriteOffsetX ?? this.spriteOffsetX
+    const tgtY = args?.spriteOffsetY ?? this.spriteOffsetY
+
+    c2d.drawImage(this.spriteSheet.img,
+      srcX, srcY, sizeX, sizeY,
+      tgtX, tgtY, sizeX, sizeY
+    )
+
+    app.undoCameraTransforms()
+  }
+
+  /*
+  Section: Event Handling
+  ----------------------------------------------------------------------------
+   */
+
   onCollision (target, collisionCorrection) {}
+
+  /*
+  Section: Animation
+  ----------------------------------------------------------------------------
+   */
+  
+  getSpriteCol () { return 0 }
+  getSpriteRow () { return 0 }
 
   /*
   Section: Getters and Setters

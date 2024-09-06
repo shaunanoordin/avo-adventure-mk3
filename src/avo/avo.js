@@ -219,7 +219,7 @@ export default class AvO {
     c2d.lineWidth = 2
     // ----------------
 
-    // Draw grid
+    // Draw background grid
     // ----------------
     const GRID_SIZE = TILE_SIZE * camera.zoom
     const offsetX = (this.camera.x % GRID_SIZE) - GRID_SIZE
@@ -245,16 +245,21 @@ export default class AvO {
     }
     // ----------------
 
-    // Draw entities and other elements
+    // Draw map tiles, entities, and other elements
     // ----------------
     for (let layer = MIN_LAYER ; layer <= MAX_LAYER ; layer++) {
+
+      // 1. draw map tiles first, as these form the background. 
       for (let row = 0 ; row < this.map.height ; row++) {
         for (let col = 0 ; col < this.map.width ; col++) {
           this.map.tiles?.[row]?.[col]?.paint(layer)
         }
       }
 
+      // 2. draw entities next.
       this.entities.forEach(entity => entity.paint(layer))
+
+      // 3. draw rules last, as these usually represent HUD visualisations.
       this.rules.forEach(rule => rule.paint(layer))
     }
     // ----------------

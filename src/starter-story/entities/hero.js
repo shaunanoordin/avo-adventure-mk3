@@ -23,6 +23,7 @@ export default class Hero extends Entity {
     this.spriteScale = 2
     this.spriteOffsetX = -12
     this.spriteOffsetY = -18
+    this.spriteFlipEastToWest = true
 
     this.health = 3
     this.invulnerability = 0  // Invulnerability time
@@ -61,10 +62,10 @@ export default class Hero extends Entity {
       : '#c0a0a0'
     super.paint(layer)
 
-    app.applyCameraTransforms()
-
     // Draw the VFX
-    if (layer === LAYERS.ENTITIES_LOWER && this.action?.name === 'charging') {
+    if (layer === LAYERS.MIDDLE && this.action?.name === 'charging') {
+      app.applyCameraTransforms()
+
       const minRadius = this.size * 0.5
       const maxRadius = this.size * 1
       const range = maxRadius - minRadius
@@ -82,31 +83,14 @@ export default class Hero extends Entity {
       c2d.beginPath()
       c2d.arc(this.x, this.y, maxRadius, 0, 2 * Math.PI)
       c2d.stroke()
+
+      app.undoCameraTransforms()
     }
 
     // Draw the sprite
-    if (layer === LAYERS.ENTITIES_LOWER) {
-      const srcX = this.getSpriteCol() * this.spriteSizeX
-      const srcY = this.getSpriteRow() * this.spriteSizeY
-      const sizeX = this.spriteSizeX
-      const sizeY = this.spriteSizeY
-      const flipX = (this.getSpriteDirection() !== DIRECTIONS.WEST) ? 1 : -1
-
-      c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
-      c2d.scale(flipX * this.spriteScale, this.spriteScale)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
-      // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
-
-      // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
-      const tgtX = this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align
-      const tgtY = this.spriteOffsetY  // Usually this is sizeY * -0.75 to nudge a sprite upwards 
-
-      c2d.drawImage(this.spriteSheet.img,
-        srcX, srcY, sizeX, sizeY,
-        tgtX, tgtY, sizeX, sizeY
-      )
+    if (layer === LAYERS.MIDDLE) {
+      this.paintSprite()
     }
-
-    app.undoCameraTransforms()
   }
 
   /*

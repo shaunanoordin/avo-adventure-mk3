@@ -36,7 +36,7 @@ export default class CNY2022Controls extends Rule {
     const camera = this._app.camera
     const pointer = this._app.playerInput.pointerCurrent
 
-    if (layer === LAYERS.HUD && pointer) {
+    if (layer === LAYERS.OVERLAY && pointer) {
       const crosshairX = pointer.x
       const crosshairY = pointer.y
       const crosshairSize = 16
