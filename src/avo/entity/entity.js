@@ -30,16 +30,19 @@ export default class Entity {
     this.shape = SHAPES.CIRCLE
     this.shapePolygonPath = null  // Only applicable if shape === SHAPES.POLYGON
 
-    // Physics (movement): self locomotion and external (pushed) movement.
+    // Physics (movement): self locomotion and external (pushed) movement
     this.moveX = 0
     this.moveY = 0
     this.pushX = 0
     this.pushY = 0
 
     // Additional physics
-    this._solid = true  // If solid, then can interact with other solid physics entities.
-    this._movable = true  // If movable, then can be moved by external forces, e.g. by being pushed by another solid entity.
-    this._mass = 10  // Only matters if solid && movable
+    this.solid = true  // If solid, then can interact with other solid physics entities.
+    this.movable = true  // If movable, then can be moved by external forces, e.g. by being pushed by another solid entity.
+    this.mass = 10  // Only matters if solid && movable.
+    
+    // Additional "dynamic" physics
+    // Uses getters & setters to adjust values, e.g. in response to actions.
     this._moveAcceleration = MOVE_ACCELERATION_MODIFIER
     this._moveDeceleration = MOVE_DECELERATION_MODIFIER
     this._moveMaxSpeed = MOVE_MAX_SPEED_MODIFIER
@@ -439,18 +442,12 @@ export default class Entity {
 
   set segments (val) { console.error('ERROR: Entity.segments is read only') }
 
-  get solid () { return this._solid }
-  get movable () { return this._movable }
-  get mass () {  return this._mass }
   get moveAcceleration () { return this._moveAcceleration }
   get moveDeceleration () { return this._moveDeceleration }
   get moveMaxSpeed () { return this._moveMaxSpeed }
   get pushDeceleration () { return this._pushDeceleration }
   get pushMaxSpeed () { return this._pushMaxSpeed }
 
-  set solid (val) { this._solid = val }
-  set movable (val) { this._movable = val }
-  set mass (val) {  this._mass = val }
   set moveAcceleration (val) { this._moveAcceleration = val }
   set moveDeceleration (val) { this._moveDeceleration = val }
   set moveMaxSpeed (val) { this._moveMaxSpeed = val }
