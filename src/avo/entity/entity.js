@@ -37,8 +37,8 @@ export default class Entity {
     this.pushY = 0
 
     // Additional physics
-    this._solid = true
-    this._movable = true
+    this._solid = true  // If solid, then can interact with other solid physics entities.
+    this._movable = true  // If movable, then can be moved by external forces, e.g. by being pushed by another solid entity.
     this._mass = 10  // Only matters if solid && movable
     this._moveAcceleration = MOVE_ACCELERATION_MODIFIER
     this._moveDeceleration = MOVE_DECELERATION_MODIFIER
