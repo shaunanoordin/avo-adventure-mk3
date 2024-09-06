@@ -13,7 +13,7 @@ export default class FloorTile extends Tile {
   }
 
   paint (layer = 0) {
-    if (layer === LAYERS.BACKGROUND) {
+    if (layer === LAYERS.BOTTOM) {
       this.paintSprite({
         spriteRow: 2,
       })

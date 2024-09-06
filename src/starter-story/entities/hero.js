@@ -63,7 +63,7 @@ export default class Hero extends Entity {
     super.paint(layer)
 
     // Draw the VFX
-    if (layer === LAYERS.ENTITIES_LOWER && this.action?.name === 'charging') {
+    if (layer === LAYERS.MIDDLE && this.action?.name === 'charging') {
       app.applyCameraTransforms()
 
       const minRadius = this.size * 0.5
@@ -88,7 +88,7 @@ export default class Hero extends Entity {
     }
 
     // Draw the sprite
-    if (layer === LAYERS.ENTITIES_LOWER) {
+    if (layer === LAYERS.MIDDLE) {
       this.paintSprite()
     }
   }

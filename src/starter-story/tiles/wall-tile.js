@@ -13,11 +13,11 @@ export default class WallTile extends Tile {
   }
 
   paint (layer = 0) {
-    if (layer === LAYERS.BACKGROUND) {
+    if (layer === LAYERS.BOTTOM) {
       this.paintSprite({
         spriteRow: 1,
       })
-    } else if (layer === LAYERS.CEILING) {
+    } else if (layer === LAYERS.TOP) {
       this.paintSprite({
         spriteRow: 0,
         spriteOffsetY: this.spriteOffsetY * 3

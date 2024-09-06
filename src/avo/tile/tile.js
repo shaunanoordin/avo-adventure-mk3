@@ -34,7 +34,7 @@ export default class Tile {
     const c2d = this._app.canvas2d
     this._app.applyCameraTransforms()
 
-    if (layer === LAYERS.BACKGROUND) {
+    if (layer === LAYERS.BOTTOM) {
       c2d.fillStyle = this.colour
       c2d.beginPath()
       c2d.rect(Math.floor(this.x - this.size / 2), Math.floor(this.y - this.size / 2), this.size, this.size)

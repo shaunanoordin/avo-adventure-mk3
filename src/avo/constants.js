@@ -51,13 +51,12 @@ The paint() step (of the core engine, each Entity, and each Rule) can paint
 information in different visual layers.
  */
 export const LAYERS = {
-  BACKGROUND: 0,  // Background layer, mostly for floors.
-  ENTITIES_LOWER: 1,  // Main object layer.
-  ENTITIES_UPPER: 2,  // Additional object layer (e.g. flying objects)
-  CEILING: 3,
-  HUD: 4,
+  BOTTOM: 1,
+  MIDDLE: 2,  // Main object layer.
+  TOP: 3,
+  OVERLAY: 4,
 }
-export const MIN_LAYER = 0
+export const MIN_LAYER = 1
 export const MAX_LAYER = 4
 
 /*
