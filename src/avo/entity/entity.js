@@ -14,10 +14,11 @@ export default class Entity {
   constructor (app) {
     this._app = app
     this._type = 'entity'
-    this.name = ''  // Optional identifier
+    this.name = ''  // Optional identifier.
 
     // General entity attributes
     this.colour = '#ccc'
+    this.flying = 0  // Pseudo z-axis. If 0, entity's "feet" are touching the ground.
 
     // Expired entities are removed at the end of the cycle.
     this._expired = false
@@ -26,9 +27,9 @@ export default class Entity {
     this.x = 0
     this.y = 0
     this.size = TILE_SIZE
-    this._rotation = ROTATIONS.SOUTH  // Rotation in radians
+    this._rotation = ROTATIONS.SOUTH  // Rotation in radians.
     this.shape = SHAPES.CIRCLE
-    this.shapePolygonPath = null  // Only applicable if shape === SHAPES.POLYGON
+    this.shapePolygonPath = null  // Only applicable if shape === SHAPES.POLYGON.
 
     // Physics (movement): self locomotion and external (pushed) movement
     this.moveX = 0
@@ -50,13 +51,14 @@ export default class Entity {
     this._pushMaxSpeed = PUSH_MAX_SPEED_MODIFIER
 
     // Animation
-    this.spriteSheet = undefined  // Image asset (see app.asset)
-    this.spriteSizeX = 16  // Size of each sprite on the sprite sheet
+    this.spriteSheet = undefined  // Image asset (see app.asset).
+    this.spriteSizeX = 16  // Size of each sprite on the sprite sheet.
     this.spriteSizeY = 16
-    this.spriteScale = 2  // Scale of the sprite when paint()ed
-    this.spriteOffsetX = -8  // Offset of the sprite when paint()ed
-    this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align
+    this.spriteScale = 2  // Scale of the sprite when paint()ed.
+    this.spriteOffsetX = -8  // Offset of the sprite when paint()ed.
+    this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align.
     this.spriteFlipEastToWest = false  // For 4-directional sprite sheets, we can automatically flip East-facing sprites into West-facing sprites during paintSprite().
+    this.spriteFlyingAddsToOffsetY = true  // If entity is flying, add that value to offsetY.
   }
 
   deconstructor () {}
@@ -175,8 +177,10 @@ export default class Entity {
     // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
 
     // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
-    const tgtX = args?.spriteOffsetX ?? this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align
-    const tgtY = args?.spriteOffsetY ?? this.spriteOffsetY  // Usually this is sizeY * -0.75 to nudge a sprite upwards 
+    let tgtX = args?.spriteOffsetX ?? this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align.
+    let tgtY = args?.spriteOffsetY ?? this.spriteOffsetY  // Usually this is sizeY * -0.75 to nudge a sprite upwards.
+
+    if (this.spriteFlyingAddsToOffsetY) tgtY -= this.flying
 
     c2d.drawImage(this.spriteSheet.img,
       srcX, srcY, sizeX, sizeY,
