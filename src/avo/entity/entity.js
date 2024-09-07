@@ -18,7 +18,7 @@ export default class Entity {
 
     // General entity attributes
     this.colour = '#ccc'
-    this.flying = 0  // Pseudo z-axis. If 0, entity's "feet" are touching the ground.
+    this.flying = false  // If flying, z position isn't affected by gravity.
 
     // Expired entities are removed at the end of the cycle.
     this._expired = false
@@ -26,6 +26,7 @@ export default class Entity {
     // Positional data
     this.x = 0
     this.y = 0
+    this.z = 0  // Pseudo position on z-axis. Doesn't affect collision. If 0, entity's "feet" are touching the ground.
     this.size = TILE_SIZE
     this._rotation = ROTATIONS.SOUTH  // Rotation in radians.
     this.shape = SHAPES.CIRCLE
@@ -58,7 +59,7 @@ export default class Entity {
     this.spriteOffsetX = -8  // Offset of the sprite when paint()ed.
     this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align.
     this.spriteFlipEastToWest = false  // For 4-directional sprite sheets, we can automatically flip East-facing sprites into West-facing sprites during paintSprite().
-    this.spriteFlyingAddsToOffsetY = true  // If entity is flying, add that value to offsetY.
+    this.spriteZAddsToOffsetY = true  // If entity has a positive z-position, add that value to offsetY.
   }
 
   deconstructor () {}
@@ -180,7 +181,7 @@ export default class Entity {
     let tgtX = args?.spriteOffsetX ?? this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align.
     let tgtY = args?.spriteOffsetY ?? this.spriteOffsetY  // Usually this is sizeY * -0.75 to nudge a sprite upwards.
 
-    if (this.spriteFlyingAddsToOffsetY) tgtY -= this.flying
+    if (this.spriteZAddsToOffsetY) tgtY -= Math.max(0, this.z)
 
     c2d.drawImage(this.spriteSheet.img,
       srcX, srcY, sizeX, sizeY,
