@@ -219,6 +219,7 @@ export default class Hero extends Entity {
       } else if (action.state === 'execution') {
         this.pushX += PUSH_POWER * Math.cos(action.rotation)
         this.pushY += PUSH_POWER * Math.sin(action.rotation)
+        this.z += 2
 
         action.counter += FRAME_DURATION
         if (action.counter >= EXECUTION_DURATION) {

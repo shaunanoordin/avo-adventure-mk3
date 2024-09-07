@@ -7,6 +7,7 @@ const PUSH_MAX_SPEED_MODIFIER = 32
 const MOVE_ACCELERATION_MODIFIER = 0.4
 const MOVE_DECELERATION_MODIFIER = 0.4
 const PUSH_DECELERATION_MODIFIER = 0.1
+const GRAVITY = 0.2
 
 const MASS_TO_LINEWIDTH_RATIO = 5
 
@@ -85,6 +86,11 @@ export default class Entity {
 
     // Upkeep: limit speed
     this.doMaxSpeedLimit()
+
+    // Upkeep: gravity
+    if (this.z > 0) {
+      this.z = Math.max(0, this.z - GRAVITY)
+    }
   }
 
   /*
