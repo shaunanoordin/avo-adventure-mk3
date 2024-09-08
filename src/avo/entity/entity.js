@@ -2,14 +2,17 @@ import {
   TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, LAYERS,
 } from '@avo/constants.js'
 
-const MOVE_MAX_SPEED_MODIFIER = 4
-const PUSH_MAX_SPEED_MODIFIER = 32
-const MOVE_ACCELERATION_MODIFIER = 0.4
-const MOVE_DECELERATION_MODIFIER = 0.4
-const PUSH_DECELERATION_MODIFIER = 0.1
-const GRAVITY = 0.2
+// Default physics config
+// Adjust to whatever "feels" right.
+const MOVE_MAX_SPEED = 4
+const PUSH_MAX_SPEED = 32
+const MOVE_ACCELERATION = 0.4
+const MOVE_DECELERATION = 0.4
+const PUSH_DECELERATION = 0.4
+const GRAVITY = -0.2
 
-const MASS_TO_LINEWIDTH_RATIO = 5
+// Default visuals config
+const PAINT_HITBOX_MASS_TO_LINEWIDTH_FACTOR = 0.2
 
 export default class Entity {
   constructor (app) {
@@ -18,7 +21,7 @@ export default class Entity {
     this.name = ''  // Optional identifier.
 
     // General entity attributes
-    this.colour = '#ccc'
+    this.colour = '#c0c0c0'
     this.flying = false  // If flying, z position isn't affected by gravity.
 
     // Expired entities are removed at the end of the cycle.
@@ -46,11 +49,11 @@ export default class Entity {
     
     // Additional "dynamic" physics
     // Uses getters & setters to adjust values, e.g. in response to actions.
-    this._moveAcceleration = MOVE_ACCELERATION_MODIFIER
-    this._moveDeceleration = MOVE_DECELERATION_MODIFIER
-    this._moveMaxSpeed = MOVE_MAX_SPEED_MODIFIER
-    this._pushDeceleration = PUSH_DECELERATION_MODIFIER
-    this._pushMaxSpeed = PUSH_MAX_SPEED_MODIFIER
+    this._moveAcceleration = MOVE_ACCELERATION
+    this._moveDeceleration = MOVE_DECELERATION
+    this._moveMaxSpeed = MOVE_MAX_SPEED
+    this._pushDeceleration = PUSH_DECELERATION
+    this._pushMaxSpeed = PUSH_MAX_SPEED
 
     // Animation
     this.spriteSheet = undefined  // Image asset (see app.asset).
@@ -89,7 +92,7 @@ export default class Entity {
 
     // Upkeep: gravity
     if (this.z > 0) {
-      this.z = Math.max(0, this.z - GRAVITY)
+      this.z = Math.max(0, this.z + GRAVITY)
     }
   }
 
@@ -104,8 +107,8 @@ export default class Entity {
 
     if (layer === LAYERS.MIDDLE) {
       c2d.fillStyle = this.colour
-      c2d.strokeStyle = '#444'
-      c2d.lineWidth = this.mass / MASS_TO_LINEWIDTH_RATIO
+      c2d.strokeStyle = '#404040'
+      c2d.lineWidth = this.mass * PAINT_HITBOX_MASS_TO_LINEWIDTH_FACTOR
 
       // Draw shape outline
       switch (this.shape) {
