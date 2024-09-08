@@ -9,7 +9,7 @@ const PUSH_MAX_SPEED = 32
 const MOVE_ACCELERATION = 0.4
 const MOVE_DECELERATION = 0.4
 const PUSH_DECELERATION = 0.4
-const GRAVITY = -0.2
+const GRAVITY = -0.4
 
 // Default visuals config
 const PAINT_HITBOX_MASS_TO_LINEWIDTH_FACTOR = 0.2

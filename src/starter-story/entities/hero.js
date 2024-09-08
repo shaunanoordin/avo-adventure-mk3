@@ -195,8 +195,7 @@ export default class Hero extends Entity {
       const WINDUP_DURATION = FRAME_DURATION * 5
       const EXECUTION_DURATION = FRAME_DURATION * 2
       const WINDDOWN_DURATION = FRAME_DURATION * 10
-      const PUSH_POWER = this.size * 0.5 * ((action.power || 0) / MAX_CHARGING_POWER)
-      
+
       if (!action.state) {  // Trigger only once, at the start of the action
 
         // Figure out the initial direction of the dash
@@ -217,9 +216,10 @@ export default class Hero extends Entity {
           action.counter = 0
         }
       } else if (action.state === 'execution') {
-        this.pushX += PUSH_POWER * Math.cos(action.rotation)
-        this.pushY += PUSH_POWER * Math.sin(action.rotation)
-        this.z += 2
+        const pushPower = this.size * 0.5 * ((action.power || 0) / MAX_CHARGING_POWER)
+        this.pushX += pushPower * Math.cos(action.rotation)
+        this.pushY += pushPower * Math.sin(action.rotation)
+        this.z += 4
 
         action.counter += FRAME_DURATION
         if (action.counter >= EXECUTION_DURATION) {
@@ -270,7 +270,7 @@ export default class Hero extends Entity {
   }
 
   get pushDeceleration () {
-    if (this.action?.name === 'skill' && this.action?.state === 'execution') return 0
+    if (this.z > 0) return this._pushDeceleration / 2  // When jumping off the ground, it's harder to slow down 
     return this._pushDeceleration
   }
 
