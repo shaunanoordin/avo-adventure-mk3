@@ -2,22 +2,27 @@ import {
   TILE_SIZE, ROTATIONS, DIRECTIONS, SHAPES, LAYERS,
 } from '@avo/constants.js'
 
-const MOVE_MAX_SPEED_MODIFIER = 4
-const PUSH_MAX_SPEED_MODIFIER = 32
-const MOVE_ACCELERATION_MODIFIER = 0.4
-const MOVE_DECELERATION_MODIFIER = 0.4
-const PUSH_DECELERATION_MODIFIER = 0.1
+// Default physics config
+// Adjust to whatever "feels" right.
+const MOVE_MAX_SPEED = 4
+const PUSH_MAX_SPEED = 32
+const MOVE_ACCELERATION = 0.4
+const MOVE_DECELERATION = 0.4
+const PUSH_DECELERATION = 0.4
+const GRAVITY = -0.4
 
-const MASS_TO_LINEWIDTH_RATIO = 5
+// Default visuals config
+const PAINT_HITBOX_MASS_TO_LINEWIDTH_FACTOR = 0.2
 
 export default class Entity {
   constructor (app) {
     this._app = app
     this._type = 'entity'
-    this.name = ''  // Optional identifier
+    this.name = ''  // Optional identifier.
 
     // General entity attributes
-    this.colour = '#ccc'
+    this.colour = '#c0c0c0'
+    this.flying = false  // If flying, z position isn't affected by gravity.
 
     // Expired entities are removed at the end of the cycle.
     this._expired = false
@@ -25,35 +30,40 @@ export default class Entity {
     // Positional data
     this.x = 0
     this.y = 0
+    this.z = 0  // Pseudo position on z-axis. Doesn't affect collision. If 0, entity's "feet" are touching the ground.
     this.size = TILE_SIZE
-    this._rotation = ROTATIONS.SOUTH  // Rotation in radians
+    this._rotation = ROTATIONS.SOUTH  // Rotation in radians.
     this.shape = SHAPES.CIRCLE
-    this.shapePolygonPath = null  // Only applicable if shape === SHAPES.POLYGON
+    this.shapePolygonPath = null  // Only applicable if shape === SHAPES.POLYGON.
 
-    // Physics (movement): self locomotion and external (pushed) movement.
+    // Physics (movement): self locomotion and external (pushed) movement
     this.moveX = 0
     this.moveY = 0
     this.pushX = 0
     this.pushY = 0
 
     // Additional physics
-    this._solid = true
-    this._movable = true
-    this._mass = 10  // Only matters if solid && movable
-    this._moveAcceleration = MOVE_ACCELERATION_MODIFIER
-    this._moveDeceleration = MOVE_DECELERATION_MODIFIER
-    this._moveMaxSpeed = MOVE_MAX_SPEED_MODIFIER
-    this._pushDeceleration = PUSH_DECELERATION_MODIFIER
-    this._pushMaxSpeed = PUSH_MAX_SPEED_MODIFIER
+    this.solid = true  // If solid, then can interact with other solid physics entities.
+    this.movable = true  // If movable, then can be moved by external forces, e.g. by being pushed by another solid entity.
+    this.mass = 10  // Only matters if solid && movable.
+    
+    // Additional "dynamic" physics
+    // Uses getters & setters to adjust values, e.g. in response to actions.
+    this._moveAcceleration = MOVE_ACCELERATION
+    this._moveDeceleration = MOVE_DECELERATION
+    this._moveMaxSpeed = MOVE_MAX_SPEED
+    this._pushDeceleration = PUSH_DECELERATION
+    this._pushMaxSpeed = PUSH_MAX_SPEED
 
     // Animation
-    this.spriteSheet = undefined  // Image asset (see app.asset)
-    this.spriteSizeX = 16  // Size of each sprite on the sprite sheet
+    this.spriteSheet = undefined  // Image asset (see app.asset).
+    this.spriteSizeX = 16  // Size of each sprite on the sprite sheet.
     this.spriteSizeY = 16
-    this.spriteScale = 2  // Scale of the sprite when paint()ed
-    this.spriteOffsetX = -8  // Offset of the sprite when paint()ed
-    this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align
+    this.spriteScale = 2  // Scale of the sprite when paint()ed.
+    this.spriteOffsetX = -8  // Offset of the sprite when paint()ed.
+    this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align.
     this.spriteFlipEastToWest = false  // For 4-directional sprite sheets, we can automatically flip East-facing sprites into West-facing sprites during paintSprite().
+    this.spriteZAddsToOffsetY = true  // If entity has a positive z-position, add that value to offsetY.
   }
 
   deconstructor () {}
@@ -79,6 +89,11 @@ export default class Entity {
 
     // Upkeep: limit speed
     this.doMaxSpeedLimit()
+
+    // Upkeep: gravity
+    if (this.z > 0) {
+      this.z = Math.max(0, this.z + GRAVITY)
+    }
   }
 
   /*
@@ -92,8 +107,8 @@ export default class Entity {
 
     if (layer === LAYERS.MIDDLE) {
       c2d.fillStyle = this.colour
-      c2d.strokeStyle = '#444'
-      c2d.lineWidth = this.mass / MASS_TO_LINEWIDTH_RATIO
+      c2d.strokeStyle = '#404040'
+      c2d.lineWidth = this.mass * PAINT_HITBOX_MASS_TO_LINEWIDTH_FACTOR
 
       // Draw shape outline
       switch (this.shape) {
@@ -172,8 +187,10 @@ export default class Entity {
     // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
 
     // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
-    const tgtX = args?.spriteOffsetX ?? this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align
-    const tgtY = args?.spriteOffsetY ?? this.spriteOffsetY  // Usually this is sizeY * -0.75 to nudge a sprite upwards 
+    let tgtX = args?.spriteOffsetX ?? this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align.
+    let tgtY = args?.spriteOffsetY ?? this.spriteOffsetY  // Usually this is sizeY * -0.75 to nudge a sprite upwards.
+
+    if (this.spriteZAddsToOffsetY) tgtY -= Math.max(0, this.z)
 
     c2d.drawImage(this.spriteSheet.img,
       srcX, srcY, sizeX, sizeY,
@@ -181,6 +198,45 @@ export default class Entity {
     )
 
     app.undoCameraTransforms()
+  }
+
+  /*
+  Paint the entity's shadow, at the entity's position.
+  Actually very similar to - if not a modified copy of - the default "paint
+  hitbox" code.
+   */
+  paintShadow (layer = 0) {
+    const c2d = this._app.canvas2d
+    this._app.applyCameraTransforms()
+
+    if (layer === LAYERS.BOTTOM) {
+      c2d.fillStyle = '#20202080'
+
+      switch (this.shape) {
+        case SHAPES.CIRCLE:
+          c2d.beginPath()
+          c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
+          c2d.fill()
+          break
+        case SHAPES.SQUARE:
+          c2d.beginPath()
+          c2d.rect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size)
+          c2d.fill()
+          break
+        case SHAPES.POLYGON:
+          c2d.beginPath()
+          let coords = this.vertices
+          if (coords.length >= 1) c2d.moveTo(coords[coords.length-1].x, coords[coords.length-1].y)
+          for (let i = 0 ; i < coords.length ; i++) {
+            c2d.lineTo(coords[i].x, coords[i].y)
+          }
+          c2d.closePath()
+          c2d.fill()
+          break
+      }
+    }
+
+    this._app.undoCameraTransforms()
   }
 
   /*
@@ -439,18 +495,12 @@ export default class Entity {
 
   set segments (val) { console.error('ERROR: Entity.segments is read only') }
 
-  get solid () { return this._solid }
-  get movable () { return this._movable }
-  get mass () {  return this._mass }
   get moveAcceleration () { return this._moveAcceleration }
   get moveDeceleration () { return this._moveDeceleration }
   get moveMaxSpeed () { return this._moveMaxSpeed }
   get pushDeceleration () { return this._pushDeceleration }
   get pushMaxSpeed () { return this._pushMaxSpeed }
 
-  set solid (val) { this._solid = val }
-  set movable (val) { this._movable = val }
-  set mass (val) {  this._mass = val }
   set moveAcceleration (val) { this._moveAcceleration = val }
   set moveDeceleration (val) { this._moveDeceleration = val }
   set moveMaxSpeed (val) { this._moveMaxSpeed = val }
