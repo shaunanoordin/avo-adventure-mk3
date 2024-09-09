@@ -129,7 +129,7 @@ export default class PlayerControls extends Rule {
     c2d.textAlign = 'left'
     c2d.strokeStyle = '#fff'
     c2d.strokeText(text, LEFT, BOTTOM)
-    c2d.fillStyle = '#c44'
+    c2d.fillStyle = '#c04040'
     c2d.fillText(text, LEFT, BOTTOM)
 
     if (hero?.action?.name === 'idle' || hero?.action?.name === 'move') {
@@ -145,12 +145,8 @@ export default class PlayerControls extends Rule {
     c2d.textAlign = 'right'
     c2d.strokeStyle = '#fff'
     c2d.strokeText(text, RIGHT, BOTTOM)
-    c2d.fillStyle = '#c44'
+    c2d.fillStyle = '#c04040'
     c2d.fillText(text, RIGHT, BOTTOM)
-
-    text = 'DEBUG [' + ']'
-    c2d.strokeText(text, RIGHT, TOP)
-    c2d.fillText(text, RIGHT, TOP)
   }
 
   /*

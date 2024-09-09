@@ -201,6 +201,45 @@ export default class Entity {
   }
 
   /*
+  Paint the entity's shadow, at the entity's position.
+  Actually very similar to - if not a modified copy of - the default "paint
+  hitbox" code.
+   */
+  paintShadow (layer = 0) {
+    const c2d = this._app.canvas2d
+    this._app.applyCameraTransforms()
+
+    if (layer === LAYERS.BOTTOM) {
+      c2d.fillStyle = '#20202080'
+
+      switch (this.shape) {
+        case SHAPES.CIRCLE:
+          c2d.beginPath()
+          c2d.arc(this.x, this.y, this.size / 2, 0, 2 * Math.PI)
+          c2d.fill()
+          break
+        case SHAPES.SQUARE:
+          c2d.beginPath()
+          c2d.rect(this.x - this.size / 2, this.y - this.size / 2, this.size, this.size)
+          c2d.fill()
+          break
+        case SHAPES.POLYGON:
+          c2d.beginPath()
+          let coords = this.vertices
+          if (coords.length >= 1) c2d.moveTo(coords[coords.length-1].x, coords[coords.length-1].y)
+          for (let i = 0 ; i < coords.length ; i++) {
+            c2d.lineTo(coords[i].x, coords[i].y)
+          }
+          c2d.closePath()
+          c2d.fill()
+          break
+      }
+    }
+
+    this._app.undoCameraTransforms()
+  }
+
+  /*
   Section: Game Logic
   ----------------------------------------------------------------------------
    */

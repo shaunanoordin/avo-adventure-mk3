@@ -60,7 +60,8 @@ export default class Hero extends Entity {
     this.colour = (app.playerInput.pointerState === POINTER_STATES.POINTER_DOWN)
       ? '#ff3333'
       : '#c0a0a0'
-    super.paint(layer)
+    // super.paint(layer)
+    this.paintShadow(layer)
 
     // Draw the VFX
     if (layer === LAYERS.MIDDLE && this.action?.name === 'charging') {
