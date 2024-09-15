@@ -9,7 +9,7 @@ export default class WallTile extends Tile {
     this.colour = '#808080'
     this.solid = true
 
-    this.spriteSheet = app.assets['map']
+    this.spriteSheet = app.assets['map'].img
   }
 
   paint (layer = 0) {

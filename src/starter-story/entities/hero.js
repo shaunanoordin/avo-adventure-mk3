@@ -17,7 +17,7 @@ export default class Hero extends Entity {
     this.intent = undefined
     this.action = undefined
 
-    this.spriteSheet = app.assets['hero']
+    this.spriteSheet = app.assets['hero'].img
     this.spriteSizeX = 24
     this.spriteSizeY = 24
     this.spriteScale = 2

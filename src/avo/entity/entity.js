@@ -56,7 +56,7 @@ export default class Entity {
     this._pushMaxSpeed = PUSH_MAX_SPEED
 
     // Animation
-    this.spriteSheet = undefined  // Image asset (see app.asset).
+    this.spriteSheet = undefined  // Image object (e.g. app.assets['hero'].img).
     this.spriteSizeX = 16  // Size of each sprite on the sprite sheet.
     this.spriteSizeY = 16
     this.spriteScale = 2  // Scale of the sprite when paint()ed.
@@ -192,7 +192,7 @@ export default class Entity {
 
     if (this.spriteZAddsToOffsetY) tgtY -= Math.max(0, this.z)
 
-    c2d.drawImage(this.spriteSheet.img,
+    c2d.drawImage(this.spriteSheet,
       srcX, srcY, sizeX, sizeY,
       tgtX, tgtY, sizeX, sizeY
     )

@@ -9,7 +9,7 @@ export default class FloorTile extends Tile {
     this.colour = '#f0f0f0'
     this.solid = false
 
-    this.spriteSheet = app.assets['map']
+    this.spriteSheet = app.assets['map'].img
   }
 
   paint (layer = 0) {
