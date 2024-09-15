@@ -57,12 +57,15 @@ export function transformSpriteSheet (
     offData[i + 3] = a
   }
 
+  // Commit the changes
+  c2dOff.putImageData(offImage, 0, 0)
+
   // Convert transformed image into an ImageBitmap object.
   // I *think* this provides better performance than returning an offscreenCanvas, but I'm not 100% sure.
-  // const transformedImageBitmap = offscreenCanvas.transferToImageBitmap()
+  const transformedImageBitmap = offscreenCanvas.transferToImageBitmap()
   // transformedImageBitmap.close()  // DON'T close.
-  // return transformedImageBitmap
+  return transformedImageBitmap
 
   // Alternatively, just return the offscreenCanvas - but this may result in a performance cost.
-  return offscreenCanvas
+  // return offscreenCanvas
 }

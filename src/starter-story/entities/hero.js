@@ -20,11 +20,7 @@ export default class Hero extends Entity {
 
     this.spriteSheet = transformSpriteSheet(
       app.assets['hero'].img,
-      (_r, _g, _b, _a) => {
-        return {
-          r: _r, g: _g, b: _b, a: _a
-        }
-      }
+      transformPixelsFromRedToBlue  // Example
     )
     this.spriteSizeX = 24
     this.spriteSizeY = 24
@@ -316,5 +312,23 @@ export default class Hero extends Entity {
     }
 
     return 0
+  }
+}
+
+function transformPixelsFromRedToBlue(_r, _g, _b, _a) {
+  let r = _r, g = _g, b = _b, a = _a
+
+  if (_r === 192 && _g === 64 && _b === 64) {
+    r = 64
+    g = 128
+    b = 192
+  } else if (_r === 80 && _g === 64 && _b === 64) {
+    r = 32
+    g = 32
+    b = 96
+  }
+
+  return {
+    r, g, b, a
   }
 }
