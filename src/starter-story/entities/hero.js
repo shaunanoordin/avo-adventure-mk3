@@ -1,5 +1,6 @@
 import Entity from '@avo/entity'
 import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
+import { transformSpriteSheet } from '@avo/misc.js'
 
 const INVULNERABILITY_WINDOW = 3000
 const MOVE_ACTION_CYCLE_DURATION = 500
@@ -17,7 +18,14 @@ export default class Hero extends Entity {
     this.intent = undefined
     this.action = undefined
 
-    this.spriteSheet = app.assets['hero'].img
+    this.spriteSheet = transformSpriteSheet(
+      app.assets['hero'].img,
+      (_r, _g, _b, _a) => {
+        return {
+          r: _r, g: _g, b: _b, a: _a
+        }
+      }
+    )
     this.spriteSizeX = 24
     this.spriteSizeY = 24
     this.spriteScale = 2
