@@ -1,5 +1,6 @@
 import Entity from '@avo/entity'
 import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
+import { transformSpriteSheet } from '@avo/misc.js'
 
 const INVULNERABILITY_WINDOW = 3000
 const MOVE_ACTION_CYCLE_DURATION = 500
@@ -17,7 +18,10 @@ export default class Hero extends Entity {
     this.intent = undefined
     this.action = undefined
 
-    this.spriteSheet = app.assets['hero']
+    this.spriteSheet = transformSpriteSheet(
+      app.assets['hero'].img,
+      transformPixelsFromRedToBlue  // Example
+    )
     this.spriteSizeX = 24
     this.spriteSizeY = 24
     this.spriteScale = 2
@@ -308,5 +312,23 @@ export default class Hero extends Entity {
     }
 
     return 0
+  }
+}
+
+function transformPixelsFromRedToBlue(_r, _g, _b, _a) {
+  let r = _r, g = _g, b = _b, a = _a
+
+  if (_r === 192 && _g === 64 && _b === 64) {
+    r = 64
+    g = 128
+    b = 192
+  } else if (_r === 80 && _g === 64 && _b === 64) {
+    r = 32
+    g = 32
+    b = 96
+  }
+
+  return {
+    r, g, b, a
   }
 }

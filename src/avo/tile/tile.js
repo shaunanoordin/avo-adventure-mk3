@@ -18,7 +18,7 @@ export default class Tile {
     this.shape = SHAPES.SQUARE
 
     // Animation
-    this.spriteSheet = undefined  // Image asset (see app.asset)
+    this.spriteSheet = undefined  // // Image object (e.g. app.assets['map'].img)
     this.spriteSizeX = 16  // Size of each sprite on the sprite sheet
     this.spriteSizeY = 16
     this.spriteScale = 2  // Scale of the sprite when paint()ed
@@ -74,7 +74,7 @@ export default class Tile {
     const tgtX = args?.spriteOffsetX ?? this.spriteOffsetX
     const tgtY = args?.spriteOffsetY ?? this.spriteOffsetY
 
-    c2d.drawImage(this.spriteSheet.img,
+    c2d.drawImage(this.spriteSheet,
       srcX, srcY, sizeX, sizeY,
       tgtX, tgtY, sizeX, sizeY
     )
