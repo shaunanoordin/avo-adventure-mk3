@@ -66,19 +66,19 @@ export default class StarterStory extends Story {
       #......................#
       #......................#
       #......................#
+      ##...##.........##...###
+      #.....#.........#......#
       #......................#
       #......................#
-      #......................#
-      #......................#
-      #......................#
-      #......................#
+      #..........#...........#
+      #.....#....#....#......#
       ########################
     `.replace(/\s/g, '')
 
     for (let row = 0 ; row < app.gameMap.height ; row++) {
       app.gameMap.tiles.push([])
       for (let col = 0 ; col < app.gameMap.width ; col++) {
-        const tileType = MAP_STRING[col * app.gameMap.width + row]
+        const tileType = MAP_STRING[row * app.gameMap.width + col]
         if (tileType === '#') {
           const tile = new WallTile(app, col, row)
           app.gameMap.tiles[row].push(tile)
