@@ -53,7 +53,7 @@ export default class AvO {
 
     this.entities = []  // Game objects
     this.hero = null  // Main player-controlled entity
-    this.map = {  // Game map and environment
+    this.gameMap = {  // Game map and environment
       tiles: [],  // 2D array of map tiles
       width: 0,
       height: 0,
@@ -250,9 +250,9 @@ export default class AvO {
     for (let layer = MIN_LAYER ; layer <= MAX_LAYER ; layer++) {
 
       // 1. draw map tiles first, as these form the background. 
-      for (let row = 0 ; row < this.map.height ; row++) {
-        for (let col = 0 ; col < this.map.width ; col++) {
-          this.map.tiles?.[row]?.[col]?.paint(layer)
+      for (let row = 0 ; row < this.gameMap.height ; row++) {
+        for (let col = 0 ; col < this.gameMap.width ; col++) {
+          this.gameMap.tiles?.[row]?.[col]?.paint(layer)
         }
       }
 
@@ -552,9 +552,9 @@ export default class AvO {
     this.entities = []
   }
 
-  resetMap () {
+  resetGameMap () {
     // TODO: do tiles need to be deconstructed?
-    this.map = {  // Game map and environment
+    this.gameMap = {  // Game map and environment
       tiles: [],  // 2D array of map tiles
       width: 0,
       height: 0,
@@ -634,7 +634,7 @@ export default class AvO {
       const range = Math.ceil(entityA.size / TILE_SIZE)
       for (let row = entityA.row - range ; row <= entityA.row + range ; row++) {
         for (let col = entityA.col - range ; col <= entityA.col + range ; col++) {
-          const tile = this.map.tiles?.[row]?.[col]
+          const tile = this.gameMap.tiles?.[row]?.[col]
           let collisionCorrection = Physics.checkCollision(entityA, tile)
 
           if (collisionCorrection) {

@@ -20,7 +20,7 @@ export default class Story {
     const app = this._app
     app.hero = undefined
     app.clearEntities()
-    app.resetMap()
+    app.resetGameMap()
     app.clearRules()
     app.resetCamera()
     app.resetPlayerInput()
