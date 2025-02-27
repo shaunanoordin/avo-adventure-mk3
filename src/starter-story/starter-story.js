@@ -4,6 +4,8 @@ import { ROTATIONS } from '@avo/constants.js'
 
 import Hero from './entities/hero.js'
 import Wizard from './entities/wizard.js'
+import ChaserEnemy from './entities/chaser-enemy.js'
+
 import FloorTile from './tiles/floor-tile'
 import WallTile from './tiles/wall-tile.js'
 
@@ -29,21 +31,10 @@ export default class StarterStory extends Story {
   load_first_scene () {
     const app = this._app
 
-    app.hero = app.addEntity(new Hero(app, 12, 20))
-    app.hero.rotation = ROTATIONS.NORTH
-    app.camera.target = app.hero
-
+    // Setup rules
     app.addRule(new PlayerControls(app))
 
-    /*
-    app.addEntity(new Wall(app, 0, 0, 1, 23))  // West Wall
-    app.addEntity(new Wall(app, 22, 0, 1, 23))  // East Wall
-    app.addEntity(new Wall(app, 1, 0, 21, 1))  // North Wall
-    app.addEntity(new Wall(app, 1, 22, 21, 1))  // South Wall
-    */
-
-    app.addEntity(new Wizard(app, 11, 4))
-
+    // Setup map
     app.gameMap.tiles = []
     app.gameMap.width = 25
     app.gameMap.height = 25
@@ -89,5 +80,15 @@ export default class StarterStory extends Story {
         }
       }
     }
+
+    // Add Hero
+    app.hero = app.addEntity(new Hero(app, 12, 20))
+    app.hero.rotation = ROTATIONS.NORTH
+    app.camera.target = app.hero
+
+    // Add other entities
+    app.addEntity(new Wizard(app, 11, 4))
+    app.addEntity(new ChaserEnemy(app, 11, 6))
+
   }
 }
