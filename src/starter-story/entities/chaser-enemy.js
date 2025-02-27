@@ -2,6 +2,8 @@ import { GameAI } from '@avo/game-ai.js'
 import Entity from '@avo/entity'
 import { LAYERS, TILE_SIZE } from '@avo/constants.js'
 
+const FRAMES_TO_WAIT_BETWEEN_SEEKING_HERO = 60
+
 export default class ChaserEnemy extends Entity {
   constructor (app, col = 0, row = 0) {
     super(app)
@@ -16,7 +18,7 @@ export default class ChaserEnemy extends Entity {
     // e.g. [[0, 1], [0, 1]]
     this.simplifiedGameMap = app.gameMap.tiles.map(row => row.map(tile => tile.solid ? 1 : 0))
 
-    this.seekingHero = true
+    this.seekHeroCounter = 0  // When this hits 0, it's time to find a new path to the Hero.
     this.pathToHero = []
   }
 
@@ -28,8 +30,10 @@ export default class ChaserEnemy extends Entity {
   play () {
     super.play()
 
-    if (this.seekingHero) {
+    if (this.seekHeroCounter <= 0) {
       this.seekHero()
+    } else {
+      this.seekHeroCounter--
     }
   }
 
@@ -37,18 +41,19 @@ export default class ChaserEnemy extends Entity {
     const app = this._app
     const hero = app.hero
 
-    this.seekingHero = false
+    // Wait a period of time before seeking the hero again.
+    this.seekHeroCounter = FRAMES_TO_WAIT_BETWEEN_SEEKING_HERO
 
+    // If there's no hero, wait around.
     if (!hero) {
       this.pathToHero = []
       return
     }
 
-    const startTile = { x: this.col, y: this.row }
-    const goalTile = { x: hero.col, y: hero.row }
-
+    // Calculate pathToHero.
+    const startTile = { x: this.col, y: this.row }  // Position of this entity
+    const goalTile = { x: hero.col, y: hero.row }  // Position of the Hero
     this.pathToHero = GameAI.findPath(startTile, goalTile, this.simplifiedGameMap)
-    console.log('+++ pathToHero', this.pathToHero)
   }
 
   paint (layer = 0) {
