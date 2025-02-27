@@ -13,3 +13,6 @@ AvO Rendering
 
 AvO Cleanup
 - Import full file names?
+
+Game AI
+- ChaserEnemy: if entity can directly see Hero, it should make a beeline to the Hero. Otherwise, use the A* pathing.  
