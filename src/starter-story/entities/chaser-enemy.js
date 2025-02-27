@@ -2,7 +2,7 @@ import { GameAI } from '@avo/game-ai.js'
 import Entity from '@avo/entity'
 import { LAYERS, TILE_SIZE } from '@avo/constants.js'
 
-const FRAMES_TO_WAIT_BETWEEN_SEEKING_HERO = 60
+const FRAMES_TO_WAIT_BETWEEN_SEEKING_HERO = 6
 
 export default class ChaserEnemy extends Entity {
   constructor (app, col = 0, row = 0) {
@@ -35,8 +35,15 @@ export default class ChaserEnemy extends Entity {
     } else {
       this.seekHeroCounter--
     }
+
+    this.moveToHero()
+
+    // TODO: if entity can see Hero directly, just make a beeline to the Hero.
   }
 
+  /*
+  Finds a path to the Hero.
+   */
   seekHero () {
     const app = this._app
     const hero = app.hero
@@ -54,6 +61,28 @@ export default class ChaserEnemy extends Entity {
     const startTile = { x: this.col, y: this.row }  // Position of this entity
     const goalTile = { x: hero.col, y: hero.row }  // Position of the Hero
     this.pathToHero = GameAI.findPath(startTile, goalTile, this.simplifiedGameMap)
+  }
+
+  /*
+  Attempt to move to the Hero, following the pathToHero. 
+   */
+  moveToHero() {
+    const pathToHero = this.pathToHero
+
+    if (!pathToHero || pathToHero.length <= 1) return
+
+    const tgtX = (pathToHero[1].x + 0.5) * TILE_SIZE  // Note: pathToHero[0] is usually where the entity is standing
+    const tgtY = (pathToHero[1].y + 0.5) * TILE_SIZE
+    const distX = tgtX - this.x
+    const distY = tgtY - this.y
+
+    if (distX !== 0 || distY !== 0) {      
+      this.rotation = Math.atan2(distY, distX)
+    }
+
+    const MOVSPD = 2
+    this.moveX = MOVSPD * Math.cos(this.rotation)
+    this.moveY = MOVSPD * Math.sin(this.rotation)
   }
 
   paint (layer = 0) {
