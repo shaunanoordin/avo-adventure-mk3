@@ -1,7 +1,7 @@
 import Entity from '@avo/entity'
 import { TILE_SIZE } from '@avo/constants.js'
 
-export default class Hero extends Entity {
+export default class Wizard extends Entity {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'wizard'

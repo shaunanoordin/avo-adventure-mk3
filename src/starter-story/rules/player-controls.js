@@ -190,7 +190,7 @@ export default class PlayerControls extends Rule {
     if (!srcEntity) return
     const c2d = this._app.canvas2d
     const entities = this._app.entities
-    const tiles = this._app.map.tiles
+    const tiles = this._app.gameMap.tiles
 
     this._app.applyCameraTransforms()
 
