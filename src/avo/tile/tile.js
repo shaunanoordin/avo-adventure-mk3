@@ -36,9 +36,12 @@ export default class Tile {
 
     if (layer === LAYERS.BOTTOM) {
       c2d.fillStyle = this.colour
+      c2d.strokeStyle = '#ffffff'
+      c2d.lineWidth = 1
       c2d.beginPath()
       c2d.rect(Math.floor(this.x - this.size / 2), Math.floor(this.y - this.size / 2), this.size, this.size)
       c2d.fill()
+      c2d.stroke()
     }
 
     this._app.undoCameraTransforms()
