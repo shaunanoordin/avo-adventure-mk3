@@ -23,6 +23,8 @@ export default class PlayerControls extends Rule {
   }
 
   deconstructor () {
+    app.removeEventListener('keydown', this.onKeyDown)
+    app.removeEventListener('keyup', this.onKeyUp)
     app.removeEventListener('pointertap', this.onPointerTap)
   }
 
