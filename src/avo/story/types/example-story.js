@@ -11,10 +11,8 @@ import ZeldaControls from '@avo/rule/types/zelda-controls.js'
 export default class ExampleStory extends Story {
   constructor (app) {
     super(app)
-  }
 
-  get assets () {
-    return {
+    this.assets = {
       "hero-4dir": new ImageAsset('assets/avo-sprites-2022-05-samiel.png'),
       "hero-2dir": new ImageAsset('assets/avo-sprites-2022-10-samiel-2dir.png'),
     }
