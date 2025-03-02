@@ -5,8 +5,8 @@
 :root {
   font-family: "Source Code Pro", monospace;
   font-size: 16px;
-  background: #fff;
-  color: #444;
+  background: #ffffff;
+  color: #404040;
 }
 
 html,
@@ -19,11 +19,11 @@ body {
 }
 
 a {
-  color: #c44;
+  color: #c04040;
   text-decoration: none;
 }
 a:hover {
-  color: #e66;
+  color: #ff3333;
 }
 
 table {
@@ -32,7 +32,7 @@ table {
 }
 table td,
 table th {
-  border: 1px solid #444;
+  border: 1px solid #404040;
 }
 
 #app {
@@ -41,7 +41,7 @@ table th {
   width: 100%;
   height: 100%;
   margin: 0 auto;
-  background: #fff;
+  background: #ffffff;
 }
 
 #app > header,
@@ -49,8 +49,8 @@ table th {
   font-size: 0.5rem;
   flex: 0 0 auto;
   padding: 0.5rem;
-  background: #c44;
-  color: #eee;
+  background: #c04040;
+  color: #e0e0e0;
 }
 
 #app > header h1 {
@@ -62,12 +62,12 @@ table th {
   text-align: right;
 }
 #app > footer a {
-  color: #fff;
+  color: #ffffff;
   text-decoration: underline;
 }
 
 #app > main {
-  background: #444 url("../assets/simple-bg.png");
+  background: #404040 url("../assets/simple-bg.png");
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
@@ -83,7 +83,7 @@ table th {
   cursor: pointer;
   user-select: none;
   touch-action: none;
-  background: #fff;
+  background: #ffffff;
 }
 #app > main.fullscreen #canvas {
   max-height: 100vh;
@@ -92,29 +92,29 @@ table th {
   display: block;
   overflow: auto;
   position: absolute;
-  border: 1px solid #fff;
+  border: 1px solid #ffffff;
   visibility: hidden;
   background: rgba(128, 128, 128, 0.5);
 }
 #app > main #home-menu > div, #app > main #interaction-menu > div {
-  background: #fff;
+  background: #ffffff;
   margin: 1em;
   padding: 1em;
 }
 #app > main .ui-button {
   position: absolute;
   cursor: pointer;
-  color: #fff;
-  background: #c44;
-  border: 2px solid #ccc;
+  color: #ffffff;
+  background: #c04040;
+  border: 2px solid #c0c0c0;
   border-radius: 1rem;
   box-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.5);
 }
 #app > main .ui-button:hover {
-  border: 2px solid #fff;
+  border: 2px solid #808080;
 }
 #app > main .ui-button:active {
-  border: 2px solid #888;
+  border: 2px solid #808080;
 }
 #app > main .ui-button img {
   display: block;
