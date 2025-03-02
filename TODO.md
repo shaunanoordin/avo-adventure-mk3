@@ -9,7 +9,7 @@ AvO Startup
 
 AvO Rendering
 - (experimental) Math.floor() on App.camera transform, and on Entity.paint()
-- Review LAYERS.
+- Review LAYERS. Do the current number (and name) of layers make sense?
 
 Coding
 - Import full file names?
