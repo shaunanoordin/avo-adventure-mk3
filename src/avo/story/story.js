@@ -1,10 +1,7 @@
 export default class Story {
   constructor (app) {
     this._app = app
-  }
-
-  get assets () {
-    return {}
+    this.assets = {}
   }
 
   /*

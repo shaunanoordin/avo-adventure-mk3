@@ -56,12 +56,15 @@ export default class Entity {
     this._pushMaxSpeed = PUSH_MAX_SPEED
 
     // Animation
-    this.spriteSheet = undefined  // Image object (e.g. app.assets['hero'].img).
+    this.spriteSheet = undefined  // HTML Image object (e.g. app.assets['hero'].img) containing all sprites used by this Entity.
     this.spriteSizeX = 16  // Size of each sprite on the sprite sheet.
     this.spriteSizeY = 16
     this.spriteScale = 2  // Scale of the sprite when paint()ed.
-    this.spriteOffsetX = -8  // Offset of the sprite when paint()ed.
-    this.spriteOffsetY = -8  // Usually half of sprite size, to centre-align.
+    this.spriteOffsetX = -8  // Offset of sprite relative to this Entity's {x,y}, when painted on canvas.
+    this.spriteOffsetY = -8  // This is usually -0.5 * spriteSizeXorY to make sure the sprite is centred on Entity.
+                             // Note: an Entity's {x,y} origin is usually its centre, whereas a HTML Image's {x,y} origin is its top-left corner.
+
+    // Advanced Animation
     this.spriteFlipEastToWest = false  // For 4-directional sprite sheets, we can automatically flip East-facing sprites into West-facing sprites during paintSprite().
     this.spriteZAddsToOffsetY = true  // If entity has a positive z-position, add that value to offsetY.
   }
@@ -159,15 +162,23 @@ export default class Entity {
 
   /*
   Paint the entity's sprite, at the entity's position.
-  Note: only specify values for args if you want to override the automatic
-  calculations.
+  Note: args are optional; ONLY specify values for args if you want to override
+  the automatic calculations.
    */
   paintSprite (args = {
-    spriteCol: undefined,
+    // Source values
+    spriteCol: undefined,  // Column and row of source sprite on the sprite sheet. 
     spriteRow: undefined,
-    spriteOffsetX: undefined,
-    spriteOffsetY: undefined,
-    spriteScale: undefined,
+    spriteSizeX: undefined,  // Size of source sprite on sprite sheet.
+    spriteSizeY: undefined,
+
+    // Painting target values
+    spriteOffsetX: undefined,  // Offset of sprite relative to this Entity's {x,y}, when painted on canvas.
+    spriteOffsetY: undefined,  // This is usually -0.5 * spriteSizeXorY to make sure the sprite is centred on Entity.
+    spriteRotation: undefined,  // Rotate the sprite.
+    spriteScale: undefined,  // Scale of the sprite when paint()ed.
+    spriteScaleX: undefined,  // Note: if you specify spriteScaleX/spriteScaleY, then spriteScale will be ignored.
+    spriteScaleY: undefined,
   }) {
     const app = this._app
     const c2d = app.canvas2d
@@ -175,16 +186,22 @@ export default class Entity {
 
     app.applyCameraTransforms()
 
-    const srcX = (args?.spriteCol ?? this.getSpriteCol()) * this.spriteSizeX
-    const srcY = (args?.spriteRow ?? this.getSpriteRow()) * this.spriteSizeY
-    const sizeX = this.spriteSizeX
-    const sizeY = this.spriteSizeY
-    const scale = args?.spriteScale ?? this.spriteScale
+    // Calculate all the variables
+    const sizeX = args?.spriteSizeX ?? this.spriteSizeX
+    const sizeY = args?.spriteSizeY ?? this.spriteSizeY
+    const srcX = (args?.spriteCol ?? this.getSpriteCol()) * sizeX
+    const srcY = (args?.spriteRow ?? this.getSpriteRow()) * sizeY
+    const scaleX = args?.spriteScaleX ?? args?.spriteScale ?? this.spriteScale
+    const scaleY = args?.spriteScaleY ?? args?.spriteScale ?? this.spriteScale
+
+    // TODO: flipping sprites should be determined by a more general "sprite rendering strategy"
     const flipX = (this.spriteFlipEastToWest && this.getSpriteDirection() === DIRECTIONS.WEST) ? -1 : 1
 
     c2d.translate(this.x, this.y)  // 1. This moves the 'drawing origin' to match the position of (the centre of) the Entity.
-    c2d.scale(flipX * scale, scale)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
-    // c2d.rotate(this.rotation)  // 3. If we wanted to, we could rotate the sprite around the 'drawing origin'.
+    c2d.scale(flipX * scaleX, scaleY)  // 2. This ensures the sprite scales with the 'drawing origin' as the anchor point.
+    if (args?.spriteRotation !== undefined) {  // 3. (OPTIONAL) If we wanted to, we could rotate the sprite around the 'drawing origin'.
+      c2d.rotate(args?.spriteRotation)
+    }
 
     // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
     let tgtX = args?.spriteOffsetX ?? this.spriteOffsetX  // Usually this is sizeX * -0.5, to centre-align.

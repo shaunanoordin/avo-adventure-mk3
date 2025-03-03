@@ -9,10 +9,14 @@ AvO Startup
 
 AvO Rendering
 - (experimental) Math.floor() on App.camera transform, and on Entity.paint()
-- Review LAYERS.
+- Review LAYERS. Do the current number (and name) of layers make sense?
 
-AvO Cleanup
+Coding
 - Import full file names?
 
+Story
+- (long term) Story should have a .finish() OR a .deconstructor().
+  - This should be implemented should AvO ever allow switching Stories.
+
 Game AI
-- ChaserEnemy: if entity can directly see Hero, it should make a beeline to the Hero. Otherwise, use the A* pathing.  
+- ChaserEnemy: if entity can directly see Hero, it should make a beeline to the Hero. Otherwise, use the A* pathing.

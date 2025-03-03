@@ -1,13 +1,13 @@
-$white: #fff;
-$light: #eee;
-$light-grey: #ccc;
-$grey: #888;
-$dark-grey: #666;
-$dark: #444;
-$black: #000;
+$white: #ffffff;
+$light: #e0e0e0;
+$light-grey: #c0c0c0;
+$grey: #808080;
+$dark-grey: #606060;
+$dark: #404040;
+$black: #000000;
 
-$primary: #c44;
-$primary-highlight: #e66;
+$primary: #c04040;
+$primary-highlight: #ff3333;
 
 * {
   box-sizing: border-box;
@@ -115,7 +115,7 @@ table {
     background: rgba(128, 128, 128, 0.5);
 
     > div {
-      background: #fff;
+      background: $white;
       margin: 1em;
       padding: 1em;
     }
@@ -124,18 +124,18 @@ table {
   .ui-button {
     position: absolute;
     cursor: pointer;
-    color: #fff;
-    background: #c44;
-    border: 2px solid #ccc;
+    color: $white;
+    background: $primary;
+    border: 2px solid $light-grey;
     border-radius: 1rem;
     box-shadow: 0.1rem 0.1rem 0 rgba(0, 0, 0, 0.5);
 
     &:hover {
-      border: 2px solid #fff;
+      border: 2px solid $grey;
     }
 
     &:active {
-      border: 2px solid #888;
+      border: 2px solid $grey;
     }
 
     img {

@@ -14,10 +14,8 @@ import PlayerControls from './rules/player-controls.js'
 export default class StarterStory extends Story {
   constructor (app) {
     super(app)
-  }
 
-  get assets () {
-    return {
+    this.assets = {
       "hero": new ImageAsset('assets/avo-sprites-2024-08-samiel.png'),
       "map": new ImageAsset('assets/avo-sprites-2024-09-simple-map-tiles.png'),
     }
