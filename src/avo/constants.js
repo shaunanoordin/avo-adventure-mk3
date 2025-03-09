@@ -1,4 +1,27 @@
+/*
+Section: General
+--------------------------------------------------------------------------------
+ */
+
+/*
+As a sprite-based game engine, we think of in-game space in terms of "tiles".
+Each map tile is 32x32 pixels, and standard in-game objects should more or less
+fit exactly one tile.  
+ */
 export const TILE_SIZE = 32
+
+/*
+We use a constant frame rate to make calculations in our game logic much easier.
+e.g. we can say that we expect an object with "movement speed" of "2" to travel
+120 pixels in 1 second. (2 pixels per frame * 60 frames per second)
+ */
+export const FRAMES_PER_SECOND = 60
+export const FRAME_DURATION = 1000 / FRAMES_PER_SECOND
+
+/*
+Section: In-Game Objects
+--------------------------------------------------------------------------------
+ */
 
 /*
 Each Entity has a physical shape.
@@ -33,6 +56,14 @@ export const DIRECTIONS = {
   NORTH: 3,
 }
 
+/*
+Section: User Input
+--------------------------------------------------------------------------------
+ */
+
+/*
+Pointer (mouse or touch) input.
+ */
 export const POINTER_STATES = {
   IDLE: 'idle',  // Player isn't doing anything
   POINTER_DOWN: 'pointer down',  // Player is actively interacting with the canvas.
@@ -47,6 +78,11 @@ export const POINTER_DEADZONE_RADIUS = 16
 export const POINTER_TAP_DURATION = 300
 
 /*
+Section: Painting
+--------------------------------------------------------------------------------
+ */
+
+/*
 The paint() step (of the core engine, each Entity, and each Rule) can paint
 information in different visual layers.
  */
@@ -58,12 +94,3 @@ export const LAYERS = {
 }
 export const MIN_LAYER = 1
 export const MAX_LAYER = 4
-
-/*
-While the engine is technically able to support any given framerate (determined
-by the hardware), a baseline is required to ground our video game logic to.
-e.g. we can say that we expect an object with "movement speed" of "2" to travel
-120 pixels in 1 second. (2 pixels per frame * 60 frames per second)
- */
-export const FRAMES_PER_SECOND = 60
-export const FRAME_DURATION = 1000 / FRAMES_PER_SECOND
