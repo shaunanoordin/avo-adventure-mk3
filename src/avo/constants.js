@@ -4,9 +4,9 @@ Section: General
  */
 
 /*
-As a sprite-based game engine, we think of in-game space in terms of "tiles".
-Each map tile is 32x32 pixels, and standard in-game objects should more or less
-fit exactly one tile.  
+As a sprite-based game engine, we think of in-game space in terms of "tiles" (or
+"map tiles"). Each map tile is 32x32 pixels, and standard in-game objects should
+more or less fit exactly one map tile.  
  */
 export const TILE_SIZE = 32
 
@@ -55,6 +55,10 @@ export const DIRECTIONS = {
   WEST: 2,
   NORTH: 3,
 }
+
+/*
+Map Tiles
+ */
 
 /*
 Section: User Input
