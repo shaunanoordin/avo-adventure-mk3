@@ -312,7 +312,7 @@ export default class PlayerControls extends Rule {
       console.log('+++ DEBUG')
       const hero = app.hero
       const tile = app.gameMap.tiles?.[hero?.row]?.[hero?.col]
-      console.log('+++ tile: \n', tile?.getAdjacentTile(1))
+      console.log('+++ tile: \n', tile?.checkTileAdjacencies())
     }
   }
 

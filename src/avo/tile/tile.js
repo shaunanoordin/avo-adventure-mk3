@@ -114,7 +114,14 @@ export default class Tile {
   its neighbours.
    */
   checkTileAdjacencies () {
+    let adjacencies = 0
 
+    if (this.getAdjacentTile(TILE_ADJACENCIES.NORTH)?._type === this._type) adjacencies += TILE_ADJACENCIES.NORTH
+    if (this.getAdjacentTile(TILE_ADJACENCIES.EAST)?._type === this._type) adjacencies += TILE_ADJACENCIES.EAST
+    if (this.getAdjacentTile(TILE_ADJACENCIES.SOUTH)?._type === this._type) adjacencies += TILE_ADJACENCIES.SOUTH
+    if (this.getAdjacentTile(TILE_ADJACENCIES.WEST)?._type === this._type) adjacencies += TILE_ADJACENCIES.WEST
+
+    return adjacencies
   }
 
   getAdjacentTile (adjacencyDirection) {
@@ -123,9 +130,9 @@ export default class Tile {
 
     switch (adjacencyDirection) {
       case TILE_ADJACENCIES.NORTH: rowOffset-- ; break
-      case TILE_ADJACENCIES.EAST: colOffset-- ; break
+      case TILE_ADJACENCIES.EAST: colOffset++ ; break
       case TILE_ADJACENCIES.SOUTH: rowOffset++ ; break
-      case TILE_ADJACENCIES.WEST: colOffset++ ; break
+      case TILE_ADJACENCIES.WEST: colOffset-- ; break
     }
     if (rowOffset === 0 && colOffset === 0) return null
 
