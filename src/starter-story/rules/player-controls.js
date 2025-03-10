@@ -307,6 +307,13 @@ export default class PlayerControls extends Rule {
         this.chargeUpStart = key
       }
     }
+
+    if (key === 'p' || key === 'P') {  // DEBUG
+      console.log('+++ DEBUG')
+      const hero = app.hero
+      const tile = app.gameMap.tiles?.[hero?.row]?.[hero?.col]
+      console.log('+++ tile: \n', tile?.checkSimilarAdjacencies())
+    }
   }
 
   onKeyUp ({ key }) {

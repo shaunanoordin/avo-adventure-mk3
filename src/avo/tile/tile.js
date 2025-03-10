@@ -1,4 +1,4 @@
-import { TILE_SIZE, SHAPES, LAYERS } from '@avo/constants.js'
+import { TILE_SIZE, SHAPES, LAYERS, TILE_ADJACENCIES } from '@avo/constants.js'
 
 export default class Tile {
   constructor (app, col = 0, row = 0) {
@@ -99,6 +99,45 @@ export default class Tile {
   
   getSpriteCol () { return 0 }
   getSpriteRow () { return 0 }
+
+  /*
+  Section: Map Logic
+  ----------------------------------------------------------------------------
+   */
+  
+  /*
+  Checks if this tile has similar neighbour tiles. Returns an integer from 0 to
+  15, that indicates on which directions (NESW) that there's a similar tile.
+  (e.g. a return value of 3 indicates there's a tile similar to this tile on the
+  NORTH, and another one on the EAST. the See TILE_ADJACENCIES for details.)
+  This function is usually used to see if a map tile should be "contiguous" with
+  its neighbours.
+   */
+  checkSimilarAdjacencies () {
+    let adjacencies = 0
+
+    if (this.getAdjacentTile(TILE_ADJACENCIES.NORTH)?._type === this._type) adjacencies += TILE_ADJACENCIES.NORTH
+    if (this.getAdjacentTile(TILE_ADJACENCIES.EAST)?._type === this._type) adjacencies += TILE_ADJACENCIES.EAST
+    if (this.getAdjacentTile(TILE_ADJACENCIES.SOUTH)?._type === this._type) adjacencies += TILE_ADJACENCIES.SOUTH
+    if (this.getAdjacentTile(TILE_ADJACENCIES.WEST)?._type === this._type) adjacencies += TILE_ADJACENCIES.WEST
+
+    return adjacencies
+  }
+
+  getAdjacentTile (adjacencyDirection) {
+    if (!adjacencyDirection) return null
+    let colOffset = 0, rowOffset = 0
+
+    switch (adjacencyDirection) {
+      case TILE_ADJACENCIES.NORTH: rowOffset-- ; break
+      case TILE_ADJACENCIES.EAST: colOffset++ ; break
+      case TILE_ADJACENCIES.SOUTH: rowOffset++ ; break
+      case TILE_ADJACENCIES.WEST: colOffset-- ; break
+    }
+    if (rowOffset === 0 && colOffset === 0) return null
+
+    return this._app.gameMap.tiles?.[this.row + rowOffset]?.[this.col + colOffset]
+  }
 
   /*
   Section: Getters and Setters
