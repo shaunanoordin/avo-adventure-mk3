@@ -10,7 +10,7 @@ export default class FloorTile extends Tile {
     this.solid = false
 
     this.spriteSheet = app.assets['map'].img
-    this.floorSpriteCol = 0
+    this.floorSpriteCol = 2
     this.floorSpriteRow = 5
   }
 

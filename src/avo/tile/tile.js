@@ -113,7 +113,7 @@ export default class Tile {
   This function is usually used to see if a map tile should be "contiguous" with
   its neighbours.
    */
-  checkTileAdjacencies () {
+  checkSimilarAdjacencies () {
     let adjacencies = 0
 
     if (this.getAdjacentTile(TILE_ADJACENCIES.NORTH)?._type === this._type) adjacencies += TILE_ADJACENCIES.NORTH
