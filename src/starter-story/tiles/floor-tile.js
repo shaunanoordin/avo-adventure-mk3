@@ -10,12 +10,15 @@ export default class FloorTile extends Tile {
     this.solid = false
 
     this.spriteSheet = app.assets['map'].img
+    this.floorSpriteCol = 0
+    this.floorSpriteRow = 5
   }
 
   paint (layer = 0) {
     if (layer === LAYERS.BOTTOM) {
       this.paintSprite({
-        spriteRow: 2,
+        spriteCol: this.floorSpriteCol,
+        spriteRow: this.floorSpriteRow,
       })
     }
   }

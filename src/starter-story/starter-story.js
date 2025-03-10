@@ -17,7 +17,7 @@ export default class StarterStory extends Story {
 
     this.assets = {
       "hero": new ImageAsset('assets/avo-sprites-2024-08-samiel.png'),
-      "map": new ImageAsset('assets/avo-sprites-2024-09-simple-map-tiles.png'),
+      "map": new ImageAsset('assets/avo-sprites-2025-03-map-tiles.png'),
     }
   }
 
