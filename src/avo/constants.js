@@ -57,8 +57,18 @@ export const DIRECTIONS = {
 }
 
 /*
-Map Tiles
+Map Tiles care about its cardinal neighbours. More specifically, they care about
+the combination of the presence of neighbours. For example, if a "brick wall"
+tile has another brick wall to the north and another to the south, we can
+express this with the value 5 (= 1 + 4 = NORTH + SOUTH). 
  */
+export const TILE_ADJACENCIES = {
+  NORTH: 1,
+  EAST: 2,
+  SOUTH: 4,
+  WEST: 8,
+}
+
 
 /*
 Section: User Input
