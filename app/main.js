@@ -256,7 +256,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
   \*********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _avo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @avo */ \"./src/avo/index.js\");\n/* harmony import */ var _starter_story__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./starter-story */ \"./src/starter-story/index.js\");\n\n\nwindow.onload = function () {\n  window.avo = new _avo__WEBPACK_IMPORTED_MODULE_0__[\"default\"]();\n};\n\n//# sourceURL=webpack://avo-adventure-mk3/./src/main.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _avo__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @avo */ \"./src/avo/index.js\");\n/* harmony import */ var _starter_story__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./starter-story */ \"./src/starter-story/index.js\");\n\n\nwindow.onload = function () {\n  window.avo = new _avo__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({\n    story: _starter_story__WEBPACK_IMPORTED_MODULE_1__[\"default\"]\n  });\n};\n\n//# sourceURL=webpack://avo-adventure-mk3/./src/main.js?");
 
 /***/ }),
 
