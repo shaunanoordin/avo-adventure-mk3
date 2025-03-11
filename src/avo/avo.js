@@ -7,7 +7,7 @@ import {
   POINTER_TAP_DURATION,
 } from '@avo/constants.js'
 import Physics from '@avo/physics.js'
-import ExampleStory from '@avo/story/types/example-story.js'  // TODO: remove, or replace with a simpler version
+import ExampleStory from '@avo/story/examples/example-story.js'  // TODO: remove, or replace with a simpler version
 import Interaction from '@avo/interaction'
 
 const searchParams = new URLSearchParams(window.location.search)

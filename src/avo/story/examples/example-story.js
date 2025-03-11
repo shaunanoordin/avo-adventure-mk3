@@ -1,12 +1,12 @@
 import Story from '../story'
 import ImageAsset from '@avo/image-asset.js'
 
-import Hero from '@avo/entity/types/hero.js'
-import Wall from '@avo/entity/types/wall.js'
-import Ball from '@avo/entity/types/ball.js'
-import Enemy from '@avo/entity/types/enemy.js'
+import Hero from '@avo/entity/examples/hero.js'
+import Wall from '@avo/entity/examples/wall.js'
+import Ball from '@avo/entity/examples/ball.js'
+import Enemy from '@avo/entity/examples/enemy.js'
 
-import ZeldaControls from '@avo/rule/types/zelda-controls.js'
+import ZeldaControls from '@avo/rule/examples/zelda-controls.js'
 
 export default class ExampleStory extends Story {
   constructor (app) {
