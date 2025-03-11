@@ -1,4 +1,4 @@
-import Entity from '@avo/entity'
+import Creature from '@avo/entity/types/creature.js'
 import { POINTER_STATES, FRAME_DURATION, LAYERS, DIRECTIONS } from '@avo/constants.js'
 import { transformSpriteSheet } from '@avo/misc.js'
 
@@ -6,7 +6,7 @@ const INVULNERABILITY_WINDOW = 3000
 const MOVE_ACTION_CYCLE_DURATION = 500
 const MAX_CHARGING_POWER = 1000
 
-export default class Hero extends Entity {
+export default class Hero extends Creature {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'hero'
