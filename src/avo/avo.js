@@ -458,17 +458,6 @@ export default class AvO {
         }
         break
 
-      /*
-      // DEBUG
-      case 'c':
-        if (this.hero?.spriteStyle === 'toon') {
-          this.hero.spriteStyle = 'zelda'
-        } else if (this.hero?.spriteStyle === 'zelda') {
-          this.hero.spriteStyle = 'toon'
-        }
-        break
-      */
-
       case '-':
       case '_':
         this.camera.zoom = Math.max(0.5, this.camera.zoom - 0.5)

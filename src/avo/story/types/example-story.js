@@ -14,7 +14,6 @@ export default class ExampleStory extends Story {
 
     this.assets = {
       "hero-4dir": new ImageAsset('assets/avo-sprites-2022-05-samiel.png'),
-      "hero-2dir": new ImageAsset('assets/avo-sprites-2022-10-samiel-2dir.png'),
     }
   }
 

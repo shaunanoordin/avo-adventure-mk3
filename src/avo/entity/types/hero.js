@@ -18,8 +18,6 @@ export default class Hero extends Entity {
 
     this.health = 3
     this.invulnerability = 0  // Invulnerability time
-
-    this.spriteStyle = (Math.random() < 0.5) ? 'zelda' : 'toon'
   }
 
   /*
@@ -53,22 +51,19 @@ export default class Hero extends Entity {
     super.paint(layer)
 
     const c2d = app.canvas2d
-    const camera = app.camera
-    const animationSpriteSheet = (this.spriteStyle === 'zelda')
-      ? app.assets['hero-4dir']
-      : app.assets['hero-2dir']
+    const animationSpriteSheet = app.assets['hero-4dir']
     if (!animationSpriteSheet) return
 
     this._app.applyCameraTransforms()
 
-    const SPRITE_SIZE = (this.spriteStyle === 'zelda') ? 48 : 32
-    const FLIP_SPRITE = (this.spriteStyle === 'toon' && this.getSpriteDirectionEW() === DIRECTIONS.WEST) ? -1 : 1
+    const SPRITE_SIZE = 48
+    const FLIP_SPRITE = 1
     const SPRITE_SCALE = 2 *
       (Math.min((this.health / 3), 1) * 0.5 + 0.5)  // Shrink after taking damage
 
     // Draw any special vfx
     const action = this.action
-    if (action?.name === 'dash' && action?.state === 'execution' && layer === LAYERS.ENTITIES_LOWER) {
+    if (action?.name === 'dash' && action?.state === 'execution' && layer === LAYERS.MIDDLE) {
       // Draw a "dash line"
       const dashLength = this.size * 2
       const dashWidth = this.size
@@ -83,7 +78,7 @@ export default class Hero extends Entity {
     }
 
     // Draw the sprite
-    if (layer === LAYERS.ENTITIES_LOWER) {
+    if (layer === LAYERS.MIDDLE) {
       const srcX = this.getSpriteCol() * SPRITE_SIZE
       const srcY = this.getSpriteRow() * SPRITE_SIZE
       const sizeX = SPRITE_SIZE
@@ -95,9 +90,7 @@ export default class Hero extends Entity {
 
       // 4. tgtX and tgtY specify where to draw the sprite, relative to the 'drawing origin'.
       const tgtX = -sizeX / 2  // Align centre of sprite to origin
-      const tgtY = (this.spriteStyle === 'zelda')
-        ? -sizeY * 0.75  // Align bottom(-ish) of sprite to origin
-        : -sizeY * 7/8
+      const tgtY = -sizeY * 0.75  // Align bottom(-ish) of sprite to origin
 
       c2d.drawImage(animationSpriteSheet.img,
         srcX, srcY, sizeX, sizeY,
@@ -264,15 +257,11 @@ export default class Hero extends Entity {
   ----------------------------------------------------------------------------
    */
   getSpriteCol () {
-    if (this.spriteStyle === 'zelda') {
-      switch (this.getSpriteDirection()) {
-        case DIRECTIONS.NORTH: return 1
-        case DIRECTIONS.EAST: return 2
-        case DIRECTIONS.SOUTH: return 0
-        case DIRECTIONS.WEST: return 3
-      }
-    } else if (this.spriteStyle === 'toon') {
-      return (this.getSpriteDirectionNS() === DIRECTIONS.NORTH) ? 1 : 0
+    switch (this.getSpriteDirection()) {
+      case DIRECTIONS.NORTH: return 1
+      case DIRECTIONS.EAST: return 2
+      case DIRECTIONS.SOUTH: return 0
+      case DIRECTIONS.WEST: return 3
     }
     return 0
   }
@@ -281,26 +270,17 @@ export default class Hero extends Entity {
     const action = this.action
     if (!action) return 0
 
-    if (this.spriteStyle === 'zelda') {
-      if (action.name === 'move') {
-        const progress = action.counter / MOVE_ACTION_CYCLE_DURATION
-        if (progress < 0.3) return 2
-        else if (progress < 0.5) return 1
-        else if (progress < 0.8) return 3
-        else if (progress < 1) return 1
-      } else if (action.name === 'dash') {
-        if (action.state === 'windup') return 4
-        else if (action.state === 'execution') return 1
-        else if (action.state === 'winddown') return 1
-      }
-    } else if (this.spriteStyle === 'toon') {
-      if (action.name === 'move') {
-        const progress = action.counter / (MOVE_ACTION_CYCLE_DURATION)
-        if (progress < 0.5) return 2
-        else return 1
-      }
+    if (action.name === 'move') {
+      const progress = action.counter / MOVE_ACTION_CYCLE_DURATION
+      if (progress < 0.3) return 2
+      else if (progress < 0.5) return 1
+      else if (progress < 0.8) return 3
+      else if (progress < 1) return 1
+    } else if (action.name === 'dash') {
+      if (action.state === 'windup') return 4
+      else if (action.state === 'execution') return 1
+      else if (action.state === 'winddown') return 1
     }
-
     return 0
   }
 }
