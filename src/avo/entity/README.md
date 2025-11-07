@@ -60,8 +60,43 @@ A Creature is a type of Entity which has the agency to perform actions.
     unconscious.
 
 - A Creature has Health.
-  - A standard human has 30 Health.
+  - A standard creature has 3 Health.
+    - For Hero creatures, Health is just a way of letting players make mistakes.
+  - Damage reduces Health.
+    - A normal attack deals 1 Damage.
+    - Taking damage gives a creature mercy invincibility for ~1 sec.
   - When a Creature's Health reaches 0, it is knocked out (KO-ed).
+  - Health can be recovered.
+    - Many creatures (notably Hero creatures) recover Health automatically but
+      slowly. (Perhaps 1 Health every 10 secs?)
+    - This ensures players always have a chance to survive.
+    - Medicine items causes (near-)instant Health recovery. (Medicine also
+      cures various negative status effects, e.g. a Slow effect.)
+
+- A Creature has Energy.
+  - A standard Creature has 100 Energy.
+    - Energy puts an interesting constraint on player actions, gives players
+      a resource to lightly manage, and motivates players to find items like
+      Food to restore Energy.
+  - Activating Skills and Items may cost Energy.
+    - Most Skills cost 1 Energy to use.
+  - Energy can be recovered.
+    - Eating Food items is the most common way to recover Energy.
+    - The amount recovered should be fairly generous, e.g. a snack recovering
+      50 Energy.
+  - Max Energy can be increased or decreased.
+    - Being in a good mood, etc can increase Max Energy.
+    - Being scared, etc can decrease Max Energy.
+  - Certain conditions can cause continuous Energy drain.
+    - For example, "extremely hot weather" can tire out creatures.
+    - Continuous Energy drain should never trigger the Desperation Rule.
+  - Desperation Rule: if a creature doesn't have Energy to active a Skill or
+    Item, that Energy cost is subtracted from Health instead.
+    - This ensures players can always activate simple Skills and Items, since
+      Health regenerates.
+    - This does mean players can knock themselves out by accident.
+    - Health loss due to the Desperation rule cannot be mitigated by Damage
+      reduction such as armour.
 
 - A Creature can be in one of a few states:
   - "Active" means the Creature is alive, awake, and able to perform actions.
@@ -71,7 +106,7 @@ A Creature is a type of Entity which has the agency to perform actions.
     actions.
     - Usually, when the Player's Hero Creature is knocked out, it's a game over.
     - Some KO-ed Creatures stay in the game world, while other KO-ed creature
-      are cleaned up
+      are cleaned up.
 
 - A Creature can perform the following actions:
   - Move (walk, run, fly)
@@ -82,6 +117,10 @@ A Creature is a type of Entity which has the agency to perform actions.
 - A Creature can carry Items.
 
 - A Creature can have Skills.
+
+- A Creature has an innate Movement Speed.
+
+- A Creature has an innate Action Speed.
 
 ### Structure
 
