@@ -100,13 +100,15 @@ A Creature is a type of Entity which has the agency to perform actions.
 
 - A Creature can be in one of a few states:
   - "Active" means the Creature is alive, awake, and able to perform actions.
-  - "Inactive" means the Creature is asleep, or stunned, or otherwise
-    incapacitated and can't perform actions.
-  - "KO" means the Creature is knocked out (has 0 Health) and can't perform
-    actions.
-    - Usually, when the Player's Hero Creature is knocked out, it's a game over.
-    - Some KO-ed Creatures stay in the game world, while other KO-ed creature
-      are cleaned up.
+  - "Inactive" means the Creature is alive, but can't perform actions.
+  - "Defeated" means the Creature has 0 Health and can't perform actions.
+    - Usually, when the Player's Hero Creature is defeated, it's a game over.
+    - Some defeated Creatures stay in the game world, while other defeated
+      creatures are cleaned up.
+  - Design Notes:
+    - the term "Destroyed" would imply the Creature is/has been removed from
+      the game, so we'll avoid using that term. 
+    - we're specifically avoiding the word "Killed" or "Dead".
 
 - A Creature can perform the following actions:
   - Move (walk, run, fly)
