@@ -1,5 +1,5 @@
 import Entity from '@avo/entity'
-import Shot from '@avo/entity/types/shot.js'
+import Shot from '@avo/entity/examples/shot.js'
 import { TILE_SIZE, FRAME_DURATION } from '@avo/constants.js'
 
 export default class Enemy extends Entity {

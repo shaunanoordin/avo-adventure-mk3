@@ -20,3 +20,9 @@ Story
 
 Game AI
 - ChaserEnemy: if entity can directly see Hero, it should make a beeline to the Hero. Otherwise, use the A* pathing.
+
+rework-hero-and-creatures branch:
+- build up Creature class
+- check if Intent & Actions can be simplified
+  - replace Intent with NextAction?
+- add .state and .stateTransition and .setState() ?

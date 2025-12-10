@@ -1,7 +1,7 @@
-import Entity from '@avo/entity'
+import Creature from '@avo/entity/types/creature.js'
 import { TILE_SIZE } from '@avo/constants.js'
 
-export default class Wizard extends Entity {
+export default class Wizard extends Creature {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'wizard'

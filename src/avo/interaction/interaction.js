@@ -12,7 +12,7 @@ export default class Interaction {
       <p>Debug Controls:</p>
       <ul>
         <li><b>[X]</b> Open example interaction menu</li>
-        <li><b>[Z]</b> Dash</li>
+        <li><b>[Z]</b> Action</li>
       </ul>
     `
 

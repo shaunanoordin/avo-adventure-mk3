@@ -1,10 +1,10 @@
 import { GameAI } from '@avo/game-ai.js'
-import Entity from '@avo/entity'
+import Creature from '@avo/entity/types/creature.js'
 import { LAYERS, TILE_SIZE } from '@avo/constants.js'
 
 const FRAMES_TO_WAIT_BETWEEN_SEEKING_HERO = 6
 
-export default class ChaserEnemy extends Entity {
+export default class ChaserEnemy extends Creature {
   constructor (app, col = 0, row = 0) {
     super(app)
     this._type = 'chaser-enemy'
