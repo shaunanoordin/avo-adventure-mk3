@@ -16,7 +16,9 @@ General Rules:
     - `.moveX` and `.moveY` keeps track of the Entity's personal locomotion,
       e.g. walking to the East.
     - `.pushX` and `.pushY` keeps track of external forces acting on the Entity,
-      e.g. getting pushed by winds.
+      e.g. getting pushed by winds. (Note: "push" movement also has better
+      physics simulation, so a "pushed" entity can bounce off walls, for
+      example.)
   - An Entity's "physicality" rule can be bent or broken, of course. For
     example, we can create a spooky ghost that passes through objects by setting
     `.solid` to false, or we can create an immovable wall by setting `.movable`
