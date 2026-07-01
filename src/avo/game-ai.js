@@ -1,3 +1,11 @@
+/*
+Game AI Subsystem
+
+Contains a bunch of functions to help run the video game AI (NPC behaviour).
+
+Mostly, this is used for pathfinding.
+ */
+
 export const GameAI = {
   /*
   A* path-finding: Given a grid, finds a path from start to goal.
