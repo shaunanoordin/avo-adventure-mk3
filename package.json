@@ -2,7 +2,6 @@
   "name": "avo-adventure-mk3",
   "version": "1.0.0",
   "description": "AvO: Adventurer's Omnibus is a collection of small adventure games.",
-  "main": "index.js",
   "scripts": {
     "start": "webpack && sass src:app && node server.js",
     "dev": "concurrently \"webpack --watch\" \"sass --watch src:app\" \"node server.js\""
