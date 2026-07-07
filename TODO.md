@@ -34,7 +34,7 @@ Rename things:
 - ~~Entity's moveX/Y => selfMoveX/Y~~ (Tried this, it's too wordy.)
 - ~~Entity's pushX/Y => forceMoveX/Y~~
 - Creature => Actor?
-- Interaction => UIMenu?
+- ~~Interaction => UIMenu?~~ (Interaction now called InteractionMenu)
 
 App & Layout:
 - Allow app to support horizontal, vertical, and square layouts

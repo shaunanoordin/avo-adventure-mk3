@@ -21,7 +21,7 @@ Here's a guide to everything in this folder.
 The following are base classes for the game objects, rules, etc used inside a game.
 
 - `entity/`: an **Entity** is a _thing_ that exists in the game world. You could call it a _game object,_ if you like.
-- `interaction/`: an **Interaction** (aka Interaction Menu) a standalone UI package (think HTML `<form>`) that allows players to interact with the non-action parts of the game.
+- `interaction-menu/`: an **Interaction Menu** is a standalone UI package (think HTML `<form>`) that allows players to interact with the non-action parts of the game.
 - `rule/`: a **Rule** (aka Game Rule) a catch-all term for small scripts.
 - `story/`: a **Story** specifies the actual story/game that the player will play through.
 - `tile/`: 
