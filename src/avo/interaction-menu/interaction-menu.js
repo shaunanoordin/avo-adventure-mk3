@@ -1,7 +1,7 @@
-export default class Interaction {
+export default class InteractionMenu {
   constructor (app) {
     this._app = app
-    this._type = 'interaction'
+    this._type = 'interaction-menu'
     this.name = ''  // Optional identifier
   }
 

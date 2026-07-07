@@ -1,3 +1,30 @@
+/*
+Physics Subsystem
+
+Contains a bunch of functions to help simulate simple 2D physics between game
+objects (Entities). The actual simulation happens in the AvO game engine
+(i.e. AvO.play() calls Physics functions) and in the Entity class (e.g.
+performing deceleration).
+
+Honestly, this subsystem is mostly used to detect and react to collisions.
+
+The Physics subsystem checks and affects an Entity's following physical
+properties:
+
+- .x, .y: position on a 2D plane. (east/west, south/west)
+- .pushX, .pushY: "external movement".
+- .shape, .solid, .movable, .mass
+
+Note that the following physical properties are IGNORED:
+
+- .z: position on the Z-axis (above/below) doesn't count for collision.
+- .moveX, .moveY: movement from self locomotion doesn't directly affect physics
+  collisions, nor is affected by it. (In other words, if you want an Entity to
+  bounce when it speeds into a wall, use pushX, pushY.)
+
+See the Entity class for more details.
+ */
+
 import { SHAPES } from '@avo/constants.js'
 import { isZero } from '@avo/misc.js'
 
@@ -8,47 +35,47 @@ export default class Physics {
   //----------------------------------------------------------------
 
   /*
-  Checks if objA is touching objB.
-  - If true, returns the corrected coordinates for objA and objB, in form:
+  Checks if entity A is touching entity B.
+  - If true, returns the corrected coordinates for entA and entB, in form:
     { a: { x, y },
       b: { x, y } }
   - If false, returns null.
    */
-  static checkCollision (objA, objB) {
-    if (!objA || !objB || objA === objB) return null
+  static checkCollision (entA, entB) {
+    if (!entA || !entB || entA === entB) return null
 
     // Circle + Circle collision
-    if (objA.shape === SHAPES.CIRCLE && objB.shape === SHAPES.CIRCLE) {
-      return Physics.checkCollision_circleCircle(objA, objB)
+    if (entA.shape === SHAPES.CIRCLE && entB.shape === SHAPES.CIRCLE) {
+      return Physics.checkCollision_circleCircle(entA, entB)
     }
 
     // Polygon + Polygon collision. (Squares are polygons, of course.)
     else if (
-      (objA.shape === SHAPES.SQUARE || objA.shape === SHAPES.POLYGON) &&
-      (objB.shape === SHAPES.SQUARE || objB.shape === SHAPES.POLYGON)
+      (entA.shape === SHAPES.SQUARE || entA.shape === SHAPES.POLYGON) &&
+      (entB.shape === SHAPES.SQUARE || entB.shape === SHAPES.POLYGON)
     ) {
-      return Physics.checkCollision_polygonPolygon(objA, objB)
+      return Physics.checkCollision_polygonPolygon(entA, entB)
     }
 
     // Circle + Polygon collision.
     else if (
-      objA.shape === SHAPES.CIRCLE &&
-      (objB.shape === SHAPES.SQUARE || objB.shape === SHAPES.POLYGON)
+      entA.shape === SHAPES.CIRCLE &&
+      (entB.shape === SHAPES.SQUARE || entB.shape === SHAPES.POLYGON)
     ) {
-      if (USE_CIRCLE_APPROXIMATION) return Physics.checkCollision_polygonPolygon(objA, objB)
+      if (USE_CIRCLE_APPROXIMATION) return Physics.checkCollision_polygonPolygon(entA, entB)
 
-      return Physics.checkCollision_circlePolygon(objA, objB)
+      return Physics.checkCollision_circlePolygon(entA, entB)
     }
 
     // Polygon + Circle collision
     // It's the reverse of the previous scenario.
     else if (
-      (objA.shape === SHAPES.SQUARE || objA.shape === SHAPES.POLYGON) &&
-      objB.shape === SHAPES.CIRCLE
+      (entA.shape === SHAPES.SQUARE || entA.shape === SHAPES.POLYGON) &&
+       entB.shape === SHAPES.CIRCLE
     ) {
-      if (USE_CIRCLE_APPROXIMATION) return Physics.checkCollision_polygonPolygon(objA, objB)
+      if (USE_CIRCLE_APPROXIMATION) return Physics.checkCollision_polygonPolygon(entA, entB)
 
-      let correction = Physics.checkCollision_circlePolygon(objB, objA)
+      let correction = Physics.checkCollision_circlePolygon(entB, entA)
       if (correction) {
         correction = {
           a: correction.b,
@@ -62,42 +89,42 @@ export default class Physics {
   }
   //----------------------------------------------------------------
 
-  static checkCollision_circleCircle (objA, objB) {
+  static checkCollision_circleCircle (entA, entB) {
     let fractionA = 0
     let fractionB = 0
-    if (!objA.solid || !objB.solid) {
-      //If either object isn't solid, there's no collision correction.
-    } else if (objA.movable && objB.movable) {
+    if (!entA.solid || !entB.solid) {
+      //If either entity isn't solid, there's no collision correction.
+    } else if (entA.movable && entB.movable) {
       fractionA = 0.5
       fractionB = 0.5
-    } else if (objA.movable) {
+    } else if (entA.movable) {
       fractionA = 1
-    } else if (objB.movable) {
+    } else if (entB.movable) {
       fractionB = 1
     }
 
-    const distX = objB.x - objA.x
-    const distY = objB.y - objA.y
+    const distX = entB.x - entA.x
+    const distY = entB.y - entA.y
     const dist = Math.sqrt(distX * distX + distY * distY)
-    const minimumDist = objA.radius + objB.radius
+    const minimumDist = entA.radius + entB.radius
     if (dist < minimumDist) {
       const angle = Math.atan2(distY, distX)
       const correctDist = minimumDist
       const cosAngle = Math.cos(angle)
       const sinAngle = Math.sin(angle)
 
-      const motion = Physics.getPostCollisionMotion(objA, objB)
+      const motion = Physics.getPostCollisionMotion(entA, entB)
 
       return {
         a: {
-          x: objA.x - cosAngle * (correctDist - dist) * fractionA,
-          y: objA.y - sinAngle * (correctDist - dist) * fractionA,
+          x: entA.x - cosAngle * (correctDist - dist) * fractionA,
+          y: entA.y - sinAngle * (correctDist - dist) * fractionA,
           pushX: motion && motion.a.pushX,
           pushY: motion && motion.a.pushY,
         },
         b: {
-          x: objB.x + cosAngle * (correctDist - dist) * fractionB,
-          y: objB.y + sinAngle * (correctDist - dist) * fractionB,
+          x: entB.x + cosAngle * (correctDist - dist) * fractionB,
+          y: entB.y + sinAngle * (correctDist - dist) * fractionB,
           pushX: motion && motion.b.pushX,
           pushY: motion && motion.b.pushY,
         }
@@ -109,24 +136,24 @@ export default class Physics {
 
   //----------------------------------------------------------------
 
-  static checkCollision_polygonPolygon (objA, objB) {
+  static checkCollision_polygonPolygon (entA, entB) {
     let fractionA = 0
     let fractionB = 0
-    if (!objA.solid || !objB.solid) {
-      //If either object isn't solid, there's no collision correction.
-    } else if (objA.movable && objB.movable) {
+    if (!entA.solid || !entB.solid) {
+      //If either entity isn't solid, there's no collision correction.
+    } else if (entA.movable && entB.movable) {
       fractionA = 0.5
       fractionB = 0.5
-    } else if (objA.movable) {
+    } else if (entA.movable) {
       fractionA = 1
-    } else if (objB.movable) {
+    } else if (entB.movable) {
       fractionB = 1
     }
 
     let correction = null
-    const verticesA = objA.vertices
-    const verticesB = objB.vertices
-    const projectionAxes = [...Physics.getShapeNormals(objA), ...Physics.getShapeNormals(objB)]
+    const verticesA = entA.vertices
+    const verticesB = entB.vertices
+    const projectionAxes = [...Physics.getShapeNormals(entA), ...Physics.getShapeNormals(entB)]
     for (let i = 0 ; i < projectionAxes.length ; i++) {
       const axis = projectionAxes[i]
       const projectionA = { min: Infinity, max: -Infinity }
@@ -157,12 +184,12 @@ export default class Physics {
     if (correction && correction.magnitude > 0) {
       return {
         a: {
-          x: objA.x - correction.x * fractionA,
-          y: objA.y - correction.y * fractionA,
+          x: entA.x - correction.x * fractionA,
+          y: entA.y - correction.y * fractionA,
         },
         b: {
-          x: objB.x + correction.x * fractionB,
-          y: objB.y + correction.y * fractionB,
+          x: entB.x + correction.x * fractionB,
+          y: entB.y + correction.y * fractionB,
         }
       }
     }
@@ -172,34 +199,34 @@ export default class Physics {
 
   //----------------------------------------------------------------
 
-  static checkCollision_circlePolygon (objA, objB) {
+  static checkCollision_circlePolygon (entA, entB) {
     let fractionA = 0
     let fractionB = 0
-    if (!objA.solid || !objB.solid) {
-      //If either object isn't solid, there's no collision correction.
-    } else if (objA.movable && objB.movable) {
+    if (!entA.solid || !entB.solid) {
+      //If either entity isn't solid, there's no collision correction.
+    } else if (entA.movable && entB.movable) {
       fractionA = 0.5
       fractionB = 0.5
-    } else if (objA.movable) {
+    } else if (entA.movable) {
       fractionA = 1
-    } else if (objB.movable) {
+    } else if (entB.movable) {
       fractionB = 1
     }
 
-    const distX = objB.x - objA.x
-    const distY = objB.y - objA.y
+    const distX = entB.x - entA.x
+    const distY = entB.y - entA.y
     const dist = Math.sqrt(distX * distX + distY * distY)
     const centreToCentreAxis = (dist !== 0)
       ? { x: distX / dist, y: distY / dist }
       : { x: 0, y: 0 }
 
     let correction = null
-    const verticesB = objB.vertices
-    const projectionAxes = [centreToCentreAxis, ...Physics.getShapeNormals(objB)]
+    const verticesB = entB.vertices
+    const projectionAxes = [centreToCentreAxis, ...Physics.getShapeNormals(entB)]
     for (let i = 0 ; i < projectionAxes.length ; i++) {
       const axis = projectionAxes[i]
-      const scalarA = Physics.dotProduct(axis, { x: objA.x, y: objA.y })
-      const projectionA = { min: scalarA - objA.radius, max: scalarA + objA.radius }
+      const scalarA = Physics.dotProduct(axis, { x: entA.x, y: entA.y })
+      const projectionA = { min: scalarA - entA.radius, max: scalarA + entA.radius }
       const projectionB = { min: Infinity, max: -Infinity }
 
       for (let j = 0 ; j < verticesB.length ; j++) {
@@ -222,12 +249,12 @@ export default class Physics {
     if (correction && correction.magnitude > 0) {
       return {
         a: {
-          x: objA.x - correction.x * fractionA,
-          y: objA.y - correction.y * fractionA,
+          x: entA.x - correction.x * fractionA,
+          y: entA.y - correction.y * fractionA,
         },
         b: {
-          x: objB.x + correction.x * fractionB,
-          y: objB.y + correction.y * fractionB,
+          x: entB.x + correction.x * fractionB,
+          y: entB.y + correction.y * fractionB,
         }
       }
     }
@@ -235,10 +262,10 @@ export default class Physics {
 
   //----------------------------------------------------------------
 
-  /*  Gets the NORMALISED normals for each edge of the object's shape. Assumes the object has the 'vertices' property.
+  /*  Gets the NORMALISED normals for each edge of the entity's shape. Assumes the entity has the 'vertices' property.
    */
-  static getShapeNormals (obj) {
-    const vertices = obj.vertices
+  static getShapeNormals (ent) {
+    const vertices = ent.vertices
     if (!vertices) return null
     if (vertices.length < 2) return []  //Look, you need to have at least three vertices to be a shape.
 
@@ -270,24 +297,24 @@ export default class Physics {
 
   //----------------------------------------------------------------
 
-  static getPostCollisionMotion (objA, objB) {
-    if (!objA || !objB) return null
+  static getPostCollisionMotion (entA, entB) {
+    if (!entA || !entB) return null
 
     if (
-      !objA.movable || !objA.solid || objA.mass === 0
-      || !objB.movable || !objB.solid || objB.mass === 0
-      || (objA.mass + objB.mass) === 0
+      !entA.movable || !entA.solid || entA.mass === 0
+      || !entB.movable || !entB.solid || entB.mass === 0
+      || (entA.mass + entB.mass) === 0
     ) return null
 
-    const collisionAngle = Math.atan2(objB.y - objA.y, objB.x - objA.x)
+    const collisionAngle = Math.atan2(entB.y - entA.y, entB.x - entA.x)
     const ANGLE_90 = Math.PI / 2
-    const totalMass = objA.mass + objB.mass
-    const aSpd = objA.pushSpeed
-    const bSpd = objB.pushSpeed
-    const aAng = objA.pushAngle
-    const bAng = objB.pushAngle
-    const aMass = objA.mass
-    const bMass = objB.mass
+    const totalMass = entA.mass + entB.mass
+    const aSpd = entA.pushSpeed
+    const bSpd = entB.pushSpeed
+    const aAng = entA.pushAngle
+    const bAng = entB.pushAngle
+    const aMass = entA.mass
+    const bMass = entB.mass
 
     const aGroup =
       ( aSpd * Math.cos(aAng - collisionAngle) * (aMass - bMass)
@@ -298,27 +325,27 @@ export default class Physics {
         + 2 * aMass * aSpd * Math.cos(aAng - collisionAngle)
       ) / totalMass
 
-    const objA_pushX =
+    const entA_pushX =
       aGroup * Math.cos(collisionAngle)
       + aSpd * Math.sin(aAng - collisionAngle) * Math.cos(collisionAngle + ANGLE_90)
-    const objA_pushY =
+    const entA_pushY =
       aGroup * Math.sin(collisionAngle)
       + aSpd * Math.sin(aAng - collisionAngle) * Math.sin(collisionAngle + ANGLE_90)
-    const objB_pushX =
+    const entB_pushX =
       bGroup * Math.cos(collisionAngle)
       + bSpd * Math.sin(bAng - collisionAngle) * Math.cos(collisionAngle + ANGLE_90)
-    const objB_pushY =
+    const entB_pushY =
       bGroup * Math.sin(collisionAngle)
       + bSpd * Math.sin(bAng - collisionAngle) * Math.sin(collisionAngle + ANGLE_90)
 
     return {
       a: {
-        pushX: objA_pushX,
-        pushY: objA_pushY,
+        pushX: entA_pushX,
+        pushY: entA_pushY,
       },
       b: {
-        pushX: objB_pushX,
-        pushY: objB_pushY,
+        pushX: entB_pushX,
+        pushY: entB_pushY,
       },
     }
   }
