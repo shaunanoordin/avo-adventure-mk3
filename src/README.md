@@ -2,14 +2,14 @@
 
 Welcome to the source code for the AvO game! If you're reading this, it likely means you're interested in understanding how this game works, or how to modify this game to create your own stories. Welcome, fellow game developer!
 
-## How This Works
+## Folder Index
 
 In this folder, you'll find the following items:
 
 - `avo/`: this is the AvO Game Engine, which runs the general game logic.
   - The game engine handles low-level things like loading files, rendering graphics, and managing time cycles.
 - `starter-story/`: this is an example Story - i.e. the actual, specific game that players play.
-  - a Story handles high-level things like defining the scenario, the characters in the game, and the victory/defeat rules. 
+  - a Story handles high-level things like defining the scenario, the characters in the game, and the victory/defeat rules.
 - `main.js`: this is the script that initialises the AvO Game Engine, and tells it to run the Starter Story.
 - `main.scss`: this defines the stylesheet for the web page.
 
