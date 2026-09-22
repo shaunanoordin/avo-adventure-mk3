@@ -44,33 +44,51 @@ A Creature is a type of Entity which has the agency to perform actions.
   - An _action_ is something the Creature is actually doing.
   - An _intent_ is usually turned into an _action,_ provided that it can be done. e.g. pressing 'B' to jump won't work if the Hero Creature is knocked unconscious.
 
-- A Creature has Health.
-  - A standard creature has 3 Health.
-    - For Hero creatures, Health is just a way of letting players make mistakes.
-  - Damage reduces Health.
-    - A normal attack deals 1 Damage.
-    - Taking damage gives a creature mercy invincibility for ~1 sec.
-  - When a Creature's Health reaches 0, it is knocked out (KO-ed).
-  - Health can be recovered.
-    - Many creatures (notably Hero creatures) recover Health automatically but slowly. (Perhaps 1 Health every 10 secs?)
-    - This ensures players always have a chance to survive.
-    - Medicine items causes (near-)instant Health recovery. (Medicine also
-      cures various negative status effects, e.g. a Slow effect.)
+- A Creature has a Strength (STR) attribute.
+  - A standard Creature has 3 Strength.
+  - Strength is a measure of general wellbeing.
+  - Special interaction: Damage
+    - When a creature receives a new Damage Effect...
+      - ...if an existing Damage Effect already exists on a Creature, just add the value of the new Effect to the old Effect. Otherwise, add the new Damage Effect to the Creature's list of Effects.
+      - ...if the total amount of Damage _exceeds_ STR, then the Creature's state transitions to Defeated. (Start playing the "KO animation", but Creature is considered Defeated even before they hit the ground.)
+      - ...if the total amount of Damage is _equal to or below_ STR, apply the MercyInvincibility Effect for 1s.
+  - Design notes:
+    - Strength was formerly called Health. Difference here is how damage is modeled: previously, damage reduced Health, and Health regenerated. Now, damage is an effect that "builds up" and eventually decays. Same thing, opposite direction.
+    - The benefit of having a static attribute (Strength) as opposed to a moving value/points (Health) is that STR can also be used as a general measure of power.
+    - Strength (like Health) is also a way of letting players make mistakes. This is supplemented by mercy invincibility upon taking damage, and the REC attribute.
 
-- A Creature has Energy.
-  - A standard Creature has 100 Energy.
-    - Energy puts an interesting constraint on player actions, gives players a resource to lightly manage, and motivates players to find items like Food to restore Energy.
-  - Activating Skills and Items may cost Energy.
-    - Most Skills cost 1 Energy to use.
-  - Energy can be recovered.
-    - Eating Food items is the most common way to recover Energy.
-    - The amount recovered should be fairly generous, e.g. a snack recovering 50 Energy.
-  - Max Energy can be increased or decreased.
-    - Being in a good mood, etc can increase Max Energy.
-    - Being scared, etc can decrease Max Energy.
-  - Certain conditions can cause continuous Energy drain.
+- A Creature has a Recovery (REC) attribute.
+  - A standard Creature has 1 REC, meaning _eventually_ it'll shake off most negative Effects.
+  - Recovery is a measure of how quickly a Creature heals from negative Effects. (And possibly how quickly it builds up positive Effects, and how quickly abilities cool down.)
+    - For example, an Effect like Burning has (1) a duration, (2) a natural decay rate (usually 1x, or reduce duration by 1 every second), and (3) an additional decay multiplier for REC (usually 1x, meaning 1 REC reduces duration by another 1 every second).
+  - Common interactions:
+    - Drinking water grants a temporary "Refreshed" Effect that increases REC by 1. (Effectively doubling the heal rate.)
+    - Medicine kits can boost REC by a large amount for a short time.
+
+- A special note on the Damage Effect:
+  - Effect name: Damage
+  - Meaning of "Value": keeps track of total damage received
+  - Duration: 30s
+  - Natural Decay: 0 (i.e. Damage doesn't go away on its own)
+  - Recovery Multiplier: 1x 
+  - Script: when duration goes to 0, value is reduced by 1, and duration resets. When duration AND value are both 0, the Effect is removed.
+  - Effectively, a Creature with 1 REC will take 30 seconds to recover from 1 damage.
+
+- A Creature has Action Points (AP).
+  - 🛠️ A standard Creature has 100 AP. (Value to be tweaked!)
+  - Technically AP is not an attribute, but a _points_ set - meaning it has a current value (curAP), a max value (maxAP), and a(n implied) min value (minAP=0). When the script refers to "AP", this usually means the _current AP value._
+  - AP is spent to activate some Skills and equipped Items.
+  - AP does _not_ naturally regenerate, but can be recovered, e.g. by eating food.
+  - Design Notes:
+    - AP used to be called Energy, but AP seems a more versatile term. For example, an Item like a Sword may also have a limit to how often it can be used, and the term AP can be a catch-all term that describes either "durability" or "ammo" depending on context.
+    - Also, we'll try to use the term "points" for values that change frequently.
+    - AP puts an interesting constraint on player actions, gives players a resource to lightly manage, and motivates players to find items like Food to restore AP.
+  - Max AP can be increased or decreased.
+    - Being in a good mood, etc can increase Max AP.
+    - Being scared, etc can decrease Max AP.
+  - Certain conditions can cause continuous AP drain.
     - For example, "extremely hot weather" can tire out creatures.
-    - Continuous Energy drain should never trigger the Desperation Rule.
+    - Continuous AP drain should never trigger the Desperation Rule.
   - Desperation Rule: if a creature doesn't have Energy to active a Skill or
     Item, that Energy cost is subtracted from Health instead.
     - This ensures players can always activate simple Skills and Items, since Health regenerates.
@@ -93,13 +111,14 @@ A Creature is a type of Entity which has the agency to perform actions.
   - Use Equipped Skill
   - Use Equipped Item
 
+- 🛠️ A Creature might also have the following innate attributes, which are usually hidden but can be interacted with: (There are still under consideration.)
+  - Movement Speed (MOV) - affects max movement speed and acceleration, and is affected by movement type.
+  - Action Speed (ACT)
+  - Sense Range (SNS) - affected by sense types.
+
 - A Creature can carry Items.
 
 - A Creature can have Skills.
-
-- A Creature has an innate Movement Speed.
-
-- A Creature has an innate Action Speed.
 
 ## Structure
 
