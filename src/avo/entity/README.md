@@ -74,26 +74,24 @@ A Creature is a type of Entity which has the agency to perform actions.
   - Script: when duration goes to 0, value is reduced by 1, and duration resets. When duration AND value are both 0, the Effect is removed.
   - Effectively, a Creature with 1 REC will take 30 seconds to recover from 1 damage.
 
-- A Creature has Action Points (AP).
-  - 🛠️ A standard Creature has 100 AP. (Value to be tweaked!)
-  - Technically AP is not an attribute, but a _points_ set - meaning it has a current value (curAP), a max value (maxAP), and a(n implied) min value (minAP=0). When the script refers to "AP", this usually means the _current AP value._
-  - AP is spent to activate some Skills and equipped Items.
-  - AP does _not_ naturally regenerate, but can be recovered, e.g. by eating food.
+- A Creature has Energy points (EN).
+  - 🛠️ A standard Creature has 100 EN. (Value to be tweaked!)
+  - Technically EN is not an attribute, but a _points system_ or _meter_ - meaning it has a current value (curEnergy), a max value (maxEnergy), and a(n implied) min value (minEnergy=0). When the script refers to "Energy", this usually means the _current Energy value._
+  - Energy is spent to activate some Skills and equipped Items.
+  - Energy does _not_ naturally regenerate, but can be recovered, e.g. by eating food.
   - Design Notes:
-    - AP used to be called Energy, but AP seems a more versatile term. For example, an Item like a Sword may also have a limit to how often it can be used, and the term AP can be a catch-all term that describes either "durability" or "ammo" depending on context.
-    - Also, we'll try to use the term "points" for values that change frequently.
-    - AP puts an interesting constraint on player actions, gives players a resource to lightly manage, and motivates players to find items like Food to restore AP.
-  - Max AP can be increased or decreased.
-    - Being in a good mood, etc can increase Max AP.
-    - Being scared, etc can decrease Max AP.
-  - Certain conditions can cause continuous AP drain.
+    - I've been flip-flopping between calling this AP (Action Points) or Energy. Energy is quite self-explanatory, but the term can be overloaded (e.g. Energy weapons). AP is quite versatile (e.g. we can use AP for measuring how often an Item like a Sword can be used) but perhaps too abstract.
+    - Energy puts an interesting constraint on player actions, gives players a resource to lightly manage, and motivates players to find items like Food to restore Energy.
+  - Max Energy can be increased or decreased.
+    - Being in a good mood, etc can increase Max Energy.
+    - Being scared, etc can decrease Max Energy.
+  - Certain conditions can cause continuous Energy drain.
     - For example, "extremely hot weather" can tire out creatures.
-    - Continuous AP drain should never trigger the Desperation Rule.
-  - Desperation Rule: if a creature doesn't have Energy to active a Skill or
-    Item, that Energy cost is subtracted from Health instead.
-    - This ensures players can always activate simple Skills and Items, since Health regenerates.
-    - This does mean players can knock themselves out by accident.
-    - Health loss due to the Desperation rule cannot be mitigated by Damage reduction such as armour.
+    - Continuous Energy drain should never trigger the Desperation Rule.
+  - Desperation Rule: if a creature doesn't have Energy to activate a Skill or
+    Item, that Energy cost is applied as Exhaustion instead.
+    - Exhaustion is an Effect that that functions like Damage and can knock out a Creature.
+    - This ensures players can always activate simple Skills and Items, since Exhaustion eventually decays.
 
 - A Creature can be in one of a few states:
   - "Active" means the Creature is alive, awake, and able to perform actions.
