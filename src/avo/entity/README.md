@@ -14,21 +14,21 @@ General Rules:
   - An Entity's "physicality" rule can be bent or broken, of course. For example, we can create a spooky ghost that passes through objects by setting `.solid` to false, or we can create an immovable wall by setting `.movable` to false.
 
 - An Entity can have Effects applied to it.
-  - An Effect is an ongoing (and usually temporary) attribute that's attached to an Entity.
+  - An Effect is a temporary attribute or modifier attached to an Entity.
   - For example, if an Entity is hit by a sword, it gets the "Damage" Effect. If it's pushed around by wind, it gets the "WindPush" Effect.
   - An Entity _reacts_ to Effects. (To be technical: the code for responding to an Effect lies in the Entity, not the Effect nor the source of the Effect. For example, if an Entity sees that it has the "WindPush" Effect, its script causes it to move in the direction of the wind.)
   - Effects have durations. (That duration can be _forever,_ or _instantaneous._)
   - 🛠️ TODO: Effects need their own description.
 
 - An Entity can have Traits.
-  - A Trait is a permanent attribute of an Entity.
+  - A Trait is a permanent attribute or modifier of an Entity.
   - Examples: "Swimmer", "ResistDamage 1"
   - Traits modify how scripts function. For example, if a fireball attempts to apply "Damage 3" Effect, an Entity with "ResistDamage 1" would only add "Damage 2" to its Effects.
 
 - An Entity can be interacted with. (i.e. have the "Interact" action of another Entity target it.)
   - An Entity _reacts_ to an Interaction. (This is similar to how an Entity reacts to Effects. For example, if a Hero Entity interacts with a Treasure Chest Entity, the Treasure Chest will go "ahhah, I'm being opened by the hero, so I should open the Inventory menu to show my contents.")
 
-- An Entity is visualised in the game world as an animated sprite.
+- An Entity is visualised in the game world as an animated 2D sprite.
   - An Entity has a sprite sheet.
 
 Technical Notes:
